@@ -23,7 +23,6 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Post.init({
-
     id_user: DataTypes.INTEGER,
     id_cat: DataTypes.INTEGER,
     type: DataTypes.ENUM('Trao đổi', 'Tìm mua', 'Bán hàng'),
