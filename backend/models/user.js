@@ -11,6 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+    User.hasMany(models.share_post, { foreignKey: 'id_user' });
+    User.hasMany(models.like_post, { foreignKey: 'id_user' });
+    User.hasMany(models.comment_post, { foreignKey: 'id_user' });
     }
   }
   User.init({
@@ -20,7 +23,6 @@ module.exports = (sequelize, DataTypes) => {
     address: DataTypes.STRING,
     phone: DataTypes.STRING,
     status: DataTypes.BOOLEAN,
-    id: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'User',

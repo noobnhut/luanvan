@@ -11,10 +11,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+     Video.belongsTo(models.Post, { foreignKey: 'id_post' });
+
     }
   }
   Video.init({
-    id: DataTypes.INTEGER,
     id_post: DataTypes.INTEGER,
     url: DataTypes.STRING,
     video: DataTypes.STRING

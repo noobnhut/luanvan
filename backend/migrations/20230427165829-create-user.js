@@ -27,9 +27,6 @@ module.exports = {
       status: {
         type: Sequelize.BOOLEAN
       },
-      id: {
-        type: Sequelize.INTEGER
-      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

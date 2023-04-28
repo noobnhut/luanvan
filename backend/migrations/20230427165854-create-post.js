@@ -9,17 +9,8 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      id: {
-        type: Sequelize.INTEGER
-      },
-      id_user: {
-        type: Sequelize.INTEGER
-      },
-      id_cat: {
-        type: Sequelize.INTEGER
-      },
-      id_type: {
-        type: Sequelize.INTEGER
+     type: {
+        type: Sequelize.ENUM('Trao đổi', 'Tìm mua', 'Bán hàng'),
       },
       post_content: {
         type: Sequelize.STRING

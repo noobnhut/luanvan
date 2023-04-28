@@ -11,10 +11,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+    share_post.belongsTo(models.User, { foreignKey: 'id_user' });
+     share_post.belongsTo(models.Post, { foreignKey: 'id_post' });
     }
   }
   share_post.init({
-    id: DataTypes.INTEGER,
+
     id_user: DataTypes.INTEGER,
     id_post: DataTypes.INTEGER
   }, {
