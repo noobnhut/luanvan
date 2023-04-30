@@ -20,6 +20,11 @@ const router = createRouter({
       name: 'register',
      component: () => import('../views/register.vue')
     },
+    {
+      path: '/messenger',
+      name: 'messenger',
+     component: () => import('../views/messenger.vue')
+    },
 
   ]
 })
