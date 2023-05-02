@@ -15,10 +15,10 @@
               </p>
               
                 <div class="mt-5">
-                  <input type="text" placeholder="Email" class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none w-full" v-model="email">
+                  <input type="text" placeholder="Email" class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none " v-model="email">
                 </div>
                 <div class="mt-5">
-                  <input type="password" placeholder="Mật khẩu" class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none w-full" v-model="password">
+                  <input type="password" placeholder="Mật khẩu" class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none " v-model="password">
                 </div>
                 <div class="mt-5">
                   <button class="w-full block bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold rounded-lg
@@ -36,16 +36,22 @@
         </div>
       </div>
 
-
+      <toast ref="toast"></toast>
 </template>
 
 <script>
+
+import toast from '../components/toast.vue';
 export default {
   data() {
     return {
       email: '',
       password: '',
     };
+  },
+  components:
+  {
+    toast
   },
   methods: {
     async login() {
@@ -59,8 +65,11 @@ export default {
           localStorage.setItem('user', JSON.stringify(login.data));
           localStorage.setItem('token', login.data.token);
           // Chuyển hướng đến trang chính của ứng dụng
-          this.$router.push({ name: 'home' });
-          this.handleCart();
+          this.$refs.toast.showToast('Đăng nhập thành công')
+          setTimeout(() => {
+            this.$router.push({ name: 'home' });
+            }, 1000) 
+        
         }
       } catch (error) {
         // Xử lý lỗi nếu có

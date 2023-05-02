@@ -21,13 +21,13 @@
                     <input type="text" placeholder="Số điện thoại" class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none " v-model="phone">
                   </div>
                 <div class="mt-5">
-                  <input type="text" placeholder="Email" class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none w-full" v-model="email">
+                  <input type="text" placeholder="Email" class=" px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none w-full" v-model="email">
                 </div>
                 <div class="mt-5">
-                  <input type="password" placeholder="Mật khẩu" class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none w-full" v-model="password">
+                  <input type="password" placeholder="Mật khẩu" class=" px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none w-full" v-model="password">
                 </div>
                 <div class="mt-5">
-                  <input type="text" placeholder="Địa chỉ" class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none w-full" v-model="address">
+                  <input type="text" placeholder="Địa chỉ" class=" px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none w-full" v-model="address">
                 </div>
                
                 <div class="mt-5">
