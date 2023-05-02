@@ -7,7 +7,7 @@
                     <div class="py-4 flex-2 flex flex-row">
                         <div class="flex-1">
                             <span class="min-[1024px]:hidden inline-block text-gray-700 hover:text-gray-900 align-bottom">
-                                <span class="block h-6 w-6 p-1 rounded-full hover:bg-gray-400">
+                                <span class="block h-6 w-6 p-1 rounded-full hover:bg-gray-400" @click="openMenu">
                                     <svg class="w-4 h-4" fill="none" stroke-linecap="round" stroke-linejoin="round"
                                         stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
                                         <path d="M4 6h16M4 12h16M4 18h16"></path>
@@ -20,13 +20,13 @@
                     </div>
 
                     <div class="main flex-1 flex flex-col">
-                        <div class="hidden lg:block heading flex-2">
+                        <div class=" lg:block heading flex-2" :class="{hidden:hidden}">
                             <h1 class="text-3xl text-gray-700 mb-4">Chat</h1>
                         </div>
 
                         <div class="flex-1 flex h-full">
                             <!--left nav-->
-                            <div class="sidebar hidden lg:flex w-1/3 flex-2 flex-col pr-6">
+                            <div class="sidebar lg:flex  flex-col pr-6" :class="{hidden:hidden}">
                                 <!--chat search-->
                                 <div class="search flex-2 pb-6 px-2">
                                     <input type="text"
@@ -43,13 +43,10 @@
                                             <div class="w-12 h-12 relative">
                                                 <img class="w-12 h-12 rounded-full mx-auto" src="../assets/login.gif"
                                                     alt="chat-user" />
-                                                <span
-                                                    class="absolute w-4 h-4 bg-green-400 rounded-full right-0 bottom-0 border-2 border-white"></span>
                                             </div>
                                         </div>
                                         <div class="flex-1 px-2">
-                                            <div class="truncate w-32"><span class="text-gray-800">Hứa EndGame</span></div>
-                                            <!-- <div><small class="text-gray-600">Yea, Sure!</small></div> -->
+                                            <div class="truncate w-32"><span class="text-gray-800">Hứa EndGame</span></div> 
                                         </div>
                                         <div class="flex-2 text-right">
                                             <!--Tune-->
@@ -61,21 +58,23 @@
                                 </div>
                             </div>
                             <!--center chat-->
-                            <div class="chat-area flex-1 flex flex-col">
+                            <div class="chat-area flex-1 flex flex-col" :class="{hidden :!hidden}">
                                 <!--name chat -->
-                                <div class="flex-3">
-                                    <h2 class="text-xl py-1 mb-8 border-b-2 border-gray-200"><b>Hứa EndGame</b></h2>
+                                <div class="flex items-center py-2 mb-4 border-b">
+                                    <img class="w-10 h-10 rounded-full mr-2" src="../assets/login.gif" alt="Avatar">
+                                    <div>
+                                        <h3 class="text-gray-900 font-medium">Nguyễn Minh Nhựt</h3>
+                                        <p class="text-gray-500 text-xs">Không hoạt động</p>
+                                   </div> 
                                 </div>
 
                                 <div class="messages flex-1 overflow-auto">
                                     <!--nguoi chat-->
                                     <div class="message mb-4 flex">
                                         <div class="flex-2">
-                                            <div class="w-12 h-12 relative">
-                                                <img class="w-12 h-12 rounded-full mx-auto" src="../assets/login.gif"
+                                            <div class="w-8 h-8 relative">
+                                                <img class="w-8 h-8 rounded-full mx-auto" src="../assets/login.gif"
                                                     alt="chat-user" />
-                                                <span
-                                                    class="absolute w-4 h-4 bg-gray-400 rounded-full right-0 bottom-0 border-2 border-white"></span>
                                             </div>
                                         </div>
                                         <div class="flex-1 px-2">
@@ -147,4 +146,22 @@
 
 
 </template>
+
+<script>
+export default
+{
+    data() {
+        return {
+         hidden:true,
+        }
+    },
+    methods:
+    {
+        openMenu()
+        {
+            this.hidden=!this.hidden;
+        }
+    }
+}
+</script>
 

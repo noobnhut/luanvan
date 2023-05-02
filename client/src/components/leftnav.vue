@@ -27,10 +27,10 @@
             <h3 class="font-semibold   hidden text-xs  md:block  lg:text-base md:block sm:block lg:block">Thông tin các nhân</h3>
           </a>
         </div>
-        <label class=" items-center mt-4 py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer flex md:hidden">
+        <router-link to="/messenger" class=" items-center mt-4 py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer flex md:hidden">
           <i class=" text-violet-500   uil-facebook-messenger mr-4 md:text-xl"></i>
           <h3 class="font-semibold   hidden text-xs  md:block  lg:text-base md:block sm:block lg:block">Nhắn tin</h3>
-        </label>
+        </router-link>
         <label class="flex items-center mt-4 py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer ">
           <i class=" text-violet-500  uil-plus-square mr-4 md:text-xl"></i>
           <h3 class="font-semibold  hidden text-xs  md:block  lg:text-base md:block sm:block lg:block">Tạo bài đăng</h3>

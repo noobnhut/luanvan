@@ -6,9 +6,9 @@
     </div>
     <div class=" p-4 lg:col-span-2 md:col-span-2 col-span-3 ">
       <div class="bg-white w-full h-18 p-4 rounded-md shadow-md">
-        <div class="w-full h-16 flex items-center flex justify-between px-5">
-            <img class=" rounded-full w-10 h-10 mr-3" src="../assets/login.gif" alt="">
-            <input type="text" class=" w-full rounded-full h-10 bg-transparent cursor-pointer px-5" placeholder="Đăng bài gì cho hôm nay nào ?" disabled>
+        <div class="w-full h-16  items-center flex justify-between md:px-5">
+            <img class=" rounded-full md:w-10 md:h-10 md:mr-3 h-8 w-8 mr-1" src="../assets/login.gif" alt="">
+            <button class=" w-full rounded-full h-10 bg-gray-100 cursor-pointer px-5 text-sm md:text-base">Đăng bài gì cho hôm nay nào ?</button>
         </div>
     </div>
       <post/>
