@@ -57,15 +57,15 @@ export default {
   destroyed() {
     window.removeEventListener("resize", this.handleResize);
   },
-  mounted() {
-    let user = JSON.parse(localStorage.getItem("user"));
-    if (!user) {
-      this.$refs.toast.showToast('Bạn chưa đăng nhập hãy đăng nhập!')
-      setTimeout(() => {
-        this.$router.push({ name: "login" });
-      }, 3000);
-    }
-  },
+  // mounted() {
+  //   let user = JSON.parse(localStorage.getItem("user"));
+  //   if (!user) {
+  //     this.$refs.toast.showToast('Bạn chưa đăng nhập hãy đăng nhập!')
+  //     setTimeout(() => {
+  //       this.$router.push({ name: "login" });
+  //     }, 3000);
+  //   }
+  // },
   methods: {
     handleResize() {
       this.screenWidth = window.innerWidth;

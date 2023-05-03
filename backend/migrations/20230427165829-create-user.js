@@ -27,6 +27,19 @@ module.exports = {
       status: {
         type: Sequelize.BOOLEAN
       },
+      avatar: {
+        type: Sequelize.STRING
+      },
+      citycode: {
+        type: Sequelize.STRING
+      },
+      districtcode: {
+        type: Sequelize.STRING
+      },
+      communecode:
+      {
+        type: Sequelize.STRING
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

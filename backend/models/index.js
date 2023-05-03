@@ -42,5 +42,4 @@ db.Sequelize = Sequelize;
 // sequelize.sync({ force: true  }).then(() => {
 //   console.log('đồng bộ hóa database thành công.');
 // }).catch(err => console.log(err));
-
 module.exports = db;
