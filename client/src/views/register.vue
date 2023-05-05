@@ -34,29 +34,29 @@
           </div>
 
           <div class="md:flex mb-2 block mt-5 ">
-            <div class="relative md:mr-2 mt-5" >
+            <div class="relative md:mr-2 mt-5">
               <label>Thành phố:</label>
-              <select id="select" name="select"  required
+              <select v-model="city_id" required @change="onCitySelected()"
                 class="block appearance-none w-full bg-white border  px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
                 <option disabled>Thành phố</option>
-                <option v-for="city in citys" :key="city.code" :value="city.code" @change="getDistricts(city.name)">{{ city.name }}</option>
+                <option v-for="city in citys" :key="city.code" :value="city.code">{{ city.name }}</option>
               </select>
             </div>
             <div class="relative md:mr-2 mt-5">
-              <label >Quận huyện:</label>
-              <select id="select" name="select " v-model="districts_code"
+              <label>Quận huyện:</label>
+              <select v-model="districts_code" @change="onDistrictSelected()"
                 class="block appearance-none w-full bg-white border  px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
                 <option disabled selected>Quận/Huyện</option>
-                <option v-for="district in districts" :key="district.code" :value="district.code">{{ district.name }}</option>
-
+                <option v-for="district in districts" :key="district.code" :value="district.code">{{ district.name }}
+                </option>
               </select>
             </div>
             <div class="relative mt-5">
-              <label >Xã phường:</label>
-              <select id="select" name="select"
+              <label>Xã phường:</label>
+              <select v-model="commune_id"
                 class="block appearance-none w-full bg-white border  px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm ">
                 <option disabled selected>Xã/Phường</option>
-                <option value="option1"></option>
+                <option v-for="commune in communes" :key="commune.code" :value="commune.code">{{ commune.name }}</option>
               </select>
             </div>
           </div>
@@ -81,7 +81,7 @@
                     ảnh hoặc video lên</span> </p>
                 <!-- <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p> -->
               </div>
-              <input id="dropzone-file" type="file" class="hidden" />
+              <input id="dropzone-file" type="file" class="hidden" @change="onFileSelected" />
             </label>
           </div>
 
@@ -101,10 +101,13 @@
       </div>
     </div>
   </div>
+  <toast ref="toast"></toast>
+
 </template>
 
 <script>
-
+import  AddressService from '../plugins/addressService';
+import toast from '../components/toast/toast.vue';
 export default
   {
     data() {
@@ -116,43 +119,55 @@ export default
         email: '',
         repassword: '',
         emailError: '',
-        
-        districts_code:'',
-        citys:[],
-        districts:[]
+        city_id: '',
+        districts_code: '',
+        commune_id: '',
+        citys: [],
+        districts: [],
+        communes: [],
+        avatar: null,
       };
     },
-     mounted()
-     {
-      this.getCountry();
-     
-     },
+    mounted() {
+      AddressService.getCountry().then(data => {
+        this.citys = data;
+      });
+    },
+    components:
+    {
+      toast
+    },
     methods:
     {
+      onFileSelected(event) {
+        this.avatar = event.target.files[0]
+        console.log(this.avatar)
+      },
+
       async register() {
-        // Validate the form inputs
+        const formData = new FormData();
+        formData.append('avatar', this.avatar);
+        formData.append('username', this.username);
+        formData.append('password', this.password);
+        formData.append('email', this.email);
+        formData.append('address', this.address);
+        formData.append('phone', this.phone);
+        formData.append('citycode', this.city_id);
+        formData.append('districtcode', this.districts_code);
+        formData.append('communecode', this.commune_id);
+        formData.append('status', false);
         try {
-          // Send the registration request
-          const register = await this.$axios.post(`register`,
-            {
-              username: this.username,
-              password: this.password,
-              email: this.email,
-              phone: this.phone,
-              address: this.address,
-              status: false
-
+          const response = await this.$axios.post('register', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
             }
-          );
-
-          // If the registration is successful, redirect the user to the login page
-          if (register.status === 200) {
+          });
+          this.$refs.toast.showToast(response.data)
+          if (response.status === 201) {
             this.$router.push({ name: 'login' });
           }
         } catch (error) {
-          // Handle any errors that occur during the registration process
           console.error(error);
-          alert('An error occurred during registration. Please try again later.');
         }
       },
 
@@ -186,25 +201,14 @@ export default
         return true;
       },
 
-      async getCountry()
-      {
-        try {
-          const data = await this.$axios.get('https://provinces.open-api.vn/api/')
-          {
-            this.citys=data.data; 
-          }
-          console.log(data.data)
-        } catch (error) {
-          
-        }
+      async onCitySelected() {
+        this.districts = await AddressService.getDistricts(this.city_id);
       },
-      async getDistricts(city_id)
-      {
-        console.log(city_id)
-      }
-
-
+      async onDistrictSelected() {
+        this.communes = await AddressService.getCommune(this.districts_code);
+      },
 
     }
   }
 </script>
+

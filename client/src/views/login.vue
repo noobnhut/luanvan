@@ -41,7 +41,8 @@
 
 <script>
 
-import toast from '../components/toast.vue';
+import toast from '../components/toast/toast.vue';
+
 export default {
   data() {
     return {
@@ -53,6 +54,7 @@ export default {
   {
     toast
   },
+ 
   methods: {
     async login() {
       try {

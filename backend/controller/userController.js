@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const db = require('../models');
 const multer = require('multer');
 const User = db.User;
+const fs = require('fs');
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
@@ -22,29 +23,12 @@ const upload = multer({
   limits: {
     fileSize: 100 * 1024 * 1024 // giới hạn dung lượng file 100MB
   },
-  fileFilter: function (req, file, cb) {
-    if (!file.originalname.match(/\.(jpg|jpeg|png|gif|jfif)$/)) {
-      cb(new Error('Định dạng file không hợp lệ'));
-    } else {
-      cb(null, true);
-    }
-  }
 });
 
 const registerUser = async (req, res) => {
   try {
     upload.array('avatar', 10)(req, res, async function (err) {
-      const {
-        username,
-        email,
-        password,
-        address,
-        phone,
-        status,
-        citycode,
-        districtcode,
-        communecode
-      } = req.body;
+      const { username, email, password, address, phone, status, citycode, districtcode, communecode } = req.body;
       if (err instanceof multer.MulterError) {
         return res.status(400).json({ message: err.message });
       } else if (err) {
@@ -55,42 +39,33 @@ const registerUser = async (req, res) => {
       if (!req.files || req.files.length === 0) {
         return res.status(400).json({ message: 'Vui lòng chọn ít nhất một ảnh đại diện' });
       }
+
+      const imgs = [];
       const existingUser = await User.findOne({
         where: {
           email
         }
       });
       if (existingUser) {
-        return res.status(400).json({
-          error: 'Email đã tồn tại trong hệ thống'
-        });
+        return res.status(200).json(
+          'Email đã tồn tại trong hệ thống'
+        );
       }
-      const users = [];
+      // Mã hóa mật khẩu
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
-
       for (let i = 0; i < req.files.length; i++) {
         const imagePath = req.files[i].path;
         const imageUrl = `${req.protocol}://${req.get('host')}/${req.files[i].filename}`;
 
-        const user = await User.create({
-          username,
-          email,
-          password:hashedPassword,
-          address,
-          phone,
-          status,
-          citycode,
-          districtcode,
-          communecode,
+        const img = await User.create({
+          username: username, email: email, password: hashedPassword, address: address, phone: phone, status: status, citycode: citycode, districtcode: districtcode, communecode: communecode,
           avatar: imageUrl,
-          
         });
-
-        users.push(user);
+        imgs.push(img);
       }
 
-      return res.status(201).json({ message: "Đăng ký thành công", users });
+      return res.status(201).json({ message: "Thêm thành công", imgs });
     });
   } catch (error) {
     console.error(error);
@@ -98,7 +73,63 @@ const registerUser = async (req, res) => {
   }
 };
 
-//login user
+const updateImg = async (req, res) => {
+  try {
+    upload.single('avatar')(req, res, async function (err) {
+      const id = req.params.id;
+      if (err instanceof multer.MulterError) {
+        return res.status(400).json({ message: err.message });
+      } else if (err) {
+        return res.status(400).json({ message: err.message });
+      }
+
+      const img = await User.findByPk(id);
+      // Kiểm tra nếu có file ảnh mới được chọn
+      if (req.file) {
+        const imagePath = req.file.path;
+        const imageUrl = `${req.protocol}://${req.get('host')}/${req.file.filename}`;
+        // Xóa ảnh cũ trên server
+        const subUrl = img.avatar.substring(21);
+        fs.unlinkSync(`./uploads/${subUrl}`);
+        img.avatar = imageUrl;
+        await img.save();
+      }
+      return res.status(200).json({ success: true, img });
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Lỗi server' });
+  }
+}
+
+const updateInfo = async (req, res) => {
+  const userId = req.params.id;
+  const {username,address,phone,citycode,districtcode,communecode} = req.body;
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      res.status(404).json({
+        message: `Tài khoản có không tồn tại.`
+      });
+    }
+     else {
+      await user.update({
+        username: username || user.username,
+        address: address || user.address,
+        phone: phone || user.phone,
+        citycode: citycode || user.citycode,
+        districtcode: districtcode || user.districtcode,
+        communecode: communecode || user.communecode,
+      });
+      res.status(200).json({ message: `Cập nhập thành công`,user});
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Cập nhập thất bại"
+    });
+  }
+}
 const loginUser = async (req, res) => {
   const {
     email,
@@ -136,8 +167,12 @@ const loginUser = async (req, res) => {
       username: user.username,
       email: user.email,
       address: user.address,
+      avatar: user.avatar,
       phone: user.phone,
       status: user.status,
+      citycode: user.citycode,
+      districtcode: user.districtcode,
+      communecode: user.communecode,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
       token
@@ -154,4 +189,6 @@ const loginUser = async (req, res) => {
 module.exports = {
   registerUser,
   loginUser,
+  updateImg,
+  updateInfo
 };

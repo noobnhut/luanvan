@@ -10,8 +10,9 @@ const {routerUser} = require('./routes/userRouter');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json()); 
 
-app.use(cors());
-
+app.use(cors({
+  methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']
+}));
 app.use(express.json());
 
 // Định tuyến

@@ -26,7 +26,7 @@ module.exports = {
         }
       },
      type: {
-        type: Sequelize.ENUM('Trao đổi', 'Tìm mua', 'Bán hàng'),
+        type: Sequelize.ENUM('Trao đổi', 'Tìm mua', 'Bán hàng','Trao tặng'),
       },
       post_content: {
         type: Sequelize.STRING

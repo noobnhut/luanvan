@@ -12,3 +12,4 @@ export default {
     app.config.globalProperties.$axios = instance
   }
 }
+

@@ -17,12 +17,12 @@
 </template>
 
 <script>
-import navbar from '../components/navbar.vue'; 
-import leftnav from '../components/leftnav.vue'
-import post from '../components/post.vue';
-import rightnav from '../components/rightnav.vue';
-import gototop from '../components/gototop.vue';
-import inputform from '../components/inputform.vue';
+import navbar from '../components/header/navbar.vue'; 
+import leftnav from '../components/header/leftnav.vue'
+import post from '../components/post/post.vue';
+import rightnav from '../components/header/rightnav.vue';
+import gototop from '../components/header/gototop.vue';
+import inputform from '../components/post/inputform.vue';
 export default
 {
   components:
