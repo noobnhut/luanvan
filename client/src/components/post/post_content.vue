@@ -2,7 +2,7 @@
     <div class=" fixed w-full h-full top-0 left-0 flex items-center justify-center z-50  ">
         <div class="absolute w-full h-full bg-gray-900 opacity-50"></div>
 
-        <div class=" bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto ">
+        <div class=" bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto h-full md:h-auto ">
             <div class="flex flex-row py-3 px-4">
                 <h5 class="text-lg font-semibold flex-grow">Đăng bài</h5>
                 <i class="uil-multiply flex-none cursor-pointer bg-gray-400 rounded-xl" @click="onclose"></i>

@@ -1,27 +1,63 @@
 <template>
-  <div class=" fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 overflow-auto ">
+  <div class=" fixed w-full h-full top-0 left-0 flex items-center z-50 ">
+
     <div class="absolute w-full h-full bg-gray-900 opacity-50"></div>
 
-    <div class=" bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto ">
+    <div class=" bg-white w-11/12 h-full md:h-auto md:max-w-2xl mx-auto rounded shadow-lg z-50 overflow-y-auto ">
       <div class="flex flex-row py-3 px-4">
         <h5 class="text-lg font-semibold flex-grow">Cập nhập bài đăng</h5>
         <i class="uil-multiply flex-none cursor-pointer bg-gray-400 rounded-xl" @click="onclose"></i>
       </div>
+
       <div class="py-4 px-2">
-        <div class="mt-1">
+
+        <div class="mt-1 ">
+          <label class="block text-base ml-2 font-medium text-gray-900 dark:text-white">Tiêu đề :</label>
           <input type="text" placeholder="Tiêu đề"
             class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none "
             v-model="title">
         </div>
 
-        <div class="mt-5">
+        <div class="mt-2">
+          <label class="block text-base ml-2 font-medium text-gray-900 dark:text-white">Nội dung bài đăng :</label>
           <input type="text" placeholder="Nội dung bài đăng"
             class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none "
             v-model="post_content">
         </div>
+
+        <div class="mt-5">
+          <label class="block text-base ml-2 font-medium text-gray-900 dark:text-white">Giá sản phẩm :</label>
+          <input type="text" placeholder="Giá sản phẩm"
+            class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none "
+            v-model="price">
+        </div>
+
+        <div class="relative mb-2 mt-5">
+          <label class="block text-base ml-2 font-medium text-gray-900 dark:text-white">Loại bài đăng :</label>
+
+          <select id="select" name="select" v-model="type"
+            class="block appearance-none w-full bg-white border  px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none">
+            <option disabled selected>Chọn loại bài đăng</option>
+            <option value="Bán hàng">Mua bán</option>
+            <option value="Trao đổi">Trao đổi</option>
+            <option value="Trao tặng">Trao tặng</option>
+            <option value="Tìm mua">Tìm kiếm</option>
+          </select>
+        </div>
+
+        <div class="relative mt-5">
+          <label class="block text-base ml-2 font-medium text-gray-900 dark:text-white">Loại sản phẩm :</label>
+          <select v-model="catid"
+            class="block appearance-none w-full bg-white border  px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm ">
+            <option disabled selected>Loại sản phẩm</option>
+            <option v-for="cat in cats" :key="cat.id" :value="cat.id">{{ cat.cat_name }}
+            </option>
+          </select>
+        </div>
+
         <div class="md:flex mb-2 block mt-5 ">
-          <div class="relative md:mr-2 mt-5">
-            <label>Thành phố:</label>
+          <div class="relative  md:mr-2 mt-5">
+            <label class="ml-2">Thành phố :</label>
             <select v-model="city_id" required @change="onCitySelected()"
               class="block appearance-none w-full bg-white border  px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
               <option disabled>Thành phố</option>
@@ -29,7 +65,7 @@
             </select>
           </div>
           <div class="relative md:mr-2 mt-5">
-            <label>Quận huyện:</label>
+            <label class="ml-2">Quận huyện :</label>
             <select v-model="districts_code" @change="onDistrictSelected()"
               class="block appearance-none w-full bg-white border  px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
               <option disabled selected>Quận/Huyện</option>
@@ -39,7 +75,7 @@
             </select>
           </div>
           <div class="relative mt-5">
-            <label>Xã phường:</label>
+            <label class="ml-2">Xã phường :</label>
             <select v-model="commune_id"
               class="block appearance-none w-full bg-white border  px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm ">
               <option disabled selected>Xã/Phường</option>
@@ -49,24 +85,8 @@
           </div>
         </div>
 
-        
-        <!-- Image -->
-        <div class="flex items-center " v-on:mouseenter="handleMouseEnter" v-on:mouseleave="handleMouseLeave" >
-          <swiper :pagination="true" :modules="modules" class="mySwiper " :autoplay="{ delay: 1000 }" >
-            <div class="flex items-end">
-              
-            </div>
-            <swiper-slide v-for="img in imgs">
-              <img class=" h-48 w-48 mx-auto" :src="img.url" alt="Bài đăng">
-            </swiper-slide>
-            <swiper-slide v-for="video in videos">
-              <video loop controls class=" h-48 w-48 mx-auto ">
-                <source :src="video.url" type="video/mp4" />
-              </video>
-            </swiper-slide>
-          </swiper>
-        </div>
 
+        <!-- Image -->
       </div>
 
       <div class="modal-footer py-3 px-4 ">
@@ -79,24 +99,20 @@
           @click="onclose()">Đóng</button>
       </div>
     </div>
+
   </div>
+  <toast ref="toast"></toast>
 </template>
   
 <script>
+
+import toast from '../toast/toast.vue';
+
 import userService from '../../plugins/userService';
 import addressService from '../../plugins/addressService';
-// Import Swiper Vue.js components
-import { Swiper, SwiperSlide } from 'swiper/vue';
 
-// Import Swiper styles
-import 'swiper/css';
-
-import 'swiper/css/pagination';
-
-import "swiper/swiper-bundle.min.css";
-// import required modules
-import { Pagination } from 'swiper';
 export default {
+  emits: ['cancel'],
   props: ['postId', 'citycode', 'districtcode', 'communecode'], // Khai báo prop postId
   data() {
     return {
@@ -110,18 +126,16 @@ export default {
       post_content: '',
       title: '',
       imgs: [],
-      videos: []
+      videos: [],
+      price: '',
+      catid: '',
+      cats: [],
+      type: ''
     }
   },
   components: {
-    Swiper,
-    SwiperSlide,
+    toast
 
-  },
-  setup() {
-    return {
-      modules: [Pagination],
-    };
   },
   mounted() {
     this.user = userService.getUserToken();
@@ -137,7 +151,10 @@ export default {
     this.city_id = this.citycode;
     this.districts_code = this.districtcode;
     this.commune_id = this.communecode;
-    this.renderPost()
+    console.log(this.communecode)
+    this.renderPost();
+    this.getCat()
+
   },
   methods: {
     onclose() {
@@ -149,6 +166,18 @@ export default {
     async onDistrictSelected() {
       this.communes = await addressService.getCommune(this.districts_code);
     },
+    async getCat() {
+      try {
+        const result = await this.$axios.get(
+          `getcat`
+        );
+        this.cats = result.data;
+
+
+      } catch (e) {
+        console.log(e);
+      }
+    },
     async renderPost() {
       try {
         const result = await this.$axios.get(
@@ -159,18 +188,40 @@ export default {
         this.post_content = this.posts[0].post_content;
         this.imgs = this.posts[0].Imgs;
         this.videos = this.posts[0].Videos;
+        this.price = this.posts[0].price;
+        this.catid = this.posts[0].Category.id,
+        this.type = this.posts[0].type
       } catch (e) {
         console.log(e);
       }
     },
-    handleMouseEnter() {
-      // Xử lý khi hover vào phần tử
-    
-    },
-    handleMouseLeave() {
-      // Xử lý khi rời khỏi phần tử
-     
-    },
+    async updateInfo() {
+      try {
+        const result = await this.$axios.put(
+          `post/update/` + this.postId,
+          {
+            title: this.title,
+            post_content: this.post_content,
+            price: this.price,
+            type: this.type,
+            id_cat: this.id_cat,
+            citycode: this.city_id,
+            districtcode: this.districts_code,
+            communecode: this.commune_id,
+            id_user: this.user.id
+          }
+        );
+        console.log(result)
+        if (result.status == 200) {
+        this.$refs.toast.showToast('Cập nhập thành công');
+        setTimeout(() => {
+            location.reload();
+            }, 1000) 
+        }
+      } catch (error) {
+
+      }
+    }
   },
 
 };

@@ -1,33 +1,36 @@
 <template>
-    <div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6"
+    <div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6 "
         v-for="post in posts.filter(item => item.type === type)">
         <!-- Header -->
         <editpost v-if="isShowModel" @cancel="onShow" :postId="post.id" :citycode="post.citycode" :districtcode="post.districtcode" :communecode="post.communecode"/>
         <div class="flex items-center px-4 py-2 bg-white border-b">
             <img class="w-10 h-10 rounded-full mr-2" :src="post.User.avatar" alt="Avatar">
+
             <div class="flex-grow">
                 <h3 @click="goIn4(post.User.username, post.User.id)" class="text-gray-900 font-medium cursor-pointer">{{
                     post.User.username }}</h3>
                 <p class="text-gray-500 text-sm">{{ getTimeFromCreatedAt(post.createdAt) }}</p>
             </div>
-            <div class="ml-auto" :class="getclass(post.User.id)">
+
+            <div class=" ml-auto" :class="getclass(post.User.id)">
                 <i class="uil-align-justify cursor-pointer" @click="toggleDropdown(post)"></i>
-                <div :id="'dropdownHover_' + post.id"
-                    class="z-10 absolute bg-white divide-y divide-gray-100 mt-1 mr-1 rounded-lg shadow w-50 dark:bg-gray-700"
+                <div :id="'dropdownHover_' + post.id" class="z-10 absolute bg-white divide-y divide-gray-100 rounded-lg"
                     v-show="isDropdownOpen(post.id)" @click="closeDropdown(post.id)">
                     <ul class="py-2 text-sm text-gray-700 dark:text-gray-200 cursor-pointer">
-                        <li class="py-2 px-1 flex items-center  hover:bg-gray-100" @click="openShowdelete(post.id)">
-                            <i class=" text-violet-500 uil-times-square md:text-xl"></i>
-                            <a class="block px-4 py-2 ">Xóa bài đăng</a>
+                        <li class="py-2 px-1 flex items-center hover:bg-gray-100" @click="openShowdelete(post.id)">
+                            <i class="text-violet-500 uil-times-square md:text-xl"></i>
+                            <a class="md:block px-4 py-2 hidden">Xóa bài đăng</a>
                         </li>
-                        <li class="py-2 px-1  flex items-center hover:bg-gray-100">
-                            <i class=" text-violet-500   uil-edit-alt md:text-xl"></i>
-                            <a class="block px-4 py-2 " @click="onShow">Cập nhập bài đăng</a>
+                        <li class="py-2 px-1 flex items-center hover:bg-gray-100" @click="onShow">
+                            <i class="text-violet-500 uil-edit-alt md:text-xl"></i>
+                            <a class="md:block px-4 py-2 hidden">Cập nhập bài đăng</a>
                         </li>
                     </ul>
                 </div>
             </div>
+        
         </div>
+
         <div class="px-4 py-2 bg-white">
             <div class="block md:flex">
                 <p class="text-blue-700 font-bold text-xs mr-2"
@@ -38,7 +41,10 @@
                     v-for="commune in communes.filter(item => item.code == post.communecode)">#{{ commune.name }}</p>
 
             </div>
+            <div class="flex">
+            <p class="text-blue-700 font-bold text-xs mr-2">#{{ post.Category.cat_name  }}</p>
             <p class="text-blue-700 font-bold text-xs">#{{ post.type }}</p>
+            </div>
             <p class="text-slate-700 font-bold md:text-sm lg:text-base text-xs">
                 {{ post.title }}
             </p>
@@ -47,8 +53,10 @@
             </p>
             <p class="text-blue-700 font-bold text-xs">Giá: {{ formatCurrency(post.price) }}</p>
         </div>
-        <!-- Image -->
-        <div class="flex items-center mt-4 py-2 px-4">
+
+        <!-- Image --> 
+         <div class="flex items-center mt-4 py-2 px-4">
+            
             <swiper :pagination="true" :modules="modules" class="mySwiper" :autoplay="{ delay: 1000 }">
                 <swiper-slide v-for="img in post.Imgs">
                     <img class="max-w-sm w-full mx-auto" :src="img.url" alt="Bài đăng">
@@ -59,7 +67,7 @@
                     </video>
                 </swiper-slide>
             </swiper>
-        </div>
+        </div>   
 
         <!-- Footer -->
         <div class="px-4 py-2 bg-white">
@@ -83,6 +91,7 @@
             </div>
 
         </div>
+
     </div>
     <div class=" fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 " v-show="isShowdelete">
         <div class="absolute w-full h-full bg-gray-900 opacity-50" @click="onclosedelete"></div>
@@ -95,7 +104,6 @@
             <div class="px-4">
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-900 ">Bạn có muốn xóa ? </label>
-
                 </div>
             </div>
             <div class="py-3 px-4">
@@ -283,9 +291,8 @@ export default {
             this.isShowdelete = !this.isShowdelete
         },
 
-        
         onShow() {
-                this.isShowModel = !this.isShowModel
+            this.isShowModel = !this.isShowModel
             },
     }
 };

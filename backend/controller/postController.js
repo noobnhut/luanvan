@@ -106,9 +106,43 @@ const deletePost = async (req, res) => {
 
 }
 
+const updatePost = async (req, res) => {
+  const postId = req.params.id;
+  const {id_cat,type,title,post_content, price,citycode,districtcode,communecode,id_user} = req.body;
+  try {
+    const post = await Post.findByPk(postId);
+    if (!post) {
+      res.status(404).json({
+        message: `Tài khoản có không tồn tại.`
+      });
+    }
+    else if (id_cat == '' || type == '' || post_content == '' || title == '' || citycode == '' || districtcode == '' || communecode == '' || price == '' ) {
+      return res.status(200).json('Thông tin nhập bị thiếu');
+    }
+     else {
+      await post.update({
+        title: title ,
+        id_user:id_user ,
+        id_cat: id_cat ,
+        type: type ,
+        post_content: post_content ,
+        price: price ,
+        citycode: citycode ,
+        districtcode: districtcode ,
+        communecode: communecode ,
+      });
+      res.status(200).json({ message: `Cập nhập thành công`,post});
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Cập nhập thất bại"
+    });
+  }
+}
 module.exports =
 {
   createPost,
   renderPost,
-  deletePost
+  deletePost,
+  updatePost
 }
