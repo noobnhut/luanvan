@@ -1,8 +1,8 @@
 <template>
-    <div class=" fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 overflow-auto ">
-        <div class="absolute w-full h-full bg-gray-900 opacity-50" ></div>
+    <div class=" fixed w-full h-full top-0 left-0 flex items-center justify-center z-50  ">
+        <div class="absolute w-full h-full bg-gray-900 opacity-50"></div>
 
-        <div class=" bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto " >
+        <div class=" bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto ">
             <div class="flex flex-row py-3 px-4">
                 <h5 class="text-lg font-semibold flex-grow">Đăng bài</h5>
                 <i class="uil-multiply flex-none cursor-pointer bg-gray-400 rounded-xl" @click="onclose"></i>
@@ -11,13 +11,13 @@
             <div class="py-4 px-4">
 
                 <div class="flex items-center px-4 py-2  ">
-                    <img class="w-10 h-10 rounded-full mr-2"  :src="user.avatar" alt="Avatar">
+                    <img class="w-10 h-10 rounded-full mr-2" :src="user.avatar" alt="Avatar">
                     <div>
-                        <h3 class="text-gray-900 font-medium">{{ user.username}}</h3>
+                        <h3 class="text-gray-900 font-medium">{{ user.username }}</h3>
                     </div>
                 </div>
                 <div class="relative mb-2">
-                    <select id="select" name="select"
+                    <select id="select" name="select" v-model="type"
                         class="block appearance-none w-full bg-white border  px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none">
                         <option disabled selected>Chọn loại bài đăng</option>
                         <option value="Bán hàng">Mua bán</option>
@@ -26,7 +26,15 @@
                         <option value="Tìm mua">Tìm kiếm</option>
                     </select>
                 </div>
-
+                <div class="relative mt-5">
+                    <label>Loại sản phẩm</label>
+                    <select v-model="catid"
+                        class="block appearance-none w-full bg-white border  px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm ">
+                        <option disabled selected>Loại sản phẩm</option>
+                        <option v-for="cat in cats" :key="cat.id" :value="cat.id">{{ cat.cat_name }}
+                        </option>
+                    </select>
+                </div>
                 <div class="md:flex mb-2 block  ">
                     <div class="relative md:mr-2 mt-5">
                         <label>Thành phố:</label>
@@ -57,33 +65,30 @@
                     </div>
                 </div>
                 <input type="text" class="w-full px-3 py-2 mb-2 text-gray-700 border rounded-lg focus:outline-none"
-                    placeholder="Nhập tiêu đề ">
+                    placeholder="Nhập tiêu đề " v-model="title">
+
+                <input type="text" class="w-full px-3 py-2 mb-2 text-gray-700 border rounded-lg focus:outline-none"
+                    placeholder="Nhập giá " v-model="price">
 
                 <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
-                    placeholder="Nhập nội dung ..."></textarea>
-
-                <div class="flex items-center justify-center w-full">
-                    <label for="dropzone-file"
-                        class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                            <svg aria-hidden="true" class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
-                                </path>
-                            </svg>
-                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Nhấn để tải
-                                    ảnh hoặc video lên</span> </p>
-                            <!-- <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p> -->
-                        </div>
-                        <input id="dropzone-file" type="file" class="hidden" />
+                    placeholder="Nhập nội dung ..." v-model="post_content"></textarea>
+                    
+                <div class="flex">
+                    <label for="video-file">
+                        <i class=" text-violet-500 uil-video mr-2 text-2xl"></i>
+                        <input id="video-file" type="file" accept=".mp4" @change="onFileSelectedVideo" multiple hidden>
                     </label>
+                    <label for="img-file">
+                        <i class="text-violet-500 uil-image-plus text-2xl "></i>
+                        <input id="img-file" type="file" @change="onFileSelected" multiple hidden accept=".png, .jpeg, .gif">
+                    </label>
+
                 </div>
 
             </div>
 
             <div class="modal-footer py-3 px-4 ">
-                <button
+                <button @click="create"
                     class="  py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer mr-4">Đăng
                     bài</button>
                 <button
@@ -92,28 +97,44 @@
             </div>
         </div>
     </div>
+    <toast ref="toast"></toast>
 </template>
 
 <script>
 import AddressService from '../../plugins/addressService';
 import userService from '../../plugins/userService';
+import toast from '../toast/toast.vue';
 export default {
+    emits: ['cancel'],
     data() {
         return {
             city_id: '',
             districts_code: '',
+            cats: [],
             commune_id: '',
             citys: [],
             districts: [],
             communes: [],
-            user:''
+            user: '',
+            catid: '',
+            avatar: [],
+            video: '',
+            post_content: '',
+            title: '',
+            type: '',
+            price: ''
         };
+    },
+    components:
+    {
+        toast
     },
     mounted() {
         AddressService.getCountry().then(data => {
             this.citys = data;
         });
-        this.user= userService.getUserToken();
+        this.user = userService.getUserToken();
+        this.getCat()
     },
     methods: {
         onclose() {
@@ -125,6 +146,85 @@ export default {
         async onDistrictSelected() {
             this.communes = await AddressService.getCommune(this.districts_code);
         },
+        async getCat() {
+            try {
+                const result = await this.$axios.get(
+                    `getcat`
+                );
+                this.cats = result.data;
+
+
+            } catch (e) {
+                console.log(e);
+            }
+        },
+        //post/create
+        onFileSelected(event) {
+            const files = event.target.files;
+            this.avatar = files;
+      
+        },
+        onFileSelectedVideo(event) {
+            const files = event.target.files;
+            this.video = files;
+           
+        },
+
+        async create() {
+            let id_user = this.user.id
+
+            const formVideo = new FormData();
+            for (let i = 0; i < this.video.length; i++) {
+                const file = this.video[i];
+                formVideo.append('video', file);
+            }
+
+            const formImg = new FormData();
+            for (let i = 0; i < this.avatar.length; i++) {
+                const file = this.avatar[i];
+                formImg.append('avatar', file);
+            }
+
+            const formData = new FormData();
+            formData.append('id_user', id_user);
+            formData.append('id_cat', this.catid);
+            formData.append('citycode', this.city_id);
+            formData.append('districtcode', this.districts_code);
+            formData.append('communecode', this.commune_id);
+            formData.append('title', this.title);
+            formData.append('price', this.price);
+            formData.append('post_content', this.post_content);
+            formData.append('type', this.type);
+            formData.append('status', true);
+            try {
+                const response = await this.$axios.post('post/create', formData, {
+                });
+                const id_post = response.data;
+                if (response.status == 200 && id_post > 0) {
+                    const addimg = await this.$axios.post(`post/addimg/${id_post}`, formImg, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    });
+
+                    const addvideo = await this.$axios.post(`post/addvideo/${id_post}`, formVideo, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    });
+
+                    if (addvideo.status == 201) {
+                        this.onclose()
+                        location.reload()
+                    }
+                }
+
+            } catch (error) {
+                console.error(error);
+            }
+
+        },
+
     },
 }
 

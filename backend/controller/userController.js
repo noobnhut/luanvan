@@ -8,7 +8,7 @@ const fs = require('fs');
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
-
+const emailCheck = require('email-check');
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './uploads/');
@@ -46,11 +46,18 @@ const registerUser = async (req, res) => {
           email
         }
       });
+      const existsMail = await emailCheck(email);
+      if(!existsMail)
+      {
+        return res.status(200).json(
+         {message:'Tài khoản Gmail không tồn tại.'} 
+        );
+      }
       if (existingUser) {
         return res.status(200).json(
           'Email đã tồn tại trong hệ thống'
         );
-      }
+      }    
       // Mã hóa mật khẩu
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
@@ -130,6 +137,7 @@ const updateInfo = async (req, res) => {
     });
   }
 }
+
 const loginUser = async (req, res) => {
   const {
     email,
@@ -186,9 +194,28 @@ const loginUser = async (req, res) => {
   }
 };
 
+const getUserById = async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      res.status(404).json({
+        message: `Không tìm thấy tài khoản`
+      });
+    } else {
+      res.json(user);
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Lỗi kết nối"
+    });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   updateImg,
-  updateInfo
+  updateInfo,
+  getUserById
 };

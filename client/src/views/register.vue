@@ -162,7 +162,7 @@ export default
               'Content-Type': 'multipart/form-data'
             }
           });
-          this.$refs.toast.showToast(response.data)
+          this.$refs.toast.showToast(response.data.message)
           if (response.status === 201) {
             this.$router.push({ name: 'login' });
           }

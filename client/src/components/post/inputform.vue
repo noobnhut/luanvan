@@ -5,7 +5,7 @@
             <button class=" w-full rounded-full h-10 bg-gray-100 cursor-pointer px-5 text-sm md:text-base" @click="onShow">Đăng bài gì cho hôm nay nào ?</button>
         </div>
     </div>
-    <post_content v-if="isShowModel" @cancel="onShow"></post_content>
+    <post_content key="0" v-if="isShowModel" @cancel="onShow()" />
 </template>
 
 <script>
@@ -13,10 +13,12 @@ import post_content from './post_content.vue';
 import userService from '../../plugins/userService';
 export default
 {
+  
     data() {
     return {
       isShowModel: false,
-      user:''
+      user:'',
+     
     }
   },
     components:
@@ -30,7 +32,7 @@ export default
     methods:
     {
      onShow() {
-      this.isShowModel = !this.isShowModel
+      this.isShowModel =!this.isShowModel
     },
     }
 

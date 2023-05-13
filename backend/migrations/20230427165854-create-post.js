@@ -31,8 +31,25 @@ module.exports = {
       post_content: {
         type: Sequelize.STRING
       },
+     title: {
+        type: Sequelize.STRING
+      },
       status: {
         type: Sequelize.BOOLEAN
+      },
+      citycode: {
+        type: Sequelize.STRING
+      },
+      districtcode: {
+        type: Sequelize.STRING
+      },
+      communecode:
+      {
+        type: Sequelize.STRING
+      },
+      price:
+      {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,

@@ -27,7 +27,13 @@ module.exports = (sequelize, DataTypes) => {
     id_cat: DataTypes.INTEGER,
     type: DataTypes.ENUM('Trao đổi', 'Tìm mua', 'Bán hàng','Trao tặng'),
     post_content: DataTypes.STRING,
-    status: DataTypes.BOOLEAN
+    title: DataTypes.STRING,
+    status: DataTypes.BOOLEAN,
+    citycode: DataTypes.STRING,
+    districtcode: DataTypes.STRING,
+    communecode: DataTypes.STRING,
+    price:DataTypes.INTEGER,
+    CreatedAt:DataTypes.DATE
   }, {
     sequelize,
     modelName: 'Post',

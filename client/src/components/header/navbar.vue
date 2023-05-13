@@ -12,21 +12,22 @@
       <div class="flex  items-center">
         <button
           class="bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-bold py-2 px-4 rounded flex-shrink-0 mx-2 lg:flex items-center hidden "
-          @click="onShow">
+          @click="onShow"  >
           <i class=" uil-plus-square  lg:text-3xl md:text-xl"></i>
           <p class="px-2">Tạo bài đăng</p>
         </button>
 
-        <div class="profile-pic ml-2">
-          <img :src="user.avatar" alt="pic 1" class="rounded-full w-10 h-10 object-cover cursor-pointer" @click="opendropdown" />
-          <div id="dropdownHover"
+        <div class="profile-pic ml-2"  >
+          <img :src="user.avatar" alt="pic 1" class="rounded-full w-10 h-10 object-cover cursor-pointer"
+            @click="opendropdown"/>
+          <div id="dropdownHover"  
             class="z-10 absolute bg-white divide-y divide-gray-100 mt-1 mr-1 rounded-lg shadow w-50  dark:bg-gray-700"
             :class="{ hidden: hidden }">
             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200 cursor-pointer">
               <li class="py-2 px-1 flex items-center  hover:bg-gray-100">
                 <i class=" text-violet-500 uil-chat-bubble-user md:text-xl"></i>
-                <router-link to="/information" class="block  px-4 py-2  ">Thông tin khách
-                  hàng</router-link>
+                <a @click="goIn4" class="block  px-4 py-2  ">Thông tin khách
+                  hàng</a>
               </li>
               <li class="py-2 px-1  flex items-center hover:bg-gray-100">
                 <i class=" text-violet-500  uil-keyhole-square md:text-xl"></i>
@@ -40,6 +41,7 @@
             </ul>
           </div>
         </div>
+
         <div class="profile-pic ml-2">
           <div
             class="rounded-full w-10 h-10 object-cover bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 flex items-center justify-center">
@@ -68,6 +70,7 @@ import post_content from '../post/post_content.vue';
 import userService from '../../plugins/userService';
 
 export default {
+
   name: "NavigationBar",
   data() {
     return {
@@ -77,6 +80,7 @@ export default {
       hidden: true
     };
   },
+
   components:
   {
     toast,
@@ -108,14 +112,20 @@ export default {
     opendropdown() {
       this.hidden = !this.hidden
     },
+    
     outWeb() {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       this.$refs.toast.showToast('Đăng xuất thành công')
       setTimeout(() => {
-            this.$router.push({ name: 'login' });
-            }, 1000) 
+        this.$router.push({ name: 'login' });
+      }, 1000)
     },
+    goIn4() {
+      // Trong thành phần hoặc hành động của bạn
+      window.location.href = `${import.meta.env.VITE_API_BASE_URL_API}information/${this.user.username}/${this.user.id}`;
+
+    }
   },
 };
 </script>
@@ -129,4 +139,5 @@ export default {
   .logo {
     margin-left: 1rem;
   }
-}</style>
+}
+</style>

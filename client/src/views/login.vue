@@ -42,12 +42,14 @@
 <script>
 
 import toast from '../components/toast/toast.vue';
+import userService  from '../plugins/userService';
 
 export default {
   data() {
     return {
       email: '',
       password: '',
+      user:''
     };
   },
   components:
@@ -67,9 +69,10 @@ export default {
           localStorage.setItem('user', JSON.stringify(login.data));
           localStorage.setItem('token', login.data.token);
           // Chuyển hướng đến trang chính của ứng dụng
-          this.$refs.toast.showToast('Đăng nhập thành công')
+          this.$refs.toast.showToast('Đăng nhập thành công');
+          this.user=userService.getUserToken();
           setTimeout(() => {
-            this.$router.push({ name: 'home' });
+            window.location.href = `${import.meta.env.VITE_API_BASE_URL_API}information/${this.user.username}/${this.user.id}`;
             }, 1000) 
         
         }

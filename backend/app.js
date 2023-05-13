@@ -4,7 +4,12 @@ const cors  = require("cors");
 require('./config/connect');
 const app = express();
 
+const {routerAdmin} = require('./routes/adminRouter');
 const {routerUser} = require('./routes/userRouter');
+const {routerPost} = require('./routes/postRouter');
+const {routerCat} = require('./routes/catRouter');
+const {routerIMG} = require('./routes/imgRouter');
+const {routerVideo} = require('./routes/videoRouter');
 
 // Thiết lập body-parser
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -16,7 +21,7 @@ app.use(cors({
 app.use(express.json());
 
 // Định tuyến
-app.use(routerUser);
+app.use(routerUser,routerPost,routerCat,routerAdmin,routerIMG,routerVideo);
 // Serve các tệp tĩnh trong thư mục "uploads"
 app.use(express.static("uploads"));
 

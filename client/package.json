@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "axios": "^1.4.0",
+    "dayjs": "^1.11.7",
     "dotenv": "^16.0.3",
     "swiper": "^9.2.4",
     "tw-elements": "^1.0.0-beta2",

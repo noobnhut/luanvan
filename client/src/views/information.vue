@@ -5,11 +5,11 @@
            <information/>
         </div>
         <div class=" p-4 lg:col-span-2 md:col-span-2 col-span-3 ">
-            <inputform />
+            <inputform v-if="showin4"/>
             <post />
         </div>
         <div class=" p-4 hidden  lg:block md:col-span-1 lg:col-span-1">
-       <rightnav/>
+       <rightnav />
         </div>
     </div>
     <gototop />
@@ -22,9 +22,16 @@ import post from '../components/post/post.vue';
 import gototop from '../components/header/gototop.vue';
 import inputform from '../components/post/inputform.vue';
 import rightnav from '../components/header/rightnav.vue';
+import userService from '../plugins/userService';
 import information from '../components/information/information.vue'
 export default
     {
+        data() {
+            return {
+                showin4: false,
+                user:''
+            }
+        },
         components:
         {
             navbar,
@@ -34,7 +41,16 @@ export default
             rightnav,
             information
 
-        }
+        },
+        mounted() {
+            this.user = userService.getUserToken();
+            if (this.$route.params.id == this.user.id) {
+               this.showin4 = true
+            }
+            else {
+                this.showIn4 = true
+            }
+        },
     }
 </script>
   
