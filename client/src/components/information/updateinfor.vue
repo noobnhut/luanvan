@@ -86,7 +86,6 @@ export default {
     data() {
         return {
             user: '',
-            user: '',
             cityname: '',
             citys: [],
             districts: [],

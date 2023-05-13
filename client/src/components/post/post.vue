@@ -2,7 +2,7 @@
     <div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6"
         v-for="post in posts.filter(item => item.type === type)">
         <!-- Header -->
-        <editpost :postId="post.id"/>
+        <editpost v-if="isShowModel" @cancel="onShow" :postId="post.id" :citycode="post.citycode" :districtcode="post.districtcode" :communecode="post.communecode"/>
         <div class="flex items-center px-4 py-2 bg-white border-b">
             <img class="w-10 h-10 rounded-full mr-2" :src="post.User.avatar" alt="Avatar">
             <div class="flex-grow">
@@ -22,7 +22,7 @@
                         </li>
                         <li class="py-2 px-1  flex items-center hover:bg-gray-100">
                             <i class=" text-violet-500   uil-edit-alt md:text-xl"></i>
-                            <a class="block px-4 py-2 ">Cập nhập bài đăng</a>
+                            <a class="block px-4 py-2 " @click="onShow">Cập nhập bài đăng</a>
                         </li>
                     </ul>
                 </div>
@@ -149,6 +149,7 @@ export default {
             districts: [],
             communes: [],
             dropdownStates: {},
+            isShowModel: false,
         }
     },
 
@@ -281,6 +282,11 @@ export default {
         onclosedelete() {
             this.isShowdelete = !this.isShowdelete
         },
+
+        
+        onShow() {
+                this.isShowModel = !this.isShowModel
+            },
     }
 };
 </script>
