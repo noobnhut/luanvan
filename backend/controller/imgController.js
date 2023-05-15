@@ -97,7 +97,7 @@ const deleteImgByPost = async (req, res) => {
     const id = req.params.id;
     const imgs = await Img.findAll({where:{id_post:id}});
 
-    if (!imgs) {
+    if (imgs.length === 0) {
       return res.status(404).json({ error: 'Không tìm thấy' });
     }
 

@@ -81,7 +81,7 @@ const deleteVideo = async (req, res) => {
     return res.status(200).json({ success: true, message: 'Xóa thành công' });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Xóa thất bại' });
+    return res.status(500).json({ error: 'Không có video để xóa ' });
   }
 }
 
@@ -90,8 +90,8 @@ const deleteVideobyPost = async (req, res) => {
     const id = req.params.id;
     const videos = await Video.findAll({where:{id_post:id}});
 
-    if (!videos) {
-      return res.status(200).json({ error: 'Không tìm thấy' });
+    if (videos.length === 0) {
+      return res.status(400).json({ error: 'Không tìm thấy'});
     }
 
     for (const video of videos) {
@@ -99,8 +99,7 @@ const deleteVideobyPost = async (req, res) => {
       deleteFile(videoPath);
       await video.destroy();
     }
-
-    return res.status(200).json({ success: true, message: 'Xóa thành công' });
+    return res.status(200).json({ message: 'Xóa thành công' });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Xóa thất bại' });

@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
     districtcode: DataTypes.STRING,
     communecode: DataTypes.STRING,
     price:DataTypes.INTEGER,
-    CreatedAt:DataTypes.DATE
+   
   }, {
     sequelize,
     modelName: 'Post',

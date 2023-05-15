@@ -76,9 +76,13 @@ export default {
             }, 1000) 
         
         }
+       
+          
+
+        
       } catch (error) {
         // Xử lý lỗi nếu có
-        console.log(error);
+        this.$refs.toast.showToast('Đăng nhập that bai');     
       }
     },
   },
