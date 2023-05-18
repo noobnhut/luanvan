@@ -2,7 +2,7 @@
     <div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6 "
         v-for="post in posts.filter(item => item.type === type)">
         <!-- Header -->
-        <editpost v-if="isShowModel" @cancel="onShow" :postId="post.id" :citycode="post.citycode" :districtcode="post.districtcode" :communecode="post.communecode"/>
+        <menupost v-if="isShowModel" @cancel="onShow" :postId="post.id" :citycode="post.citycode" :districtcode="post.districtcode" :communecode="post.communecode"/>
         <div class="flex items-center px-4 py-2 bg-white border-b">
             <img class="w-10 h-10 rounded-full mr-2" :src="post.User.avatar" alt="Avatar">
 
@@ -137,12 +137,12 @@ import { Pagination } from 'swiper';
 
 import userService from '../../plugins/userService';
 import addressService from '../../plugins/addressService';
-import  editpost from '../post/editpost.vue'
+import  menupost from '../post/menupost.vue'
 export default {
     components: {
         Swiper,
         SwiperSlide,
-        editpost
+        menupost
     },
     props: ['type'],
     data() {

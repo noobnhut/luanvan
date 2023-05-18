@@ -46,13 +46,14 @@ const registerUser = async (req, res) => {
           email
         }
       });
-      const existsMail = await emailCheck(email);
-      if(existsMail)
-      {
-        return res.status(200).json(
-         {message:'Tài khoản Gmail không tồn tại.'} 
-        );
-      }
+      // const existsMail = await emailCheck(email);
+      // if(existsMail)
+      // {
+      //   return res.status(200).json(
+      //    {message:'Tài khoản Gmail không tồn tại.'} 
+      //   );
+      // }
+
       if (existingUser) {
         return res.status(200).json(
           'Email đã tồn tại trong hệ thống'
