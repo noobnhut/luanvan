@@ -47,7 +47,7 @@ const registerUser = async (req, res) => {
         }
       });
       const existsMail = await emailCheck(email);
-      if(!existsMail)
+      if(existsMail)
       {
         return res.status(200).json(
          {message:'Tài khoản Gmail không tồn tại.'} 
