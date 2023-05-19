@@ -82,9 +82,40 @@ const deleteComment = async (req, res) => {
         console.log(error.message);
     }
 }
+
+const editComment = async (req,res)=>
+{
+    const comment = await Comment.findOne({
+        where: {
+            id: req.params.id
+        }
+    });
+    const {comment_content}=req.body;
+
+    if (!comment) {
+        return res.status(404).json({
+            message: "không tìm thấy dữ liệu"
+        });
+    }
+    try {
+        await Comment.update({comment_content:comment_content},{
+            where: {
+                id: req.params.id
+            }
+        });
+        res.status(200).json({
+            message: "cập nhập hoàn tất"
+        });
+
+
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 module.exports =
 {
     createdComment,
     deleteComment,
-    getAllComment
+    getAllComment,
+    editComment
 }  

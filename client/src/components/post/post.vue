@@ -86,8 +86,9 @@
                     </span>
                     <!-- Nếu không có sản phẩm nào trong danh sách thích, hiển thị chữ màu #ccc -->
                     <span v-else>
-                        <i class="fa fa-heart" style="color: #ccc" @click="addlike(post.id)"></i>
+                        <i class="fa fa-heart" style="color: #ccc" @click="addlike(post.id)"></i> 
                     </span>
+                    {{ resultLike(post.id) }}
                 </div>
                 <!--post comment-->
                 <button class="mr-3" @click="focusComment">
@@ -98,16 +99,14 @@
                     <span><i class="uil uil-share"></i></span>
                 </button>
             </div>
-            <div>
-                <p class="text-gray-900 font-medium mb-2">{{ resultLike(post.id) }} lượt thích</p>
-            </div>
+            
             <div class="text-gray-900 text-sm font-bold mb-2 cursor-pointer" @click="opencomment">Xem tất cả bình luận</div>
 
             <!--post comment-->
             <div class="flex items-center mt-2">
                 <img class="w-6 h-6 rounded-full mr-2" :src="user.avatar" alt="Avatar">
-                <input class="w-full px-4 py-2 border rounded-full text-gray-700 focus:outline-none" type="text"
-                    ref="comment" placeholder="Thêm bình luận...">
+                <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none text-sm" type="text"
+                   v-model="comments" placeholder="Thêm bình luận..." v-on:keyup.enter="comment(post.id)"></textarea>
             </div>
 
         </div>
@@ -182,7 +181,8 @@ export default {
             dropdownStates: {},
             isShowModel: false,
             likes: [],
-            isShowcomment: false
+            isShowcomment: false,
+            comments:''
 
         }
     },
@@ -369,7 +369,23 @@ export default {
 
         opencomment() {
             this.isShowcomment = !this.isShowcomment
-        }
+        },
+
+        async comment(id) {
+            try {
+                const result = await this.$axios.post(`comment/create`,
+                    {
+                        id_user: this.user.id,
+                        id_post: id,
+                        comment_content:this.comments
+                    })
+               
+               this.comments = '';
+               this.opencomment()
+            } catch (error) {
+                console.log(error)
+            }
+        },
 
 
     }
