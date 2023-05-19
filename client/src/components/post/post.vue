@@ -2,7 +2,8 @@
     <div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6 "
         v-for="post in posts.filter(item => item.type === type)">
         <!-- Header -->
-        <menupost v-if="isShowModel" @cancel="onShow" :postId="post.id" :citycode="post.citycode" :districtcode="post.districtcode" :communecode="post.communecode"/>
+        <menupost v-if="isShowModel" @cancel="onShow" :postId="post.id" :citycode="post.citycode"
+            :districtcode="post.districtcode" :communecode="post.communecode" />
         <div class="flex items-center px-4 py-2 bg-white border-b">
             <img class="w-10 h-10 rounded-full mr-2" :src="post.User.avatar" alt="Avatar">
 
@@ -28,7 +29,7 @@
                     </ul>
                 </div>
             </div>
-        
+
         </div>
 
         <div class="px-4 py-2 bg-white">
@@ -42,8 +43,8 @@
 
             </div>
             <div class="flex">
-            <p class="text-blue-700 font-bold text-xs mr-2">#{{ post.Category.cat_name  }}</p>
-            <p class="text-blue-700 font-bold text-xs">#{{ post.type }}</p>
+                <p class="text-blue-700 font-bold text-xs mr-2">#{{ post.Category.cat_name }}</p>
+                <p class="text-blue-700 font-bold text-xs">#{{ post.type }}</p>
             </div>
             <p class="text-slate-700 font-bold md:text-sm lg:text-base text-xs">
                 {{ post.title }}
@@ -54,9 +55,9 @@
             <p class="text-blue-700 font-bold text-xs">Giá: {{ formatCurrency(post.price) }}</p>
         </div>
 
-        <!-- Image --> 
-         <div class="flex items-center mt-4 py-2 px-4">
-            
+        <!-- Image -->
+        <div class="flex items-center mt-4 py-2 px-4">
+
             <swiper :pagination="true" :modules="modules" class="mySwiper" :autoplay="{ delay: 1000 }">
                 <swiper-slide v-for="img in post.Imgs">
                     <img class="max-w-sm w-full mx-auto" :src="img.url" alt="Bài đăng">
@@ -67,32 +68,53 @@
                     </video>
                 </swiper-slide>
             </swiper>
-        </div>   
+        </div>
 
-        <!-- Footer -->
+        <!-- Footer action  -->
         <div class="px-4 py-2 bg-white">
             <div class="flex items-center mb-2">
-                <button class="mr-3">
-                    <span><i class="uil uil-heart"></i></span>
-                </button>
-                <button class="mr-3">
+                <!--like handle-->
+                <div class="action mr-3">
+                    <!-- Sử dụng v-if để kiểm tra xem sản phẩm có trong danh sách thích hay không -->
+                    <span v-if="likes.some(item => item.id_post === post.id && item.id_user === user.id)">
+                        <!-- Sử dụng v-for để lặp lại các sản phẩm trong danh sách thích -->
+                        <span v-for="like in likes.filter(item => item.id_post === post.id && item.id_user === user.id)">
+                            <!-- Kiểm tra trạng thái của sản phẩm và sử dụng màu đỏ hoặc #ccc tương ứng -->
+                            <i class="fa fa-heart" :style="{ color: like.status ? 'red' : '#ccc' }"
+                                @click="unlike(like, post.id)"></i>
+                        </span>
+                    </span>
+                    <!-- Nếu không có sản phẩm nào trong danh sách thích, hiển thị chữ màu #ccc -->
+                    <span v-else>
+                        <i class="fa fa-heart" style="color: #ccc" @click="addlike(post.id)"></i>
+                    </span>
+                </div>
+                <!--post comment-->
+                <button class="mr-3" @click="focusComment">
                     <span><i class="uil uil-comment"></i></span>
                 </button>
+
                 <button>
                     <span><i class="uil uil-share"></i></span>
                 </button>
             </div>
-            <p class="text-gray-900 font-medium mb-2">100 lượt thích</p>
+            <div>
+                <p class="text-gray-900 font-medium mb-2">{{ resultLike(post.id) }} lượt thích</p>
+            </div>
+            <div class="text-gray-900 text-sm font-bold mb-2 cursor-pointer" @click="opencomment">Xem tất cả bình luận</div>
 
+            <!--post comment-->
             <div class="flex items-center mt-2">
-                <img class="w-6 h-6 rounded-full mr-2" src="../../assets/login.gif" alt="Avatar">
+                <img class="w-6 h-6 rounded-full mr-2" :src="user.avatar" alt="Avatar">
                 <input class="w-full px-4 py-2 border rounded-full text-gray-700 focus:outline-none" type="text"
-                    placeholder="Thêm bình luận...">
+                    ref="comment" placeholder="Thêm bình luận...">
             </div>
 
         </div>
-
+        <view_comment v-if="isShowcomment" @cancel="opencomment" :postId="post.id"></view_comment>
     </div>
+
+    <!--delete-->
     <div class=" fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 " v-show="isShowdelete">
         <div class="absolute w-full h-full bg-gray-900 opacity-50" @click="onclosedelete"></div>
 
@@ -116,7 +138,6 @@
             </div>
         </div>
     </div>
-    
 </template>
 
 <script>
@@ -137,12 +158,14 @@ import { Pagination } from 'swiper';
 
 import userService from '../../plugins/userService';
 import addressService from '../../plugins/addressService';
-import  menupost from '../post/menupost.vue'
+import menupost from '../post/menupost.vue';
+import view_comment from '../post/view_comment.vue';
 export default {
     components: {
         Swiper,
         SwiperSlide,
-        menupost
+        menupost,
+        view_comment
     },
     props: ['type'],
     data() {
@@ -158,6 +181,9 @@ export default {
             communes: [],
             dropdownStates: {},
             isShowModel: false,
+            likes: [],
+            isShowcomment: false
+
         }
     },
 
@@ -178,8 +204,8 @@ export default {
         addressService.getAllCommune().then(data => {
             this.communes = data;
         });
+        this.getLike()
     },
-    
     methods:
     {
         async renderPost() {
@@ -249,7 +275,7 @@ export default {
         isDropdownOpen(postId) {
             return this.dropdownStates[postId] || false;
         },
-        
+
         async deleteImg() {
             try {
                 const result = await this.$axios.delete(`post/deleteimgbypost/` + this.id);
@@ -282,6 +308,48 @@ export default {
             }
         },
 
+        async getLike() {
+            try {
+                const result = await this.$axios.get(`like/getlike`);
+                this.likes = result.data
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+        async unlike(like, postid) {
+            try {
+                const result = await this.$axios.post(`like/addlike`,
+                    {
+                        id_user: like.id_user,
+                        id_post: postid,
+                        id: like.id
+                    });
+                this.getLike()
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+        async addlike(postid) {
+            try {
+                const result = await this.$axios.post(`like/addlike`,
+                    {
+                        id_user: this.user.id,
+                        id_post: postid,
+                        status: 'true'
+                    });
+                this.getLike()
+
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+        resultLike(id) {
+            return this.likes.filter(like => like.id_post === id).length;
+        },
+
         openShowdelete(id) {
             this.id = id
             this.isShowdelete = !this.isShowdelete
@@ -293,7 +361,17 @@ export default {
 
         onShow() {
             this.isShowModel = !this.isShowModel
-            },
+        },
+
+        focusComment() {
+            this.$refs['comment'][0].focus()
+        },
+
+        opencomment() {
+            this.isShowcomment = !this.isShowcomment
+        }
+
+
     }
 };
 </script>
