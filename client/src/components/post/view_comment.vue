@@ -105,6 +105,7 @@
             placeholder="Thêm bình luận..."
             v-on:keyup.enter="comment"
           ></textarea>
+  
         </div>
       </div>
     </div>
@@ -138,6 +139,7 @@ export default {
     this.renderPost();
   },
   methods: {
+
     onclose() {
       this.$emit("cancel");
     },
@@ -237,16 +239,18 @@ export default {
     },
 
     async updateComment(id) {
-    //     try {
-    //     const result = await this.$axios.put("comment/edit/" + id, {
-    //       comment_content: this.comment_content,
-    //     });
-    //    this.showedit=true
-    //     this.getcomment();
+          try {
+          const result = await this.$axios.put("comment/edit/" + id, {
+            comment_content: this.comment_content,
+          });
+         this.showedit=!this.showedit
+         this.idcomment=''
+          this.getcomment();
+        } catch (error) {
+          console.log(error);
+        }
 
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
+
     },
     openEditComment(comment) {
       this.comment_content = comment.comment_content;
