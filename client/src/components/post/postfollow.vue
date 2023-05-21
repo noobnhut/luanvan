@@ -1,9 +1,7 @@
 <template>
-    <div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6 " v-for="post in posts">
+    <div v-for="follow in follows.filter(item=>item.id_user==this.$route.params.id)">
+    <div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6 " v-for="post in posts.filter(item=>item.id==follow.Post.id)">
         <!-- Header -->
-        <menupost v-if="isShowModel" @cancel="onShow" :postId="postId" :citycode="post.citycode"
-            :districtcode="post.districtcode" :communecode="post.communecode" />
-
         <div class="flex items-center px-4 py-2 bg-white border-b">
             <img class="w-10 h-10 rounded-full mr-2" :src="post.User.avatar" alt="Avatar">
 
@@ -12,24 +10,6 @@
                     post.User.username }}</h3>
                 <p class="text-gray-500 text-sm">{{ getTimeFromCreatedAt(post.createdAt) }}</p>
             </div>
-
-            <div class="ml-auto" :class="getclass(post.User.id)">
-                <i class="uil-align-justify cursor-pointer" @click="toggleDropdown(post)"></i>
-                <div :id="'dropdownHover_' + post.id" class="z-10 absolute bg-white divide-y divide-gray-100 rounded-lg"
-                    v-show="isDropdownOpen(post.id)" @click="closeDropdown(post.id)">
-                    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200 cursor-pointer">
-                        <li class="py-2 px-1 flex items-center hover:bg-gray-100" @click="openShowdelete(post.id)">
-                            <i class="text-violet-500 uil-times-square md:text-xl"></i>
-                            <a class="md:block px-4 py-2 hidden">Xóa bài đăng</a>
-                        </li>
-                        <li class="py-2 px-1 flex items-center hover:bg-gray-100" @click="onShow(post.id)">
-                            <i class="text-violet-500 uil-edit-alt md:text-xl"></i>
-                            <a class="md:block px-4 py-2 hidden">Cập nhập bài đăng</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
         </div>
 
         <div class="px-4 py-2 bg-white">
@@ -115,7 +95,6 @@
                 </div>
             </div>
 
-
             <div class="text-gray-900 text-sm font-bold mb-2 cursor-pointer" @click="opencomment(post.id)">Xem tất cả bình luận</div>
 
             <!--post comment-->
@@ -128,32 +107,8 @@
         </div>
 
         <view_comment v-if="isShowcomment" @cancel="opencomment" :postId="postId"></view_comment>
-    </div>
-
-    <!--delete-->
-    <div class=" fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 " v-show="isShowdelete">
-        <div class="absolute w-full h-full bg-gray-900 opacity-50" @click="onclosedelete"></div>
-
-        <div class=" bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto ">
-            <div class="flex flex-row py-3 px-4">
-                <h5 class="text-lg font-semibold flex-grow">Xóa bài đăng</h5>
-                <i class="uil-multiply flex-none cursor-pointer bg-gray-400 rounded-xl" @click="onclosedelete"></i>
-            </div>
-            <div class="px-4">
-                <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-900 ">Bạn có muốn xóa ? </label>
-                </div>
-            </div>
-            <div class="py-3 px-4">
-                <button
-                    class="  py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer mr-4"
-                    @click="deleteImg()">Xóa</button>
-                <button
-                    class="  py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer"
-                    @click="onclosedelete()">Đóng</button>
-            </div>
-        </div>
-    </div>
+    </div> 
+</div>
     <toast ref="toast"></toast>
 </template>
 
@@ -175,13 +130,11 @@ import { Pagination } from 'swiper';
 
 import userService from '../../plugins/userService';
 import addressService from '../../plugins/addressService';
-import menupost from '../post/menupost.vue';
 import view_comment from '../post/view_comment.vue';
 export default {
     components: {
         Swiper,
         SwiperSlide,
-        menupost,
         view_comment,
         toast
     },
@@ -191,14 +144,11 @@ export default {
             posts: [],
             hidden: false,
             user: '',
-            isShowdelete: false,
             id: '',
             result: '',
             citys: [],
             districts: [],
             communes: [],
-            dropdownStates: {},
-            isShowModel: false,
             likes: [],
             isShowcomment: false,
             comments: '',
@@ -233,15 +183,8 @@ export default {
         async renderPost() {
             try {
                 const result = await this.$axios.get(
-                    `post/render`
-                );
-                if (this.type === '') {
-                    this.posts = result.data.filter(item => item.User.id == this.$route.params.id);
-                }
-                else {
-                    this.posts = result.data.filter(item => item.type == this.type);
-                }
-
+                    `post/render`)
+                    this.posts = result.data;           
             } catch (e) {
                 console.log(e);
             }
@@ -274,72 +217,12 @@ export default {
             window.location.href = `http://localhost:5173/information/${username}/${id}`;
         },
 
-        getclass(id) {
-            if (id !== this.user.id) {
-                return 'hidden'
-            }
-            else {
-                return ''
-            }
-        },
         getclass2(id) {
             if (id !== this.user.id) {
                 return ''
             }
             else {
                 return 'hidden'
-            }
-        },
-
-        toggleDropdown(post) {
-            if (this.isDropdownOpen(post.id)) {
-                this.closeDropdown(post.id);
-            } else {
-                this.openDropdown(post.id);
-            }
-        },
-
-        openDropdown(postId) {
-            this.dropdownStates[postId] = true
-        },
-
-        closeDropdown(postId) {
-            this.dropdownStates[postId] = false
-        },
-
-        isDropdownOpen(postId) {
-            return this.dropdownStates[postId] || false;
-        },
-
-        async deleteImg() {
-            try {
-                const result = await this.$axios.delete(`post/deleteimgbypost/` + this.id);
-                if (result.status === 200) {
-                    await Promise.all([
-                        this.deletePost(this.id),
-                        this.deleteVideo(this.id)
-                    ]);
-                }
-                this.onclosedelete()
-                location.reload()
-            } catch (e) {
-                console.log(e);
-            }
-        },
-
-        async deleteVideo(id) {
-            try {
-                const result = await this.$axios.delete(`post/deleteVideobypost/` + id);
-            } catch (e) {
-                console.log(e);
-            }
-        },
-
-        async deletePost(id) {
-            try {
-                const result = await this.$axios.delete(`post/delete/` + id);
-            } catch (e) {
-                console.log(e);
             }
         },
 
@@ -383,20 +266,6 @@ export default {
 
         resultLike(id) {
             return this.likes.filter(like => like.id_post === id).length;
-        },
-
-        openShowdelete(id) {
-            this.id = id
-            this.isShowdelete = !this.isShowdelete
-        },
-
-        onclosedelete() {
-            this.isShowdelete = !this.isShowdelete
-        },
-
-        onShow(id) {
-            this.postId=id
-            this.isShowModel = !this.isShowModel
         },
 
         focusComment() {

@@ -18,7 +18,8 @@ module.exports = (sequelize, DataTypes) => {
   share_post.init({
 
     id_user: DataTypes.INTEGER,
-    id_post: DataTypes.INTEGER
+    id_post: DataTypes.INTEGER,
+    status:DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'share_post',
