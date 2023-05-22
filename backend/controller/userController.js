@@ -58,7 +58,7 @@ const registerUser = async (req, res) => {
         return res.status(200).json(
           'Email đã tồn tại trong hệ thống'
         );
-      }    
+      }
       // Mã hóa mật khẩu
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
@@ -113,7 +113,7 @@ const updateImg = async (req, res) => {
 
 const updateInfo = async (req, res) => {
   const userId = req.params.id;
-  const {username,address,phone,citycode,districtcode,communecode} = req.body;
+  const { username, address, phone, citycode, districtcode, communecode } = req.body;
   try {
     const user = await User.findByPk(userId);
     if (!user) {
@@ -121,7 +121,7 @@ const updateInfo = async (req, res) => {
         message: `Tài khoản có không tồn tại.`
       });
     }
-     else {
+    else {
       await user.update({
         username: username || user.username,
         address: address || user.address,
@@ -130,7 +130,7 @@ const updateInfo = async (req, res) => {
         districtcode: districtcode || user.districtcode,
         communecode: communecode || user.communecode,
       });
-      res.status(200).json({ message: `Cập nhập thành công`,user});
+      res.status(200).json({ message: `Cập nhập thành công`, user });
     }
   } catch (error) {
     res.status(500).json({
@@ -213,10 +213,31 @@ const getUserById = async (req, res) => {
   }
 };
 
+const updatePass = async (req, res) => {
+  const userId = req.params.id;
+  const { oldPassword, newPassword, email } = req.body;
+  const user = await User.findByPk(userId);
+  const emailCheck = await User.findOne({ where: { email } });
+  if (!user || !emailCheck) {
+    return res.status(200).json({ message: 'Tài khoản không tồn tại.' })
+  }
+  const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+  if (!isPasswordValid) {
+    return res.status(200).json({ message: 'Mật khẩu cũ không đúng' });
+  }
+  else {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    user.password = hashedPassword;
+    await user.save();
+    return res.status(200).json({ message: 'Cập nhập thành công mật khẩu' })
+  }
+};
 module.exports = {
   registerUser,
   loginUser,
   updateImg,
   updateInfo,
-  getUserById
+  getUserById,
+  updatePass
 };

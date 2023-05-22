@@ -21,7 +21,7 @@
           <img :src="user.avatar" alt="pic 1" class="rounded-full w-10 h-10 object-cover cursor-pointer"
             @click="opendropdown"/>
           <div id="dropdownHover"  
-            class="z-10 absolute bg-white divide-y divide-gray-100 mt-1 mr-1 rounded-lg shadow w-50  dark:bg-gray-700"
+            class="z-10 absolute bg-white divide-y divide-gray-100 mt-1 ml-1 rounded-lg shadow w-50  dark:bg-gray-700"
             :class="{ hidden: hidden }">
             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200 cursor-pointer">
               <li class="py-2 px-1 flex items-center  hover:bg-gray-100">
@@ -31,7 +31,7 @@
               </li>
               <li class="py-2 px-1  flex items-center hover:bg-gray-100">
                 <i class=" text-violet-500  uil-keyhole-square md:text-xl"></i>
-                <a class="block px-4 py-2  ">Thay đổi mật
+                <a class="block px-4 py-2  " @click="onShowChange">Thay đổi mật
                   khẩu</a>
               </li>
               <li class="py-2 px-1  flex items-center hover:bg-gray-100" @click="outWeb">
@@ -62,13 +62,14 @@
 
   <toast ref="toast"></toast>
   <post_content v-if="isShowModel" @cancel="onShow"></post_content>
+  <changepass v-if="showchange" @cancel="onShowChange"/>
 </template>
   
 <script>
 import toast from '../toast/toast.vue';
 import post_content from '../post/post_content.vue';
 import userService from '../../plugins/userService';
-
+import changepass from '../information/changepass.vue';
 export default {
 
   name: "NavigationBar",
@@ -77,7 +78,8 @@ export default {
       screenWidth: window.innerWidth,
       isShowModel: false,
       user: '',
-      hidden: true
+      hidden: true,
+      showchange:false
     };
   },
 
@@ -85,6 +87,7 @@ export default {
   {
     toast,
     post_content,
+    changepass
 
   },
   created() {
@@ -124,6 +127,12 @@ export default {
     goIn4() {
       // Trong thành phần hoặc hành động của bạn
       window.location.href = `${import.meta.env.VITE_API_BASE_URL_API}information/${this.user.username}/${this.user.id}`;
+
+    },
+    onShowChange()
+    {
+      this.showchange=!this.showchange
+      this.hidden = !this.hidden
 
     }
   },

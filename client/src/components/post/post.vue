@@ -15,7 +15,7 @@
 
             <div class="ml-auto" :class="getclass(post.User.id)">
                 <i class="uil-align-justify cursor-pointer" @click="toggleDropdown(post)"></i>
-                <div :id="'dropdownHover_' + post.id" class="z-10 absolute bg-white divide-y divide-gray-100 rounded-lg"
+                <div :id="'dropdownHover_' + post.id" class="z-10 absolute bg-white divide-y divide-gray-100 rounded-lg mr-2"
                     v-show="isDropdownOpen(post.id)" @click="closeDropdown(post.id)">
                     <ul class="py-2 text-sm text-gray-700 dark:text-gray-200 cursor-pointer">
                         <li class="py-2 px-1 flex items-center hover:bg-gray-100" @click="openShowdelete(post.id)">
