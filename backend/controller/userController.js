@@ -213,6 +213,22 @@ const getUserById = async (req, res) => {
   }
 };
 
+const getUser = async (req, res) => {
+  try {
+    const user = await User.findAll();
+    if (!user) {
+      res.status(404).json({
+        message: `Không tìm thấy tài khoản`
+      });
+    } else {
+      res.json(user);
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "Lỗi kết nối"
+    });
+  }
+};
 const updatePass = async (req, res) => {
   const userId = req.params.id;
   const { oldPassword, newPassword, email } = req.body;
@@ -239,5 +255,6 @@ module.exports = {
   updateImg,
   updateInfo,
   getUserById,
-  updatePass
+  updatePass,
+  getUser
 };

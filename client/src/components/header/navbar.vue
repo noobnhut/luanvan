@@ -7,7 +7,7 @@
       <div class="search-bar flex items-center bg-gray-100 md:w-92">
         <i class="uil uil-search text-gray-600 mx-2"></i>
         <input type="search" class="bg-transparent text-sm rounded-md px-4 py-3 pr-10 focus:outline-none w-full md:w-72"
-          placeholder="Tìm kiếm" />
+          placeholder="Tìm kiếm" v-model="searchQuery" v-on:keyup.enter="searchpost()" />
       </div>
       <div class="flex  items-center">
         <button
@@ -79,7 +79,8 @@ export default {
       isShowModel: false,
       user: '',
       hidden: true,
-      showchange:false
+      showchange:false,
+      searchQuery:''
     };
   },
 
@@ -134,6 +135,11 @@ export default {
       this.showchange=!this.showchange
       this.hidden = !this.hidden
 
+    },
+    searchpost(event)
+    {
+      console.log(this.searchQuery)
+     window.location.href = `http://localhost:5173/searchview?q=${this.searchQuery}`;
     }
   },
 };

@@ -249,7 +249,7 @@ export default {
         const result = await this.$axios.put(`post/update/` + this.postId, {
           title: this.title,
           post_content: this.post_content,
-          price: this.unformatCurrency(this.price),
+          price: this.price,
           type: this.type,
           id_cat: this.id_cat,
           citycode: this.city_id,
@@ -266,16 +266,7 @@ export default {
         }
       } catch (error) {}
     },
-    formatCurrency() {
-      let value = this.price.replace(/\D/g, "");
-      value = new Intl.NumberFormat("vi-VN").format(value);
-      this.price = value;
-    },
-    unformatCurrency(formattedValue) {
-      const unformattedValue = formattedValue.replace(/[^0-9]/g, "");
-      const numericValue = parseFloat(unformattedValue);
-      return numericValue;
-    },
+
   },
 };
 </script>

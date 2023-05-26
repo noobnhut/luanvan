@@ -11,7 +11,7 @@
             <div class="py-4 px-4">
                 <div class="  w-full">
                     <input type="text" class="w-full px-3 py-2 mb-2 text-gray-700 border rounded-lg focus:outline-none"
-                       disabled placeholder="Nhập địa chỉ mail " v-model="email" />
+                       disabled[] placeholder="Nhập địa chỉ mail " v-model="email" />
                     <input type="text" class="w-full px-3 py-2 mb-2 text-gray-700 border rounded-lg focus:outline-none"
                         placeholder="Nhập mật khẩu cũ " v-model="password" />
                     <input type="text" class="w-full px-3 py-2 mb-2 text-gray-700 border rounded-lg focus:outline-none"

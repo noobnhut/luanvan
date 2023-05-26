@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
     User.hasMany(models.share_post, { foreignKey: 'id_user' });
     User.hasMany(models.like_post, { foreignKey: 'id_user' });
     User.hasMany(models.comment_post, { foreignKey: 'id_user' });
+    User.hasMany(models.History_Messenge, { foreignKey: 'id_user' });
+    User.hasMany(models.Messages, { foreignKey: 'receiver_id' });
+    User.hasMany(models.Messages, { foreignKey: 'sender_id' });
+
     }
   }
   User.init({
