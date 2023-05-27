@@ -73,7 +73,11 @@ const sendChat = async (req, res) => {
         const chat = await message.create({
             sender_id: userSender, receiver_id: userReceiver, messenger_content: messenger_content, conversation_id: id_room
         })
-        io.emit('newMessage', chat);
+        
+        res.io.emit('chat', {
+            sender_id: userSender, receiver_id: userReceiver, messenger_content: messenger_content, conversation_id: id_room
+          });
+        return res.json(chat)
     } catch (error) {
         return res.status(400).json( error );
 

@@ -1,10 +1,31 @@
 const bodyParser = require('body-parser');
 const express = require('express');
-const cors  = require("cors");
-const http = require('http');
-const socketIO = require('socket.io');
-require('./config/connect');
 const app = express();
+const cors  = require("cors");
+require('./config/connect');
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server,
+  {
+    allowEIO3:true,
+    cors:{
+      origin:"*",
+      methods:["GET","POST"],
+    },
+    transports:["polling","websocket"],
+  });
+
+//setup socket io
+io.on('connect', socket => {
+  console.log('có người kết nối này');
+});
+
+app.use((req, res, next) => {
+  res.io = io
+  next()
+});
+
 const {routerAdmin} = require('./routes/adminRouter');
 const {routerUser} = require('./routes/userRouter');
 const {routerPost} = require('./routes/postRouter');
@@ -31,15 +52,8 @@ app.use(routerUser,routerPost,routerCat,routerAdmin,routerIMG,routerVideo,router
 // Serve các tệp tĩnh trong thư mục "uploads"
 app.use(express.static("uploads"));
 
-const server = http.createServer(app);
-const io = socketIO(server);
 
-io.on('connection', (socket) => {
-  console.log('A client connected');
-
-  // Thêm các xử lý sự kiện Socket.IO tại đây
-});
 const port = 3000;
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`API đang chạy : http://localhost:${port}/`);
 });
