@@ -1,5 +1,9 @@
 <template>
-    <button @click="sendChat">s</button>
+    <div>
+        <input type="text" v-model="message">
+        <button @click="sendChat">nhan vo</button>
+         <div v-for="chat in chats">{{chat}}</div>
+    </div>
 </template>
 
 <script>
@@ -10,46 +14,39 @@ export default
     {
         data() {
             return {
-                hidden: true,
+                user: '',
+                message: '',
                 chats: [],
-                user: ''
+
             }
         },
         mounted() {
-            this.getChat();
-            this.user = UserService.getUserToken();
 
+            this.user = UserService.getUserToken();
+            socket.connect();
+            socket.on('chat', (chat) => {
+                console.log('Tin nhắn mới', chat);
+               this.chats.push(chat)
+            });
         },
         methods:
         {
             openMenu() {
                 this.hidden = !this.hidden;
             },
-            async getChat() {
+            async sendChat() {
                 try {
-                    const result = await this.$axios.get(`chat/get/4`);
-                    this.chats = result.data
+                    const result = await this.$axios.post('chat/send', {
+                        userSender: 1, userReceiver: 2, messenger_content: this.message
+                    });
                 } catch (error) {
                     console.log(error)
                 }
-            },
-            formatTime(timeString) {
-                return dayjs(timeString).format('HH:mm');
-            },
-            sendChat() {
-                const userSender = '1';
-                const userReceiver = '2';
-                const messenger_content = 'Hello!';
 
-                // Gửi tin nhắn qua Socket.io
-                socket.emit('chat', {
-                    userSender,
-                    userReceiver,
-                    messenger_content
-                });
+
             },
 
-    }
+        }
     }
 </script>
 

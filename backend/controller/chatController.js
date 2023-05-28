@@ -56,44 +56,40 @@ const sendChat = async (req, res) => {
 
         const checkHistory = await History.findOne({
             where: {
-                id_conversation:id_room
+                id_conversation: id_room
             },
         });
-        if(!checkHistory)
-        {
+        if (!checkHistory) {
             const history = await History.create({
                 id_conversation: id_room,
-                id_user:userSender
+                id_user: userSender
             });
             const history2 = await History.create({
                 id_conversation: id_room,
-                id_user:userReceiver
+                id_user: userReceiver
             })
         }
         const chat = await message.create({
             sender_id: userSender, receiver_id: userReceiver, messenger_content: messenger_content, conversation_id: id_room
         })
-        
-        res.io.emit('chat', {
-            sender_id: userSender, receiver_id: userReceiver, messenger_content: messenger_content, conversation_id: id_room
-          });
+
+        res.io.emit('chat',chat);
         return res.json(chat)
     } catch (error) {
-        return res.status(400).json( error );
+        return res.status(400).json(error);
 
     }
 }
 
-const getChat = async (req,res)=>
-{
+const getChat = async (req, res) => {
     const conversation_id = req.params.id;
     try {
         const chat = await message.findAll({
-            where:{conversation_id:conversation_id},
+            where: { conversation_id: conversation_id },
         })
         return res.status(200).json(chat);
     } catch (error) {
-        return res.status(400).json({ error });     
+        return res.status(400).json({ error });
     }
 }
 
@@ -116,16 +112,27 @@ const deleteChats = async (req, res) => {
                 }
             });
             return res.status(200).json({ message: 'Xóa tin nhắn thành công' });
-        }    
+        }
     } catch (error) {
         return res.status(400).json({ error });
 
+    }
+}
+
+const demo = async (req, res) => {
+    try {
+        const { message } = req.body;
+        res.io.emit('chatMessage', message);
+        return res.status(200).json({ message: 'Message sent successfully.' });
+    } catch (error) {
+        return res.status(404).json(error)
     }
 }
 module.exports = {
     checkConversation,
     sendChat,
     deleteChats,
-    getChat
+    getChat,
+    demo
 };
 
