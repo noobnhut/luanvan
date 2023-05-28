@@ -119,11 +119,28 @@ const deleteChats = async (req, res) => {
     }
 }
 
-const demo = async (req, res) => {
+const getHistory = async (req, res) => {
     try {
-        const { message } = req.body;
-        res.io.emit('chatMessage', message);
-        return res.status(200).json({ message: 'Message sent successfully.' });
+        const userId = req.params.id;
+        const conversations = await conversation.findAll({
+            where: {
+              [Op.or]: [
+                { conversation_name: { [Op.startsWith]: `${userId}&` } }, // Lọc theo người gửi
+                {conversation_name: { [Op.substring]: `&${userId}` } }, // Lọc theo người nhận
+               
+              ],
+            },
+          });
+          const idroom = conversations.map((room) => room.id);
+          const history = await History.findAll(
+            {
+                where:{
+                    id_conversation:  { [Op.in]: idroom },
+                    id_user: { [Op.ne]: userId }
+                }
+            }
+          )
+          return res.json(history);
     } catch (error) {
         return res.status(404).json(error)
     }
@@ -133,6 +150,6 @@ module.exports = {
     sendChat,
     deleteChats,
     getChat,
-    demo
+    getHistory
 };
 

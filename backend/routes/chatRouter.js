@@ -4,11 +4,11 @@ const {
     sendChat,
     deleteChats,
     getChat,
-    demo
+    getHistory
 } = require("../controller/chatController.js");
 const routerChat = express.Router();
 routerChat.get('/api/chat/get/:id', getChat);
-routerChat.get('/api/chat/demo', demo);
+routerChat.get('/api/chat/getHistory/:id', getHistory);
 routerChat.post('/api/chat/check', checkConversation);
 routerChat.post('/api/chat/send', sendChat);
 routerChat.delete('/api/chat/deleteall/:id', deleteChats);
