@@ -36,8 +36,8 @@ const registerUser = async (req, res) => {
       }
 
       // Nếu không có file ảnh được chọn
-      if (!req.files || req.files.length === 0) {
-        return res.status(400).json({ message: 'Vui lòng chọn ít nhất một ảnh đại diện' });
+      if (!req.files || req.files.length === 0 || !username || !email || !password || !address || !phone || !status || !citycode || !districtcode || !communecode) {
+        return res.status(202).json({ message: 'Vui lòng điền đầy đủ thông tin' });
       }
 
       const imgs = [];
@@ -65,7 +65,6 @@ const registerUser = async (req, res) => {
       for (let i = 0; i < req.files.length; i++) {
         const imagePath = req.files[i].path;
         const imageUrl = `${req.protocol}://${req.get('host')}/${req.files[i].filename}`;
-
         const img = await User.create({
           username: username, email: email, password: hashedPassword, address: address, phone: phone, status: status, citycode: citycode, districtcode: districtcode, communecode: communecode,
           avatar: imageUrl,
@@ -73,7 +72,7 @@ const registerUser = async (req, res) => {
         imgs.push(img);
       }
 
-      return res.status(201).json({ message: "Thêm thành công", imgs });
+      return res.status(201).json({ message: "Đăng kí thành công", imgs });
     });
   } catch (error) {
     console.error(error);
@@ -152,15 +151,15 @@ const loginUser = async (req, res) => {
       }
     });
     if (!user) {
-      return res.status(400).json({
-        error: 'Tài khoản hoặc mật khẩu không đúng'
+      return res.status(201).json({
+        message: 'Tài khoản hoặc mật khẩu không đúng'
       });
     }
     // So sánh mật khẩu được cung cấp với mật khẩu đã được mã hóa
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({
-        error: 'Tài khoản hoặc mật khẩu không đúng'
+      return res.status(201).json({
+        message: 'Tài khoản hoặc mật khẩu không đúng'
       });
     }
 
