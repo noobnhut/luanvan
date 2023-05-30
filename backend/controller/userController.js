@@ -234,11 +234,11 @@ const updatePass = async (req, res) => {
   const user = await User.findByPk(userId);
   const emailCheck = await User.findOne({ where: { email } });
   if (!user || !emailCheck) {
-    return res.status(200).json({ message: 'Tài khoản không tồn tại.' })
+    return res.status(201).json({ message: 'Tài khoản không tồn tại.' })
   }
   const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
   if (!isPasswordValid) {
-    return res.status(200).json({ message: 'Mật khẩu cũ không đúng' });
+    return res.status(201).json({ message: 'Mật khẩu cũ không đúng' });
   }
   else {
     const salt = await bcrypt.genSalt(10);

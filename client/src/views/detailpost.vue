@@ -298,7 +298,6 @@ export default
                 document.execCommand('copy');
                 document.body.removeChild(tempInput);
                 this.$refs.toast.showToast('Đường dẫn đã lưu');
-
             }
 
         }

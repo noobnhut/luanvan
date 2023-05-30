@@ -10,14 +10,14 @@ const router = createRouter({
     {
       path: '/',
       name: 'login',
-      component: () => import('../views/login.vue')
+      component: () => import('../views/auth/login.vue')
     },
 
     // Đăng nhập
     {
       path: '/register',
       name: 'register',
-      component: () => import('../views/register.vue')
+      component: () => import('../views/auth/register.vue')
     },
 
     // Trang chủ
@@ -96,7 +96,7 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'loginadmin',
-      component: () => import('../views/loginadmin.vue')
+      component: () => import('../views/auth/loginadmin.vue')
     },
 
     {

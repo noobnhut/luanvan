@@ -6,6 +6,12 @@
           <h2 class="text-3xl mb-4">Đăng ký</h2>
           <p class="mb-4">Chào mừng bạn đến với mạng xã hội của chúng tôi !</p>
 
+          <!--bắt đầu username
+          + v-model : username đại diện cho tên người dùng
+          + @focus -> checkUsernameError cho phép bật tắt việc check lỗi input username
+          + 2 if là check rỗng và độ dài username nhập vào input
+          -->
+
           <div class="mt-5">
             <input type="text" placeholder="Họ và tên"
               class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
@@ -15,6 +21,14 @@
           <p class="text-red-500 text-sm ml-1"
             v-else-if="(username.length < 3 || username.length > 20) && usernameFocused">Tên người dùng phải từ 3 đến 20
             ký tự.</p>
+
+          <!--kết thúc username-->
+
+          <!--bắt đầu phone
+          + v-model : phone đại diện cho số điện thoại người dùng
+          + @focus -> checkphoneError cho phép bật tắt việc check lỗi input phone
+          + 2 if : 1 là check rỗng, 2 là check định dạng phone /^(0[1-9]|84[2-9])(\d{8})$/
+          -->
           <div class="mt-5">
             <input type="text" placeholder="Số điện thoại"
               class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
@@ -24,6 +38,14 @@
           <p class="text-red-500 text-sm ml-1" v-else-if="!validPhone(phone) && phoneFocused">Số điện thoại sai định dạng.
           </p>
 
+          <!--kết thúc phone-->
+
+          <!--bắt đầu email
+          + v-model: email đại diện cho email người dùng
+          + @focus => checkemailError cho phép bật tắc check lỗi input email
+          + 2 if là 1 cái check rỗng và else if check định dạng email 
+          : /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          -->
           <div class="mt-5">
             <input type="text" placeholder="Email"
               class="px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none w-full"
@@ -31,14 +53,36 @@
             <p class="text-red-500 text-sm ml-1" v-if="!email && emailFocused">Email bị trống.</p>
             <p class="text-red-500 text-sm ml-1" v-else-if="!validEmail(email) && emailFocused">Email sai định dạng.</p>
           </div>
+
+          <!--kết thúc email-->
+
+          <!--bắt đầu password
+          + v-model : password đại diện cho mật khẩu người dùng.
+          + @focus -> checkpasswordError cho phép bật tắt check lỗi password
+          + 4 if là check rỗng, check độ dài tối thiểu 8 kí tự , check kí tự đặc biệt, check chữ cái hoa
+          -->
           <div class="mt-5">
             <input type="password" placeholder="Mật khẩu"
               class="px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none w-full"
               v-model="password" @focus="checkpasswordError" />
           </div>
           <p class="text-red-500 text-sm ml-1" v-if="!password && passwordFocused">Mật khẩu bị trống.</p>
+          <p class="text-red-500 text-sm ml-1" v-else-if="password.length <= 7 && passwordFocused">Mật khẩu có tối thiểu 8
+            kí tự</p>
+          <p class="text-red-500 text-sm ml-1" v-else-if="!validPassword(password) && passwordFocused">Mật khẩu chứa kí tự
+            đặc biệt " ~ / ) [ * ^ $ .... "</p>
+          <p class="text-red-500 text-sm ml-1" v-else-if="!validPassword2(password) && passwordFocused">Mật khẩu có tối
+            thiểu 1 chữ cái hoa</p>
+          <!--kết thúc password -->
 
+          <!--bắt đầu địa chỉ -->
           <div class="md:flex mb-2 block mt-5">
+            <!--thành phố
+            v-model : city_id lấy ra mã thành phố,
+            @change = "onCitySelected() trả về id city"
+            @focus -> checkcityError bật tắt kiểm tra
+            1 if kiểm tra xem chọn chưa thành phố
+            -->
             <div class="relative md:mr-2 mt-5">
               <label>Thành phố:</label>
               <select v-model="city_id" required @change="onCitySelected()" @focus="checkcityError"
@@ -50,6 +94,13 @@
               </select>
               <p class="text-red-500 text-sm ml-1" v-if="!city_id && cityFocused">Không được để trống.</p>
             </div>
+
+            <!--Quận huyện
+            v-model :districts_cod lấy ra mã quận huyện,
+            @change = "onDistrictsSelected() trả về id Districts"
+            @focus -> checkDistrictsError bật tắt kiểm tra
+            1 if kiểm tra xem chọn chưa quận huyện
+            -->
             <div class="relative md:mr-2 mt-5">
               <label>Quận huyện:</label>
               <select v-model="districts_code" @change="onDistrictSelected()" @focus="checkDistrictsError"
@@ -62,6 +113,13 @@
               <p class="text-red-500 text-sm ml-1" v-if="!districts_code && districtFocused">Không được để trống.</p>
 
             </div>
+
+            <!--Xã thị trấn
+             v-model :ommune_id lấy ra mã xã thị trấn,
+            @change = "onCommuneSelected() trả về id Commune"
+            @focus -> checkCommuneError bật tắt kiểm tra
+            1 if kiểm tra xem chọn chưa xã thị trấn
+            -->
             <div class="relative mt-5">
               <label>Xã phường:</label>
               <select v-model="commune_id" @focus="checkCommuneError"
@@ -72,18 +130,27 @@
                 </option>
               </select>
               <p class="text-red-500 text-sm ml-1" v-if="!commune_id && communeFocused">Không được để trống.</p>
-
             </div>
+
           </div>
 
+          <!-- địa chỉ cụ thể:
+          + @focus -> checkaddressError() bật tắt chế độ kiểm tra
+          + v-model : address đại diện địa chỉ cụ thể
+          + 1 if kiểm tra rỗng và độ dài <= 10
+          -->
           <div class="mt-5">
             <input type="text" placeholder="Địa chỉ cụ thể:"
               class="px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none w-full"
               v-model="address" @focus=" checkaddressError()" />
           </div>
+
           <p class="text-red-500 text-sm ml-1" v-if="!address && addressFocusted">Địa chỉ cụ thể bị trống.</p>
           <p class="text-red-500 text-sm ml-1" v-if="address.length >= 10 && addressFocusted">Địa chỉ tối đa 10 kí tự.</p>
 
+          <!--kết thúc địa chỉ-->
+
+          <!--bắt đầu img-->
           <div class="flex items-center justify-center w-full mt-2">
             <label for="dropzone-file"
               class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
@@ -105,6 +172,9 @@
           </div>
           <p class="text-red-500 text-sm ml-1" v-if="!avatar && avatarFocusted">Vui lòng chọn ảnh.</p>
           <div class="mt-5">
+            <!--kết thúc img-->
+
+            <!-- button gọi method register-->
             <button
               class="w-full block bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold rounded-lg px-4 py-3 mt-6"
               @click="register">
@@ -112,50 +182,43 @@
             </button>
           </div>
 
+          <!-- chuyển sang login form-->
           <p class="mt-8">
             Bạn đã có tài khoản ?
             <router-link to="/" class="text-blue-500 hover:text-blue-700 font-semibold">
               Đăng nhập
             </router-link>
           </p>
+
         </div>
       </div>
     </div>
   </div>
+  <!--component toast thông báo !!!-->
   <toast ref="toast"></toast>
 </template>
 
 <script>
-import AddressService from "../plugins/addressService";
-import toast from "../components/toast/toast.vue";
-import authService from "../plugins/authService";
+// import 2 service là address( api thành phố ... ) & service xử lý đăng nhập đăng kí
+import AddressService from "../../plugins/addressService";
+import authService from "../../plugins/authService";
+// import toast component
+import toast from "../../components/toast/toast.vue";
 export default {
   data() {
     return {
-      username: "",
-      password: "",
-      address: "",
-      phone: "",
-      email: "",
-      repassword: "",
-      city_id: "",
-      districts_code: "",
-      commune_id: "",
-      citys: [],
-      districts: [],
-      communes: [],
-      avatar: null,
-      usernameFocused: false,
-      emailFocused: false,
-      passwordFocused: false,
-      cityFocused: false,
-      districtFocused: false,
-      communeFocused: false,
-      addressFocusted: false,
-      phoneFocused: false,
-      avatarFocusted: false
+      /* dữ liệu tạo ra để lưu trữ thông tin người dùng nhập vào*/
+      username: "", password: "", address: "", phone: "", email: "", repassword: "", city_id: "", districts_code: "", commune_id: "", avatar: null,
+
+      /* dữ liệu tạo ra để lưu trữ thông tin các api*/
+      citys: [], districts: [], communes: [],
+
+      /* các biển kiểm tra bật tắt focus để validate form*/
+      usernameFocused: false, emailFocused: false, passwordFocused: false, cityFocused: false, districtFocused: false, communeFocused: false,
+      addressFocusted: false, phoneFocused: false, avatarFocusted: false
     };
   },
+
   mounted() {
     AddressService.getCountry().then((data) => {
       this.citys = data;
@@ -165,63 +228,63 @@ export default {
     toast,
   },
   methods: {
-    onFileSelected(event) {
-      this.avatar = event.target.files[0];
+    // xử lý các focus bật tắt validate
+    checkUsernameError() { this.usernameFocused = true; },
+    checkemailError() { this.emailFocused = true; },
+    checkpasswordError() { this.passwordFocused = true; },
+    checkphoneError() { this.phoneFocused = true; },
+    checkcityError() { this.cityFocused = true; },
+    checkDistrictsError() { this.districtFocused = true; },
+    checkCommuneError() { this.communeFocused = true; },
+    checkaddressError() { this.addressFocused = true; },
+
+    //hàm lấy hình
+    onFileSelected(event) { this.avatar = event.target.files[0]; },
+
+    // lấy data quận huyện
+    async onCitySelected() {
+      this.districts= []
+      this.communes = []
+      this.districts_code= ''
+      this.commune_id= ''
+      this.districts = await AddressService.getDistricts(this.city_id);
     },
-    checkUsernameError() {
-      this.usernameFocused = true;
+    // lấy data xã thị trấn
+    async onDistrictSelected() {
+      this.communes = []
+      this.commune_id= ''
+      this.communes = await AddressService.getCommune(this.districts_code);
     },
-    checkemailError() {
-      this.emailFocused = true;
-    },
-    checkpasswordError() {
-      this.passwordFocused = true;
-    },
-    checkphoneError() {
-      this.phoneFocused = true;
-    },
-    checkcityError() {
-      this.cityFocused = true;
-    },
-    checkDistrictsError() {
-      this.districtFocused = true;
-    },
-    checkCommuneError() {
-      this.communeFocused = true;
-    },
-    checkaddressError() {
-      this.addressFocused = true;
-    },
+    //hàm đăng kí
     async register() {
-      this.avatarFocusted = true
-      this.usernameFocused = true,
-        this.emailFocused = true,
-        this.passwordFocused = true,
-        this.cityFocused = true,
-        this.districtFocused = true,
-        this.communeFocused = true,
-        this.addressFocusted = true,
-        this.phoneFocused = true,
-        this.avatarFocusted = true
+      // bật hết các focus validate
+      this.avatarFocusted = true, this.usernameFocused = true, this.emailFocused = true,
+      this.passwordFocused = true, this.cityFocused = true, this.districtFocused = true,
+      this.communeFocused = true, this.addressFocusted = true, this.phoneFocused = true
+
+      //gọi lại hàm đăng kí từ authService
       authService.register(this.avatar, this.username, this.password, this.email,
         this.address, this.phone, this.city_id, this.districts_code, this.commune_id, this.$refs, this.$router)
     },
-    validEmail: function (email) {
+
+    // các re ràng buộc
+    validEmail(email) {
       var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
       return re.test(email);
     },
-    validPhone: function (phone) {
+    validPhone(phone) {
       const re = /^(0[1-9]|84[2-9])(\d{8})$/;
       return re.test(phone);
     },
-
-    async onCitySelected() {
-      this.districts = await AddressService.getDistricts(this.city_id);
+    validPassword(password) {
+      const re = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+      return re.test(password);
+    },
+    validPassword2(password) {
+      const re = /[A-Z]/;
+      return re.test(password);
     },
 
-    async onDistrictSelected() {
-      this.communes = await AddressService.getCommune(this.districts_code);
-    },
   },
 };
 </script>

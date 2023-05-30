@@ -199,6 +199,7 @@
 </template>
 
 <script>
+
 import banner from '../components/admin/banner.vue'
 export default
     {
@@ -207,7 +208,6 @@ export default
                 isShow: true,
                 isShowavatar: false,
                 showbanner: false,
-
             };
         },
         components: {
