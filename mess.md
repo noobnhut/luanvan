@@ -1,197 +1,120 @@
-<template>
-    <div class="w-full h-screen">
-        <div class="flex h-full">
-            <div class="flex-1 bg-gradient-to-r from-indigo-100 via-purple-100 to-pink-100 w-full h-full">
-                <div class="main-body container m-auto w-11/12 h-full flex flex-col">
-                    <!--mobile top-->
-                    <div class="py-4 flex-2 flex flex-row">
-                        <div class="flex-1">
-                            <span class="min-[1024px]:hidden inline-block text-gray-700 hover:text-gray-900 align-bottom">
-                                <span class="block h-6 w-6 p-1 rounded-full hover:bg-gray-400" @click="openMenu">
-                                    <svg class="w-4 h-4" fill="none" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path d="M4 6h16M4 12h16M4 18h16"></path>
-                                    </svg>
-                                </span>
-                            </span>
+<div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6 "
+            v-for="post in posts.filter(item => item.id === search.id)">
+            <!-- Header -->
+            <div class="flex items-center px-4 py-2 bg-white border-b">
+                <img class="w-10 h-10 rounded-full mr-2" :src="post.User.avatar" alt="Avatar">
 
-                        </div>
-
-                    </div>
-
-                    <div class="main flex-1 flex flex-col">
-                        <div class=" lg:block heading flex-2" :class="{ hidden: hidden }">
-                            <h1 class="text-3xl text-gray-700 mb-4">Chat</h1>
-                        </div>
-
-                        <div class="flex-1 flex h-full">
-                            <!--left nav-->
-                            <div class="sidebar lg:flex  flex-col pr-6" :class="{ hidden: hidden }">
-                                <!--chat search-->
-                                <div class="search flex-2 pb-6 px-2">
-                                    <input type="text"
-                                        class="outline-none py-2 block w-full bg-transparent border-b-2 border-gray-200"
-                                        placeholder="Tìm kiếm tin nhắn">
-                                </div>
-
-                                <!--left chat avatar-->
-                                <div class="flex-1 h-full overflow-auto px-2">
-
-                                    <div
-                                        class="entry cursor-pointer transform hover:scale-105 duration-300 transition-transform bg-white mb-4 rounded p-4 flex shadow-md">
-                                        <div class="flex-2">
-                                            <div class="w-12 h-12 relative">
-                                                <img class="w-12 h-12 rounded-full mx-auto" src="../assets/login.gif"
-                                                    alt="chat-user" />
-                                            </div>
-                                        </div>
-                                        <div class="flex-1 px-2">
-                                            <div class="truncate w-32"><span class="text-gray-800">Hứa EndGame</span></div>
-                                        </div>
-                                        <div class="flex-2 text-right">
-                                            <!--Tune-->
-                                            <div><small class="text-gray-500">10:32</small></div>
-
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                            <!--center chat-->
-                            <div class="chat-area flex-1 flex flex-col" :class="{ hidden: !hidden }">
-                                <!--name chat -->
-                                <div class="flex items-center py-2 mb-4 border-b">
-                                    <img class="w-10 h-10 rounded-full mr-2" src="../assets/login.gif" alt="Avatar">
-                                    <div>
-                                        <h3 class="text-gray-900 font-medium">Nguyễn Minh Nhựt</h3>
-                                        <p class="text-gray-500 text-xs">trạng thái hoạt động</p>
-                                    </div>
-                                </div>
-
-                                <div class="messages flex-1 overflow-auto">
-                                    <div v-for="message in chats" :key="message.id"
-                                        :class="{ 'me': message.sender_id === user.id, 'you': message.sender_id !== user.id }">
-                                        <div class="message mb-4 flex" v-if="message.sender_id !== user.id">
-                                            <div class="flex-2">
-                                                <div class="w-8 h-8 relative">
-                                                    <img class="w-8 h-8 rounded-full mx-auto" src="../assets/login.gif"
-                                                        alt="chat-user" />
-                                                </div>
-                                            </div>
-                                            <div class="flex-1 px-2">
-                                                <div
-                                                    class="inline-block bg-gradient-to-r from-indigo-100 via-purple-200 to-pink-100 rounded-full p-2 px-6 text-gray-700">
-                                                    <span>{{ message.messenger_content }}</span>
-                                                </div>
-                                                <div class="pl-4"><small class="text-gray-500">{{
-                                                    formatTime(message.createdAt) }}</small></div>
-                                            </div>
-                                        </div>
-                                        <div class="message me mb-4 flex text-right" v-else>
-                                            <div class="flex-1 px-2">
-                                                <div
-                                                    class="inline-block bg-gradient-to-r from-indigo-100 via-purple-200 to-pink-200 rounded-full p-2 px-6 ">
-                                                    <span>{{ message.messenger_content }}</span>
-                                                </div>
-                                                <div class="pr-4"><small class="text-gray-500">{{
-                                                    formatTime(message.createdAt) }}</small></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!--bottom center-->
-                                <div class="flex-2 pt-4 pb-10">
-                                    <div class="write bg-white shadow flex rounded-lg">
-
-                                        <div class="flex-1">
-                                            <textarea name="message"
-                                                class="w-full block outline-none py-4 px-4 bg-transparent" rows="1"
-                                                placeholder="Nhập nội dung chat..." autofocus v-on:keyup.enter="sendChat()"></textarea>
-                                        </div>
-                                        <div class="flex-2 w-32 p-2 flex content-center items-center">
-                                            <div class="flex-1 text-center">
-                                                <span class="text-gray-400 hover:text-gray-800">
-                                                    <span class="inline-block align-text-bottom">
-                                                        <svg fill="none" stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"
-                                                            class="w-6 h-6">
-                                                            <path
-                                                                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13">
-                                                            </path>
-                                                        </svg>
-                                                    </span>
-                                                </span>
-                                            </div>
-                                            <div class="flex-1">
-                                                <button class="bg-blue-400 w-10 h-10 rounded-full inline-block">
-                                                    <span class="inline-block align-text-bottom">
-                                                        <i class="w-4 h-4 text-white  uil-heart-alt"></i>
-                                                    </span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                        </div>
-                    </div>
+                <div class="flex-grow">
+                    <h3 @click="goIn4(post.User.username, post.User.id)" class="text-gray-900 font-medium cursor-pointer">{{
+                        post.User.username }}</h3>
+                    <p class="text-gray-500 text-sm">{{ getTimeFromCreatedAt(post.createdAt) }}</p>
+                </div>
+                <div class="ml-auto">
+                    <span class="bg-blue-200  font-bold py-2 px-1 rounded-md"
+                        :class="{ ' text-blue-500': post.status, 'text-red-500': !post.status }">
+                        {{ post.status ? 'Đã bán' : 'Chưa bán' }}
+                    </span>
                 </div>
             </div>
 
+            <div class="px-4 py-2 bg-white">
+                <div class="block md:flex">
+                    <p class="text-blue-700 font-bold text-xs mr-2"
+                        v-for="city in citys.filter(item => item.code == post.citycode)">#{{ city.name }}</p>
+                    <p class="text-blue-700 font-bold text-xs mr-2"
+                        v-for="district in districts.filter(item => item.code == post.districtcode)">#{{ district.name }}
+                    </p>
+                    <p class="text-blue-700 font-bold text-xs mr-2"
+                        v-for="commune in communes.filter(item => item.code == post.communecode)">#{{ commune.name }}</p>
+
+                </div>
+                <div class="flex">
+                    <p class="text-blue-700 font-bold text-xs mr-2">#{{ post.Category.cat_name }}</p>
+                    <p class="text-blue-700 font-bold text-xs">#{{ post.type }}</p>
+                </div>
+                <p class="text-slate-700 font-bold md:text-sm lg:text-base text-xs">
+                    {{ post.title }}
+                </p>
+                <p class="text-slate-700 md:text-sm lg:text-base text-xs">
+                    {{ post.post_content }}
+                </p>
+                <p class="text-blue-700 font-bold text-xs">Giá: {{ formatCurrency(post.price) }}</p>
+            </div>
+
+            <!-- Image -->
+            <div class="flex items-center mt-4 py-2 px-4">
+
+                <swiper :pagination="true" :modules="modules" class="mySwiper" :autoplay="{ delay: 1000 }">
+                    <swiper-slide v-for="img in post.Imgs">
+                        <img class="max-w-sm w-full mx-auto" :src="img.url" alt="Bài đăng">
+                    </swiper-slide>
+                    <swiper-slide v-for="video in post.Videos">
+                        <video loop controls class="max-w-sm w-full mx-auto ">
+                            <source :src="video.url" type="video/mp4" />
+                        </video>
+                    </swiper-slide>
+                </swiper>
+            </div>
+
+            <!-- Footer action  -->
+            <div class="px-4 py-2 bg-white">
+                <div class="flex items-center mb-2">
+                    <!--like handle-->
+                    <div class="action mr-3">
+                        <!-- Sử dụng v-if để kiểm tra xem sản phẩm có trong danh sách thích hay không -->
+                        <span v-if="likes.some(item => item.id_post === post.id && item.id_user === user.id)">
+                            <!-- Sử dụng v-for để lặp lại các sản phẩm trong danh sách thích -->
+                            <span
+                                v-for="like in likes.filter(item => item.id_post === post.id && item.id_user === user.id)">
+                                <!-- Kiểm tra trạng thái của sản phẩm và sử dụng màu đỏ hoặc #ccc tương ứng -->
+                                <i class="fa fa-heart" :style="{ color: like.status ? 'red' : '#ccc' }"
+                                    @click="unlike(like, post.id)"></i>
+                            </span>
+                        </span>
+                        <!-- Nếu không có sản phẩm nào trong danh sách thích, hiển thị chữ màu #ccc -->
+                        <span v-else>
+                            <i class="fa fa-heart" style="color: #ccc" @click="addlike(post.id)"></i>
+                        </span>
+                        {{ resultLike(post.id) }}
+                    </div>
+                    <!--post comment-->
+                    <button class="mr-3" @click="focusComment">
+                        <span><i class="uil uil-comment"></i></span>
+                    </button>
+
+                    <button>
+                        <span><i class="uil uil-share" @click="share(post)"></i></span>
+                    </button>
+
+                    <div class="ml-auto" :class="getclass2(post.User.id)">
+                        <span v-if="follows.some(item => item.id_post === post.id && item.id_user === user.id)">
+                            <!-- Sử dụng v-for để lặp lại các sản phẩm trong danh sách thích -->
+                            <span
+                                v-for="follow in follows.filter(item => item.id_post === post.id && item.id_user === user.id)">
+                                <!-- Kiểm tra trạng thái của sản phẩm và sử dụng màu đỏ hoặc #ccc tương ứng -->
+                                <i class="fa-solid fa-bookmark text-xl" :style="{ color: follow.status ? 'black' : '#ccc' }"
+                                    @click="unfollow(follow, post.id)"></i>
+                            </span>
+                        </span>
+                        <!-- Nếu không có sản phẩm nào trong danh sách thích, hiển thị chữ màu #ccc -->
+                        <span v-else>
+                            <i class="fa-solid fa-bookmark text-xl" style="color: #ccc" @click="addfollow(post.id)"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="text-gray-900 text-sm font-bold mb-2 cursor-pointer" @click="opencomment(post.id)">Xem tất cả
+                    bình luận</div>
+
+                <!--post comment-->
+                <div class="flex items-center mt-2">
+                    <img class="w-6 h-6 rounded-full mr-2" :src="user.avatar" alt="Avatar">
+                    <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none text-sm"
+                        type="text" v-model="comments" placeholder="Thêm bình luận..."
+                        v-on:keyup.enter="comment(post.id)"></textarea>
+                </div>
+
+            </div>
+
+            <view_comment v-if="isShowcomment" @cancel="opencomment" :postId="postId"></view_comment>
         </div>
-    </div>
-</template>
-
-<script>
-import UserService from '../plugins/userService'
-import dayjs from 'dayjs';
-import socket from '../plugins/socket'
-export default
-    {
-        data() {
-            return {
-                hidden: true,
-                chats: [],
-                user: ''
-            }
-        },
-        mounted() {
-            this.getChat();
-            this.user = UserService.getUserToken();
-            socket.connect()
-        },
-        methods:
-        {
-            openMenu() {
-                this.hidden = !this.hidden;
-            },
-            async getChat() {
-                try {
-                    const result = await this.$axios.get(`chat/get/4`);
-                    this.chats = result.data
-                } catch (error) {
-                    console.log(error)
-                }
-            },
-            formatTime(timeString) {
-                return dayjs(timeString).format('HH:mm');
-            },
-            sendChat() {
-                const messenger_content = "nhut dang test"
-               socket.emit('newMessage', {
-      conversationId: name, // Thay đổi conversationId tương ứng với logic của bạn
-      message: { sender_id: userSender, receiver_id: userReceiver, messenger_content },
-    });
-            },
-             clickButton()
-            {
-                socket.on('connect', () => {
-                console.log('Đã kết nối tới máy chủ');
-            });
-        }
-    }
-</script>
-

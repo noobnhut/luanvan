@@ -1,5 +1,5 @@
 <template>
-    <post type="Tìm mua"/>
+    <post type="Tìm mua" filter=""/>
 </template>
 
 <script>

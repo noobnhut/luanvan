@@ -112,10 +112,30 @@ const editComment = async (req,res)=>
         console.log(error.message);
     }
 }
+const deleteCommentByPost = async (req, res) => {
+    try {
+      const id = req.params.id;
+      const comments = await Comment.findAll({where:{id_post:id}});
+  
+      if (comments.length === 0) {
+        return res.status(200).json({ error: 'Không tìm thấy' });
+      }
+  
+      for (const comment of comments) {
+        await comment.destroy();
+      }
+  
+      return res.status(200).json({ success: true, message: 'Xóa thành công' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Xóa thất bại' });
+    }
+  }
 module.exports =
 {
     createdComment,
     deleteComment,
     getAllComment,
-    editComment
+    editComment,
+    deleteCommentByPost
 }  

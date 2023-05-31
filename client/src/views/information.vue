@@ -24,7 +24,7 @@
                     </li>
                 </ul>  
             </div>
-            <post type="" v-if="isUser"/>
+            <post type="" filter="" v-if="isUser"/>
             <postfollow v-if="isFollow"/>
         </div>
         <div class=" p-4 hidden  lg:block md:col-span-1 lg:col-span-1">

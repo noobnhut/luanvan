@@ -1,5 +1,5 @@
 <template>
-    <div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6 " v-for="post in posts">
+    <div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6 " v-for="(post,index) in posts" :key="index">
         <!-- Header -->
         <menupost v-if="isShowModel" @cancel="onShow" :postId="postId" :citycode="post.citycode"
             :districtcode="post.districtcode" :communecode="post.communecode" />
@@ -13,14 +13,16 @@
                 <p class="text-gray-500 text-sm">{{ getTimeFromCreatedAt(post.createdAt) }}</p>
             </div>
             <div class="ml-auto">
-                <span class="bg-blue-200  font-bold py-2 px-1 rounded-md" :class="{' text-blue-500': post.status, 'text-red-500': !post.status}">
+                <span class="bg-blue-200  font-bold py-2 px-1 rounded-md"
+                    :class="{ ' text-blue-500': post.status, 'text-red-500': !post.status }">
                     {{ post.status ? 'Đã bán' : 'Chưa bán' }}
-                  </span>
+                </span>
             </div>
             <div class="ml-auto" :class="getclass(post.User.id)">
                 <i class="uil-align-justify cursor-pointer" @click="toggleDropdown(post)"></i>
-                <div :id="'dropdownHover_' + post.id" class="z-10 absolute bg-white divide-y divide-gray-100 rounded-lg mr-2"
-                    v-show="isDropdownOpen(post.id)" @click="closeDropdown(post.id)">
+                <div :id="'dropdownHover_' + post.id"
+                    class="z-10 absolute bg-white divide-y divide-gray-100 rounded-lg mr-2" v-show="isDropdownOpen(post.id)"
+                    @click="closeDropdown(post.id)">
                     <ul class="py-2 text-sm text-gray-700 dark:text-gray-200 cursor-pointer">
                         <li class="py-2 px-1 flex items-center hover:bg-gray-100" @click="openShowdelete(post.id)">
                             <i class="text-violet-500 uil-times-square md:text-xl"></i>
@@ -95,7 +97,7 @@
                     {{ resultLike(post.id) }}
                 </div>
                 <!--post comment-->
-                <button class="mr-3" @click="focusComment">
+                <button class="mr-3" @click="focusComment(index)">
                     <span><i class="uil uil-comment"></i></span>
                 </button>
 
@@ -106,7 +108,8 @@
                 <div class="ml-auto" :class="getclass2(post.User.id)">
                     <span v-if="follows.some(item => item.id_post === post.id && item.id_user === user.id)">
                         <!-- Sử dụng v-for để lặp lại các sản phẩm trong danh sách thích -->
-                        <span v-for="follow in follows.filter(item => item.id_post === post.id && item.id_user === user.id)">
+                        <span
+                            v-for="follow in follows.filter(item => item.id_post === post.id && item.id_user === user.id)">
                             <!-- Kiểm tra trạng thái của sản phẩm và sử dụng màu đỏ hoặc #ccc tương ứng -->
                             <i class="fa-solid fa-bookmark text-xl" :style="{ color: follow.status ? 'black' : '#ccc' }"
                                 @click="unfollow(follow, post.id)"></i>
@@ -120,13 +123,14 @@
             </div>
 
 
-            <div class="text-gray-900 text-sm font-bold mb-2 cursor-pointer" @click="opencomment(post.id)">Xem tất cả bình luận</div>
+            <div class="text-gray-900 text-sm font-bold mb-2 cursor-pointer" @click="opencomment(post.id)">Xem tất cả bình
+                luận</div>
 
             <!--post comment-->
             <div class="flex items-center mt-2">
                 <img class="w-6 h-6 rounded-full mr-2" :src="user.avatar" alt="Avatar">
                 <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none text-sm" type="text"
-                    v-model="comments" placeholder="Thêm bình luận..." v-on:keyup.enter="comment(post.id)"></textarea>
+                    v-model="comments" placeholder="Thêm bình luận..." :ref="'input_' + index" v-on:keyup.enter="comment(post.id)"></textarea>
             </div>
 
         </div>
@@ -151,7 +155,7 @@
             <div class="py-3 px-4">
                 <button
                     class="  py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer mr-4"
-                    @click="deleteImg()">Xóa</button>
+                    @click="deletePost()">Xóa</button>
                 <button
                     class="  py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer"
                     @click="onclosedelete()">Đóng</button>
@@ -162,25 +166,24 @@
 </template>
 
 <script>
-import toast from '../toast/toast.vue';
+
 import dayjs from 'dayjs';
 
 // Import Swiper Vue.js components
 import { Swiper, SwiperSlide } from 'swiper/vue';
-
-// Import Swiper styles
 import 'swiper/css';
-
 import 'swiper/css/pagination';
-
 import "swiper/swiper-bundle.min.css";
-// import required modules
 import { Pagination } from 'swiper';
 
 import userService from '../../plugins/userService';
+import postService from '../../plugins/postService';
 import addressService from '../../plugins/addressService';
+
+import toast from '../toast/toast.vue';
 import menupost from '../post/menupost.vue';
 import view_comment from '../post/view_comment.vue';
+
 export default {
     components: {
         Swiper,
@@ -189,26 +192,15 @@ export default {
         view_comment,
         toast
     },
-    props: ['type'],
+    props: ['type','filter'],
+
     data() {
         return {
-            posts: [],
-            hidden: false,
-            user: '',
-            isShowdelete: false,
-            id: '',
-            result: '',
-            citys: [],
-            districts: [],
-            communes: [],
-            dropdownStates: {},
-            isShowModel: false,
-            likes: [],
-            isShowcomment: false,
-            comments: '',
-            follows:[],
-            postId:''
-
+            posts: [], citys: [], districts: [], communes: [],
+            follows: [], likes: [],
+            hidden: false, isShowdelete: false, isShowModel: false, isShowcomment: false,
+            user: '', id: '', result: '', comments: '', postId: ''
+            , dropdownStates: {},
         }
     },
 
@@ -217,68 +209,104 @@ export default {
             modules: [Pagination],
         };
     },
+
     mounted() {
         this.user = userService.getUserToken();
-        this.renderPost();
-        addressService.getCountry().then(data => {
-            this.citys = data;
+
+        postService.renderPost().then((data) => {
+            
+            if (this.type === '' && this.filter === '') {
+                this.posts = data.filter(item => item.User.id == this.$route.params.id);
+            }
+            if(this.filter !== '' && this.type === '')
+            {
+                this.posts = data.filter(item=>item.id == this.filter)
+            }
+            if(this.type !== '' && this.filter === '' )
+            {
+                this.posts = data.filter(item=>item.type == this.type)
+            }
+            
         });
-        addressService.getAllDistricts().then(data => {
-            this.districts = data;
-        });
-        addressService.getAllCommune().then(data => {
-            this.communes = data;
-        });
-        this.getLike();
-        this.getfollow()
+
+        postService.getLike().then((data) => { this.likes = data });
+        postService.getfollow().then((data) => { this.follows = data })
+
+        addressService.getCountry().then(data => { this.citys = data; });
+        addressService.getAllDistricts().then(data => { this.districts = data; });
+        addressService.getAllCommune().then(data => { this.communes = data; });
+
     },
     methods:
     {
-        async renderPost() {
-            try {
-                const result = await this.$axios.get(
-                    `post/render`
-                );
-                if (this.type === '') {
-                    this.posts = result.data.filter(item => item.User.id == this.$route.params.id);
-                }
-                else if (!this.$route.params.id) {
-                    this.posts = result.data.filter(item => item.type == this.type);
-                }
-               
-
-            } catch (e) {
-                console.log(e);
-            }
-        },
-
+        // các method format và goin4
         formatCurrency(value) {
-            let val = (value / 1).toFixed(0).replace('.', ',')
-            return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + ' đồng'
+            return postService.formatCurrency(value)
         },
-
         getTimeFromCreatedAt(createdAt) {
-            const now = dayjs();
-            const diffInSeconds = now.diff(createdAt, 'second');
-
-            if (diffInSeconds < 60) {
-                return `${diffInSeconds} giây`;
-            } else if (diffInSeconds < 3600) {
-                const diffInMinutes = Math.floor(diffInSeconds / 60);
-                return `${diffInMinutes} phút`;
-            } else if (diffInSeconds < 86400) {
-                const diffInHours = Math.floor(diffInSeconds / 3600);
-                return `${diffInHours} giờ`;
-            } else {
-                const diffInDays = Math.floor(diffInSeconds / 86400);
-                return `${diffInDays} ngày`;
-            }
+            return postService.getTimeFromCreatedAt(createdAt)
         },
-
         goIn4(username, id) {
             window.location.href = `http://localhost:5173/information/${username}/${id}`;
         },
 
+        //delete post
+        async deletePost() {
+            if (this.id) {
+                const id = this.id
+                await postService.deletePostAll(id)
+            }
+        },
+        
+        //handle like
+        async addlike(postid) {
+            const id_user = this.user.id
+            await postService.addlike(id_user, postid)
+            postService.getLike().then((data) => { this.likes = data });
+
+        },
+        async unlike(like, postid) {
+            const id_user = like.id_user;
+            const id = like.id
+            await postService.unlike(id_user, id, postid)
+            postService.getLike().then((data) => { this.likes = data });
+        },
+        resultLike(id) {
+            return postService.resultLike(id, this.likes)
+        },
+
+        //handle comments
+        async comment(id) {
+            const id_user = this.user.id;
+            const result = await postService.addcomment(id, id_user, this.comments);
+            if (result.status === 200) {
+                this.comments = ''
+                this.opencomment()
+            }
+        },
+
+        // handle share
+        share(post) {
+            postService.share(post, this.$refs)
+        },
+        // handle follow
+        async unfollow(follow, postid) {
+            const id_user = follow.id_user
+            const id = follow.id;
+            const result = await postService.unfollow(id_user, id, postid)
+            if (result.status == 200) {
+                postService.getfollow().then((data) => { this.follows = data })
+            }
+        },
+        async addfollow(postid) {
+            const id_user = this.user.id;
+            const result = await postService.addfollow(id_user, postid)
+            if (result.status == 200) {
+                postService.getfollow().then((data) => { this.follows = data })
+            }
+        },
+
+        // đóng mở các component con 
         getclass(id) {
             if (id !== this.user.id) {
                 return 'hidden'
@@ -295,7 +323,6 @@ export default {
                 return 'hidden'
             }
         },
-
         toggleDropdown(post) {
             if (this.isDropdownOpen(post.id)) {
                 this.closeDropdown(post.id);
@@ -303,184 +330,33 @@ export default {
                 this.openDropdown(post.id);
             }
         },
-
         openDropdown(postId) {
             this.dropdownStates[postId] = true
         },
-
         closeDropdown(postId) {
             this.dropdownStates[postId] = false
         },
-
         isDropdownOpen(postId) {
             return this.dropdownStates[postId] || false;
         },
-
-        async deleteImg() {
-            try {
-                const result = await this.$axios.delete(`post/deleteimgbypost/` + this.id);
-                if (result.status === 200) {
-                    await Promise.all([
-                        this.deletePost(this.id),
-                        this.deleteVideo(this.id)
-                    ]);
-                }
-                this.onclosedelete()
-                location.reload()
-            } catch (e) {
-                console.log(e);
-            }
-        },
-
-        async deleteVideo(id) {
-            try {
-                const result = await this.$axios.delete(`post/deleteVideobypost/` + id);
-            } catch (e) {
-                console.log(e);
-            }
-        },
-
-        async deletePost(id) {
-            try {
-                const result = await this.$axios.delete(`post/delete/` + id);
-            } catch (e) {
-                console.log(e);
-            }
-        },
-
-        async getLike() {
-            try {
-                const result = await this.$axios.get(`like/getlike`);
-                this.likes = result.data
-            } catch (error) {
-                console.log(error)
-            }
-        },
-
-        async unlike(like, postid) {
-            try {
-                const result = await this.$axios.post(`like/addlike`,
-                    {
-                        id_user: like.id_user,
-                        id_post: postid,
-                        id: like.id
-                    });
-                this.getLike()
-            } catch (error) {
-                console.log(error)
-            }
-        },
-
-        async addlike(postid) {
-            try {
-                const result = await this.$axios.post(`like/addlike`,
-                    {
-                        id_user: this.user.id,
-                        id_post: postid,
-                        status: 'true'
-                    });
-                this.getLike()
-
-            } catch (error) {
-                console.log(error)
-            }
-        },
-
-        resultLike(id) {
-            return this.likes.filter(like => like.id_post === id).length;
-        },
-
         openShowdelete(id) {
             this.id = id
             this.isShowdelete = !this.isShowdelete
         },
-
         onclosedelete() {
             this.isShowdelete = !this.isShowdelete
         },
-
         onShow(id) {
-            this.postId=id
+            this.postId = id
             this.isShowModel = !this.isShowModel
         },
-
-        focusComment() {
-            this.$refs['comment'][0].focus()
+        focusComment(index) {
+            this.$refs['input_' + index][0].focus();
         },
-
         opencomment(id) {
-            this.postId=id
+            this.postId = id
             this.isShowcomment = !this.isShowcomment
         },
-
-        async comment(id) {
-            try {
-                const result = await this.$axios.post(`comment/create`,
-                    {
-                        id_user: this.user.id,
-                        id_post: id,
-                        comment_content: this.comments
-                    })
-
-                this.comments = '';
-                this.opencomment()
-            } catch (error) {
-                console.log(error)
-            }
-        },
-
-        share(post) {
-            const path = `${import.meta.env.VITE_API_BASE_URL_API}detailpost/${post.title}/${post.id}`;
-            const tempInput = document.createElement('input');
-            tempInput.value = path;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempInput);
-            this.$refs.toast.showToast('Đường dẫn đã lưu');
-
-        },
-
-        async getfollow() {
-            try {
-                const result = await this.$axios.get(`follow/getfollow`);
-                this.follows = result.data
-            } catch (error) {
-                console.log(error)
-            }
-        },
-
-        async unfollow(follow, postid) {
-            try {
-                const result = await this.$axios.post(`follow/addfollow`,
-                    {
-                        id_user: follow.id_user,
-                        id_post: postid,
-                        id: follow.id
-                    });
-                this.getfollow()
-            } catch (error) {
-                console.log(error)
-            }
-        },
-
-        async addfollow(postid) {
-            try {
-                const result = await this.$axios.post(`follow/addfollow`,
-                    {
-                        id_user: this.user.id,
-                        id_post: postid,
-                        status: 'true'
-                    });
-                this.getfollow()
-
-            } catch (error) {
-                console.log(error)
-            }
-        },
-
-
-
     }
 };
 </script>

@@ -91,7 +91,7 @@ const deleteVideobyPost = async (req, res) => {
     const videos = await Video.findAll({where:{id_post:id}});
 
     if (videos.length === 0) {
-      return res.status(400).json({ error: 'Không tìm thấy'});
+      return res.status(200).json({ error: 'Không tìm thấy'});
     }
 
     for (const video of videos) {

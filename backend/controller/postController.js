@@ -29,7 +29,7 @@ const createPost = async (req, res) => {
       }
     }
   } catch (error) {
-    return res.status(404).json('Thêm thất bại !' )
+    return res.status(404).json({error} )
   }
 }
 

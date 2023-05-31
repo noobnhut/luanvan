@@ -36,8 +36,27 @@ const renderlike = async (req, res) => {
     }
 };
 
-
+const deleteLikeByPost = async (req, res) => {
+    try {
+      const id = req.params.id;
+      const likes = await Like.findAll({where:{id_post:id}});
+  
+      if (likes.length === 0) {
+        return res.status(200).json({ error: 'Không tìm thấy' });
+      }
+  
+      for (const like of likes) {
+        await like.destroy();
+      }
+  
+      return res.status(200).json({ success: true, message: 'Xóa thành công' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Xóa thất bại' });
+    }
+  }
 module.exports = {
     Postlike,
     renderlike,
+    deleteLikeByPost
 }

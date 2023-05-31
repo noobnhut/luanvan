@@ -35,9 +35,28 @@ const renderShare = async (req, res) => {
         console.log(error);
     }
 };
-
+const deleteFollowByPost = async (req, res) => {
+    try {
+      const id = req.params.id;
+      const follows = await Share.findAll({where:{id_post:id}});
+  
+      if (follows.length === 0) {
+        return res.status(200).json({ error: 'Không tìm thấy' });
+      }
+  
+      for (const follow of follows) {
+        await follow.destroy();
+      }
+  
+      return res.status(200).json({ success: true, message: 'Xóa thành công' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Xóa thất bại' });
+    }
+  }
 
 module.exports = {
     PostShare,
     renderShare,
+    deleteFollowByPost
 }
