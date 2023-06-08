@@ -34,10 +34,8 @@
             class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none"
           >
             <option disabled selected>Chọn loại bài đăng</option>
-            <option value="Bán hàng">Mua bán</option>
-            <option value="Trao đổi">Trao đổi</option>
+            <option value="Tìm kiếm">Tìm kiếm</option>
             <option value="Trao tặng">Trao tặng</option>
-            <option value="Tìm mua">Tìm kiếm</option>
           </select>
         </div>
         <div class="relative mt-5">
@@ -108,13 +106,6 @@
           v-model="title"
         />
 
-        <input
-          type="text"
-          class="w-full px-3 py-2 mb-2 text-gray-700 border rounded-lg focus:outline-none"
-          placeholder="Nhập giá "
-          @input="formatCurrency"
-          v-model="price"
-        />
 
         <textarea
           class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
@@ -189,7 +180,6 @@ export default {
       post_content: "",
       title: "",
       type: "",
-      price: "",
     };
   },
   components: {
@@ -219,25 +209,6 @@ export default {
       } catch (e) {
         console.log(e);
       }
-    },
-    formatCurrency() {
-      // Định dạng thành chuỗi số nguyên
-      let value = this.price.replace(/\D/g, "");
-
-      // Định dạng thành tiền Việt Nam đồng
-      value = new Intl.NumberFormat("vi-VN").format(value);
-
-      // Gán giá trị đã định dạng lại vào v-model
-      this.price = value;
-    },
-    unformatCurrency(formattedValue) {
-      // Loại bỏ các ký tự không cần thiết (dấu phẩy, dấu chấm phân cách hàng nghìn)
-      const unformattedValue = formattedValue.replace(/[^0-9]/g, "");
-
-      // Chuyển đổi giá trị thành số
-      const numericValue = parseFloat(unformattedValue);
-
-      return numericValue;
     },
     //post/create
     onFileSelected(event) {
@@ -271,10 +242,8 @@ export default {
       formData.append("districtcode", this.districts_code);
       formData.append("communecode", this.commune_id);
       formData.append("title", this.title);
-      formData.append("price",this.unformatCurrency( this.price));
       formData.append("post_content", this.post_content);
       formData.append("type", this.type);
-      formData.append("status", true);
       try {
         const response = await this.$axios.post("post/create", formData, {});
         const id_post = response.data;

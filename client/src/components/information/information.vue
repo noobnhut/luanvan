@@ -51,8 +51,7 @@
             </label>
             <div class="flex justify-center">
                 <button @click="onShowInfo" :class="{ hidden: showIn4 }"
-                    class=" mt-4 py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer">Chỉnh
-                    sửa thông tin</button>
+                    class=" mt-4 py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer">Cập nhập thông tin</button>
             </div>
 
         </div>

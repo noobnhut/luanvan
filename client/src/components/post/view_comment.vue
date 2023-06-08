@@ -6,9 +6,11 @@
             <div
                 class=" flex flex-col bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-hidden md:max-h-[75%] h-full">
                 <div class="top-cover flex flex-row items-center py-3 px-4 border-b-4 border-gray-100 ">
-                    <h5 class="text-lg font-semibold flex-grow">
-                        Bài viết của {{ username }} - <span
-                            class="bg-blue-200 text-blue-800 font-bold py-2 px-1 rounded-md1`">{{ title }}</span>
+                    <h5 class=" text-sm md:text-lg font-semibold flex-grow"
+                        v-for="post in posts.filter(item => item.id == postId)">
+                        Bài viết của {{ post.User.username }} - <span
+                            class="bg-blue-200 text-blue-800 font-bold py-2 px-1 rounded-md1 text-sm md:text-base">{{
+                                post.title }}</span>
                     </h5>
                     <button type="button" @click="onclose"
                         class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
@@ -76,9 +78,9 @@
 
 <script>
 import dayjs from "dayjs";
-
+import socket from '../../plugins/socket'
 import userService from "../../plugins/userService";
-
+import postService from "../../plugins/postService";
 export default {
     emits: ["cancel"],
     props: ["postId"],
@@ -97,33 +99,48 @@ export default {
     },
     components: {},
     mounted() {
+        socket.connect();
         this.user = userService.getUserToken();
-        this.getcomment();
-        this.renderPost();
-
+        postService.renderPost().then((data) => { this.posts = data });
+        postService.getcomment().then((data) => { this.comments = data });
+        socket.on('comment', (comment) => {
+                this.comments.push(comment[0])
+            });
     },
-   
-    methods: {
+    
 
+    methods: {
         onclose() {
             this.$emit("cancel");
         },
-
         getTimeFromCreatedAt(createdAt) {
-            const now = dayjs();
-            const diffInSeconds = now.diff(createdAt, "second");
+            return postService.getTimeFromCreatedAt(createdAt)
+        },
 
-            if (diffInSeconds < 60) {
-                return `${diffInSeconds} giây`;
-            } else if (diffInSeconds < 3600) {
-                const diffInMinutes = Math.floor(diffInSeconds / 60);
-                return `${diffInMinutes} phút`;
-            } else if (diffInSeconds < 86400) {
-                const diffInHours = Math.floor(diffInSeconds / 3600);
-                return `${diffInHours} giờ`;
-            } else {
-                const diffInDays = Math.floor(diffInSeconds / 86400);
-                return `${diffInDays} ngày`;
+        //handle comment
+        async comment(event) {
+            const id_user = this.user.id;
+            const result = await postService.addcomment(this.postId, id_user, event.target.value);
+            if (result.status === 200) {
+                event.target.value = ''
+
+            }
+        },
+        async deletecomment(id) {
+            const id_comment = id
+            const result = await postService.deletecommentByid(id_comment);
+            if (result.status == 200) {
+                 postService.getcomment().then((data) => { this.comments = data });
+            }
+
+        },
+        async updateComment(id) {
+            const id_comment = id
+            const result = await postService.updateComment(id_comment, this.comment_content);
+            if (result.status == 200) {
+                this.showedit = !this.showedit
+                this.idcomment = ''
+                postService.getcomment().then((data) => { this.comments = data });
             }
         },
 
@@ -134,11 +151,14 @@ export default {
                 return "hidden";
             }
         },
-
         goIn4(username, id) {
             window.location.href = `http://localhost:5173/information/${username}/${id}`;
         },
-
+        openEditComment(comment) {
+            this.comment_content = comment.comment_content;
+            this.showedit = !this.showedit;
+            this.idcomment = comment.id;
+        },
         toggleDropdown(post) {
             if (this.isDropdownOpen(post.id)) {
                 this.closeDropdown(post.id);
@@ -146,81 +166,14 @@ export default {
                 this.openDropdown(post.id);
             }
         },
-
         openDropdown(postId) {
             this.dropdownStates[postId] = true;
         },
-
         closeDropdown(postId) {
             this.dropdownStates[postId] = false;
         },
-
         isDropdownOpen(postId) {
             return this.dropdownStates[postId] || false;
-        },
-
-        async renderPost() {
-            try {
-                const result = await this.$axios.get(`post/render`);
-                this.posts = result.data.filter((post) => post.id === this.postId);
-                this.username = this.posts[0].User.username;
-                this.title = this.posts[0].title;
-            } catch (e) {
-                console.log(e);
-            }
-        },
-
-        async comment(event) {
-            try {
-                const result = await this.$axios.post(`comment/create`, {
-                    id_user: this.user.id,
-                    id_post: this.postId,
-                    comment_content: event.target.value,
-                });
-               
-                event.target.value = "";
-            } catch (error) {
-                console.log(error);
-            }
-        },
-
-        async getcomment() {
-            try {
-                const result = await this.$axios.get("comment/get");
-                this.comments = result.data;
-            } catch (error) {
-                console.log(error);
-            }
-        },
-
-        async deletecomment(id) {
-            try {
-                const result = await this.$axios.delete("comment/delete/" + id);
-                this.getcomment();
-            } catch (error) {
-                console.log(error);
-            }
-        },
-
-        async updateComment(id) {
-            try {
-                const result = await this.$axios.put("comment/edit/" + id, {
-                    comment_content: this.comment_content,
-                });
-                this.showedit = !this.showedit
-                this.idcomment = ''
-                this.getcomment();
-            } catch (error) {
-                console.log(error);
-            }
-
-
-        },
-
-        openEditComment(comment) {
-            this.comment_content = comment.comment_content;
-            this.showedit = !this.showedit;
-            this.idcomment = comment.id;
         },
     },
 };

@@ -13,10 +13,9 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Post.belongsTo(models.Category, { foreignKey: 'id_cat' });
       Post.belongsTo(models.User, { foreignKey: 'id_user' });
-
       Post.hasMany(models.Video, { foreignKey: 'id_post' });
       Post.hasMany(models.Img, { foreignKey: 'id_post' });
-      Post.hasMany(models.share_post, { foreignKey: 'id_post' });
+      Post.hasMany(models.follow_post, { foreignKey: 'id_post' });
       Post.hasMany(models.like_post, { foreignKey: 'id_post' });
       Post.hasMany(models.comment_post, { foreignKey: 'id_post' });
 
@@ -25,15 +24,12 @@ module.exports = (sequelize, DataTypes) => {
   Post.init({
     id_user: DataTypes.INTEGER,
     id_cat: DataTypes.INTEGER,
-    type: DataTypes.ENUM('Trao đổi', 'Tìm mua', 'Bán hàng','Trao tặng'),
+    type: DataTypes.ENUM('Tìm kiếm','Trao tặng'),
     post_content: DataTypes.STRING,
     title: DataTypes.STRING,
-    status: DataTypes.BOOLEAN,
-    citycode: DataTypes.STRING,
-    districtcode: DataTypes.STRING,
-    communecode: DataTypes.STRING,
-    price:DataTypes.INTEGER,
-   
+    citycode: DataTypes.INTEGER,
+    districtcode: DataTypes.INTEGER,
+    communecode: DataTypes.INTEGER, 
   }, {
     sequelize,
     modelName: 'Post',

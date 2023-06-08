@@ -12,12 +12,7 @@
                     post.User.username }}</h3>
                 <p class="text-gray-500 text-sm">{{ getTimeFromCreatedAt(post.createdAt) }}</p>
             </div>
-            <div class="ml-auto">
-                <span class="bg-blue-200  font-bold py-2 px-1 rounded-md"
-                    :class="{ ' text-blue-500': post.status, 'text-red-500': !post.status }">
-                    {{ post.status ? 'Đã bán' : 'Chưa bán' }}
-                </span>
-            </div>
+           
             <div class="ml-auto" :class="getclass(post.User.id)">
                 <i class="uil-align-justify cursor-pointer" @click="toggleDropdown(post)"></i>
                 <div :id="'dropdownHover_' + post.id"
@@ -58,7 +53,7 @@
             <p class="text-slate-700 md:text-sm lg:text-base text-xs">
                 {{ post.post_content }}
             </p>
-            <p class="text-blue-700 font-bold text-xs">Giá: {{ formatCurrency(post.price) }}</p>
+           
         </div>
 
         <!-- Image -->
@@ -281,7 +276,7 @@ export default {
             const result = await postService.addcomment(id, id_user, this.comments);
             if (result.status === 200) {
                 this.comments = ''
-                this.opencomment()
+                this.opencomment(id)
             }
         },
 

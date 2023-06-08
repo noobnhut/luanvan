@@ -87,7 +87,6 @@ export default {
 
         postService.getLike().then((data) => { this.likes = data });
         postService.getfollow().then((data) => { this.follows = data })
-
         addressService.getCountry().then(data => { this.citys = data; });
         addressService.getAllDistricts().then(data => { this.districts = data; });
         addressService.getAllCommune().then(data => { this.communes = data; });

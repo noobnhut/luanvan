@@ -123,6 +123,36 @@ class postService {
             console.log(error)
         }
     }
+    async getcomment() {
+        try {
+            const result = await axios.get(`${this.url}comment/get`);
+            return result.data;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    async deletecommentByid(id) {
+        try {
+            const result = await axios.delete(`${this.url}comment/delete/` + id);
+            return result;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    async updateComment(id,comment_content) {
+        try {
+            const result = await axios.put(`${this.url}comment/edit/` + id, {
+                comment_content: comment_content,
+            });
+         return result;
+        } catch (error) {
+            console.log(error);
+        }
+
+
+    }
+
+
     // handle share and follow post
     share(post,refs) {
         const path = `${import.meta.env.VITE_API_BASE_URL_API}detailpost/${post.title}/${post.id}`;

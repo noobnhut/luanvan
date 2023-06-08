@@ -10,35 +10,35 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       username: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(50)
       },
       email: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(64)
       },
       password: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(64)
       },
       address: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(32)
       },
       phone: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(10)
       },
-      status: {
+      notication_status: {
         type: Sequelize.BOOLEAN
       },
       avatar: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       citycode: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       districtcode: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       communecode:
       {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,

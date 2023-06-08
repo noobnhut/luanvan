@@ -4,11 +4,9 @@ const User = db.User;
 const Cat = db.Category;
 const Img = db.Img;
 const Video = db.Video;
-const multer = require('multer');
-const fs = require('fs');
 
 const createPost = async (req, res) => {
-  const { id_user, id_cat, type, post_content, status, title, citycode, districtcode, communecode,price } = req.body;
+  const { id_user, id_cat, type, post_content,  title, citycode, districtcode, communecode } = req.body;
 
   try {
     const existingUser = await User.findOne({ where: { id: id_user } });
@@ -17,15 +15,14 @@ const createPost = async (req, res) => {
     const existingCat = await Cat.findOne({ where: { id: id_cat } });
     if (!existingCat) { return res.status(200).json('Không tồn tại loại sản phẩm'); }
 
-    else if (id_cat == '' || type == '' || post_content == '' || status == '' || title == '' || citycode == '' || districtcode == '' || communecode == '' || price == '') {
+    else if (id_cat == '' || type == '' || post_content == '' ||  title == '' || citycode == '' || districtcode == '' || communecode == '' ) {
       return res.status(200).json('Thông tin nhập bị thiếu');
     }
     else {
-      const post = await Post.create({ id_user, id_cat, type, post_content, status, title, citycode, districtcode, communecode,price });
+      const post = await Post.create({ id_user, id_cat, type, post_content, title, citycode, districtcode, communecode });
       if (post) {
         const id_post = post.id;
         return res.status(200).json(id_post)
-
       }
     }
   } catch (error) {
@@ -38,13 +35,13 @@ const renderPost = async (req,res)=>{
     const post = await Post.findAll(
       {
         attributes: [
-         'id', 'type', 'post_content', 'status', 'title', 'citycode', 'districtcode', 'communecode','price','createdAt'
+         'id', 'type', 'post_content',  'title', 'citycode', 'districtcode', 'communecode','createdAt'
         ],
         include:
         [
           {
             model:User,
-            attributes: ['id','username','avatar','status'],
+            attributes: ['id','username','avatar'],
             raw: true,
             nest: true,
           },
@@ -108,7 +105,7 @@ const deletePost = async (req, res) => {
 
 const updatePost = async (req, res) => {
   const postId = req.params.id;
-  const {id_cat,type,title,post_content, price,citycode,districtcode,communecode,id_user} = req.body;
+  const {id_cat,type,title,post_content, citycode,districtcode,communecode,id_user} = req.body;
   try {
     const post = await Post.findByPk(postId);
     if (!post) {
@@ -116,7 +113,7 @@ const updatePost = async (req, res) => {
         message: `Tài khoản có không tồn tại.`
       });
     }
-    else if (id_cat == '' || type == '' || post_content == '' || title == '' || citycode == '' || districtcode == '' || communecode == '' || price == '' ) {
+    else if (id_cat == '' || type == '' || post_content == '' || title == '' || citycode == '' || districtcode == '' || communecode == ''  ) {
       return res.status(200).json('Thông tin nhập bị thiếu');
     }
      else {
@@ -126,7 +123,6 @@ const updatePost = async (req, res) => {
         id_cat: id_cat ,
         type: type ,
         post_content: post_content ,
-        price: price ,
         citycode: citycode ,
         districtcode: districtcode ,
         communecode: communecode ,
@@ -139,6 +135,7 @@ const updatePost = async (req, res) => {
     });
   }
 }
+
 module.exports =
 {
   createPost,

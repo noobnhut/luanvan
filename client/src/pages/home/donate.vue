@@ -1,5 +1,5 @@
 <template>
-    <post type="Trao tặng " filter=""/>
+    <post type="Trao tặng" filter=""/>
 </template>
 
 <script>

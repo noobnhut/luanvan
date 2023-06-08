@@ -9,13 +9,12 @@ const getAllComment = async(req,res) =>
         const comment = await Comment.findAll(
           {
             attributes: [
-             'id', 'comment_content' ,'createdAt'
-            ],
+             'id', 'comment_content' ,'createdAt' ],
             include:
             [
               {
                 model:User,
-                attributes: ['id','username','avatar','status'],
+                attributes: ['id','username','avatar'],
                 raw: true,
                 nest: true,
               },
@@ -49,7 +48,24 @@ const createdComment = async (req, res) => {
         }
         else {
             const comment = await Comment.create({ id_user, id_post, comment_content });
-            res.status(200).json('Thêm thành công')
+            const commentbyid = await Comment.findAll(
+                {
+                  attributes: [  'id', 'comment_content' ,'createdAt' ],
+                  include:
+                  [
+                    {
+                      model:User,attributes: ['id','username','avatar'],raw: true,nest: true,
+                    },
+                    {
+                      model:Post,attributes: ['id'], raw: true,nest: true,
+                    },
+                  ],
+                  where: { id: comment.id  },
+                });
+                
+            res.io.emit('comment',commentbyid);
+            return res.status(200).json(commentbyid)
+          
         }
     } catch (error) {
         return res.status(404).json('Thêm thất bại !')
@@ -79,7 +95,7 @@ const deleteComment = async (req, res) => {
 
 
     } catch (error) {
-        console.log(error.message);
+        console.log(error);
     }
 }
 

@@ -36,17 +36,6 @@ const router = createRouter({
           name: 'donate',
           component: () => import('../pages/home/donate.vue')
         },
-
-        {
-          path: 'buy', // mua bán
-          name: 'buy',
-          component: () => import('../pages/home/buy.vue')
-        },
-        {
-          path: 'trade', //trao đổi
-          name: 'trade',
-          component: () => import('../pages/home/trade.vue')
-        },
         {
           path: 'search', // tìm mua
           name: 'search',

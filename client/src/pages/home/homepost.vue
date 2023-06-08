@@ -1,8 +1,6 @@
 <template>
     <post type="Trao tặng" filter=""/>
-    <post type="Bán hàng" filter=""/>
-    <post type="Trao đổi" filter=""/>
-    <post type="Tìm mua" filter=""/>
+    <post type="Tìm kiếm" filter=""/>
 
 </template>
 

@@ -27,7 +27,7 @@ module.exports = {
         }
       },
       comment_content: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       createdAt: {
         allowNull: false,

@@ -19,10 +19,10 @@ module.exports = {
         }
       },
       url: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       video: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(255)
       },
       createdAt: {
         allowNull: false,

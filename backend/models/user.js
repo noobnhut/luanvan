@@ -11,13 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-    User.hasMany(models.share_post, { foreignKey: 'id_user' });
+    User.hasMany(models.follow_post, { foreignKey: 'id_user' });
     User.hasMany(models.like_post, { foreignKey: 'id_user' });
     User.hasMany(models.comment_post, { foreignKey: 'id_user' });
-    User.hasMany(models.History_Messenge, { foreignKey: 'id_user' });
-    User.hasMany(models.Messages, { foreignKey: 'receiver_id' });
-    User.hasMany(models.Messages, { foreignKey: 'sender_id' });
-
     }
   }
   User.init({
@@ -26,11 +22,11 @@ module.exports = (sequelize, DataTypes) => {
     password: DataTypes.STRING,
     address: DataTypes.STRING,
     phone: DataTypes.STRING,
-    citycode: DataTypes.STRING,
-    districtcode: DataTypes.STRING,
-    communecode: DataTypes.STRING,
+    citycode: DataTypes.INTEGER,
+    districtcode: DataTypes.INTEGER,
+    communecode: DataTypes.INTEGER,
     avatar: DataTypes.STRING,
-    status: DataTypes.BOOLEAN,
+    notication_status: DataTypes.BOOLEAN,
   }, {
     sequelize,
     modelName: 'User',

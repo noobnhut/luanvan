@@ -7,20 +7,11 @@
       </div>
 
         <div class="mt-8 shadow-lg rounded-lg p-4 ">
-          <router-link to="/home/trade" class="flex items-center py-4 ">
-            <i class=" text-violet-500  uil-tag uil-tag mr-4 text-xl md:text-2xl "></i>
-            <h3 class="font-semibold   hidden text-xs  md:block  lg:text-base sm:block lg:block ">Trao đổi</h3>
-          </router-link>
-          <hr class="h-px bg-gray-200 border-0 dark:bg-gray-700">
-          <router-link to="/home/buy" class="flex items-center py-4">
-            <i class=" text-violet-500 uil-label-alt mr-4 md:text-xl"></i>
-            <h3 class="font-semibold   hidden text-xs  md:block  lg:text-base sm:block lg:block">Mua bán</h3>
-          </router-link>
-          <hr class="h-px bg-gray-200 border-0 dark:bg-gray-700">
-          <router-link to="/home/donate" class="flex items-center py-4  ">
+      <router-link to="/home/donate" class="flex items-center py-4  ">
             <i class=" text-violet-500 uil-gift mr-4 md:text-xl"></i>
             <h3 class="font-semibold   hidden text-xs  md:block  lg:text-base sm:block lg:block">Trao tặng</h3>
           </router-link>
+          <hr class="h-px bg-gray-200 border-0 dark:bg-gray-700"/>
           <router-link to="/home/search" class="flex items-center py-4  ">
             <i class=" text-violet-500 uil-search mr-4 md:text-xl"></i>
             <h3 class="font-semibold   hidden text-xs  md:block  lg:text-base sm:block lg:block">Tìm kiếm</h3>

@@ -26,28 +26,21 @@ module.exports = {
         }
       },
      type: {
-        type: Sequelize.ENUM('Trao đổi', 'Tìm mua', 'Bán hàng','Trao tặng'),
+        type: Sequelize.ENUM('Tìm kiếm','Trao tặng'),
       },
       post_content: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(128)
       },
      title: {
-        type: Sequelize.STRING
-      },
-      status: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.STRING(32)
       },
       citycode: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       districtcode: {
-        type: Sequelize.STRING
+        type: Sequelize.INTEGER
       },
       communecode:
-      {
-        type: Sequelize.STRING
-      },
-      price:
       {
         type: Sequelize.INTEGER
       },

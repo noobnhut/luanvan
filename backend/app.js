@@ -35,7 +35,6 @@ const { routerLike } = require('./routes/likeRouter');
 const { routerFollow } = require('./routes/followRouter');
 const { routerComment } = require('./routes/commentRouter')
 const { routerSearch } = require('./routes/searchRouter');
-const { routerChat } = require('./routes/chatRouter')
 
 // Thiết lập body-parser
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -47,7 +46,7 @@ app.use(cors({
 app.use(express.json());
 
 // Định tuyến
-app.use(routerUser, routerPost, routerCat, routerAdmin, routerIMG, routerVideo, routerLike, routerComment, routerFollow, routerSearch, routerChat);
+app.use(routerUser, routerPost, routerCat, routerAdmin, routerIMG, routerVideo, routerLike, routerComment, routerFollow, routerSearch);
 // Serve các tệp tĩnh trong thư mục "uploads"
 app.use(express.static("uploads"));
 
