@@ -64,11 +64,13 @@
     <updateInfo v-if="isShowInfo" @cancel="onShowInfo"></updateInfo>
 </template>
 <script>
+
 import updateimg from './updateimg.vue';
 import addressService from '../../plugins/addressService'
 import userService from '../../plugins/userService';
 import toast from '../toast/toast.vue';
 import updateInfo from '../information/updateinfor.vue'
+
 export default
     {
         data() {
@@ -89,7 +91,8 @@ export default
         {
             toast,
             updateimg,
-            updateInfo
+            updateInfo,
+      
         },
         mounted() {
             this.getUsers();
@@ -112,6 +115,7 @@ export default
             onShowInfo() {
                 this.isShowInfo = !this.isShowInfo
             },
+           
             async getUsers() {
                 try {
                     const result = await this.$axios.get(

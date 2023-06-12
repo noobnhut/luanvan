@@ -23,7 +23,7 @@
                             Theo dõi</button>
                     </span>
 
-                    <button
+                    <button @click="onShowReport"
                         class=" mt-4 py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer">Báo
                         cáo người dùng</button>
 
@@ -61,6 +61,7 @@
             <rightnav />
         </div>
     </div>
+    <reportuser v-if="isShowReport" @cancel="onShowReport"/>
     <gototop />
 </template>
   
@@ -75,6 +76,7 @@ import rightnav from '../components/header/rightnav.vue';
 import userService from '../plugins/userService';
 import information from '../components/information/information.vue'
 import followuser from '../components/information/followuser.vue';
+import reportuser from '../components/information/reportuser.vue';
 export default
     {
         data() {
@@ -88,6 +90,7 @@ export default
                 isFollowUser: false,
                 showNotUser: false,
                 followText: '',
+                isShowReport:false,
                 followusers: []
             }
         },
@@ -100,7 +103,8 @@ export default
             rightnav,
             information,
             postfollow,
-            followuser
+            followuser,
+            reportuser
         },
         mounted() {
             this.user = userService.getUserToken();
@@ -156,7 +160,11 @@ export default
                 this.activeTab = 'followuser'
                 this.isUser = false
                 this.isFollow = false
-            }
+            },
+            onShowReport()
+            {
+                this.isShowReport = !this.isShowReport
+            },
         }
     }
 </script>
