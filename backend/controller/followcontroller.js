@@ -4,6 +4,7 @@ const Share = db.follow_post;
 
 //sản phâm đã xem && đã thích
 const PostShare = async (req, res) => {
+   try {
     const { id,id_user, id_post, status } = req.body;
     const existShare = await Share.findOne({ where: { id_user, id_post } });
 
@@ -15,6 +16,9 @@ const PostShare = async (req, res) => {
         const share= await Share.create({ id_user, id_post, status });
         res.status(200).json({ share, message: "Thêm thích thành công" })
     }
+   } catch (error) {
+    res.status(404).json(error)
+   }
 };
 
 const renderShare = async (req, res) => {
