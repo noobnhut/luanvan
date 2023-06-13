@@ -8,6 +8,7 @@ class userService {
     let user = JSON.parse(localStorage.getItem("user"));
     return user;
   }
+  
   async renderUser() {
     try {
       const result = await axios.get(`${this.url}user/get`);
@@ -83,6 +84,15 @@ class userService {
     } catch (error) {
         console.log(error)
     }
+}
+
+async getreport() {
+  try {
+      const result = await axios.get(`${this.url}report/get`);
+     return result.data;
+  } catch (error) {
+      console.log(error)
+  }
 }
 }
 export default new userService();

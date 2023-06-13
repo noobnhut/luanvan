@@ -27,6 +27,9 @@ module.exports = {
       notication_status: {
         type: Sequelize.BOOLEAN
       },
+      isUser: {
+        type: Sequelize.BOOLEAN
+      },
       avatar: {
         type: Sequelize.STRING(255)
       },

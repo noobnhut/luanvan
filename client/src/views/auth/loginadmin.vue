@@ -70,7 +70,7 @@
 
 <script>
 
-import toast from '../components/toast/toast.vue';
+import toast from '../../components/toast/toast.vue';
 
 export default {
   data() {

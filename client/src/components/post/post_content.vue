@@ -38,6 +38,7 @@
             <option value="Trao tặng">Trao tặng</option>
           </select>
         </div>
+        
         <div class="relative mt-5">
           <label>Loại sản phẩm</label>
           <select

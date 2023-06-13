@@ -32,6 +32,7 @@ module.exports = (sequelize, DataTypes) => {
     communecode: DataTypes.INTEGER,
     avatar: DataTypes.STRING,
     notication_status: DataTypes.BOOLEAN,
+    isUser: DataTypes.BOOLEAN,
   }, {
     sequelize,
     modelName: 'User',

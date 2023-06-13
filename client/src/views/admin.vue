@@ -32,7 +32,7 @@
                                     <rect x="4" y="14" width="6" height="6" rx="1" />
                                     <rect x="14" y="14" width="6" height="6" rx="1" />
                                 </svg>
-                                Danh sách online
+                               Quản lý người dùng
                             </a>
                         </li>
                         <!--view bài đăng-->
@@ -87,7 +87,7 @@
 
             <!-- Brand Logo / Name -->
             <div class="flex items-center px-6 py-3 h-16 mt-2">
-                <router-link to="/adminlogin" class="cursor-pointer" @click="showbanner = true">
+                <router-link to="/adminlogin" class="cursor-pointer">
                     <div class="text-2xl font-bold tracking-tight text-gray-800">TRANG QUẢN LÝ</div>
                 </router-link>
             </div>
@@ -96,7 +96,7 @@
             <div class="px-4 py-2 ">
                 <ul class="mt-16">
                     <!--view online-->
-                    <li class="py-4" @click="showbanner = false">
+                    <li class="py-4">
                         <router-link to="/adminlogin/user" 
                             class="mb-1 px-2 py-2 rounded-lg flex items-center font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-200">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mr-4 opacity-50" width="24" height="24"
@@ -108,12 +108,12 @@
                                 <rect x="4" y="14" width="6" height="6" rx="1" />
                                 <rect x="14" y="14" width="6" height="6" rx="1" />
                             </svg>
-                            Danh sách online
+                            Quản lý người dùng
                         </router-link>
                     </li>
                     <!--view bài đăng-->
-                    <li class="py-4" @click="showbanner = false">
-                        <router-link to="/adminlogin/user" 
+                    <li class="py-4">
+                        <router-link to="/adminlogin/post" 
                             class="mb-1 px-2 py-2 rounded-lg flex items-center font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-200">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mr-4 opacity-50" width="24" height="24"
                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
@@ -126,7 +126,7 @@
                         </router-link  >
                     </li>
                     <!--view danh mục-->
-                    <li class="py-4" @click="showbanner = false">
+                    <li class="py-4">
                         <router-link to="/adminlogin/category"
                             class="mb-1 px-2 py-2 rounded-lg flex items-center font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-200">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mr-4 opacity-50" width="24" height="24"
@@ -141,6 +141,20 @@
                             </svg>
                             Quản lý danh mục
                         </router-link>
+                    </li>
+
+                    <li class="py-4">
+                        <router-link to="/adminlogin/report" 
+                            class="mb-1 px-2 py-2 rounded-lg flex items-center font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-4 opacity-50" width="24" height="24"
+                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="0" y="0" width="24" height="24" stroke="none"></rect>
+                                <line x1="4" y1="19" x2="20" y2="19" />
+                                <polyline points="4 15 8 9 12 11 16 6 20 10" />
+                            </svg>
+                            Quản lý báo cáo
+                        </router-link  >
                     </li>
                 </ul>
 
@@ -189,7 +203,6 @@
             </div>
 
             <div class="md:max-w-6xl md:mx-auto px-4 py-8">
-                <banner v-if="showbanner" />
                 <router-view />
 
 
@@ -200,18 +213,13 @@
 
 <script>
 
-import banner from '../components/admin/banner.vue'
 export default
     {
         data() {
             return {
                 isShow: true,
                 isShowavatar: false,
-                showbanner: false,
             };
-        },
-        components: {
-            banner
         },
         methods:
         {

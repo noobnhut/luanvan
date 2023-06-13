@@ -28,7 +28,7 @@ const upload = multer({
 const registerUser = async (req, res) => {
   try {
     upload.array('avatar', 10)(req, res, async function (err) {
-      const { username, email, password, address, phone, notication_status, citycode, districtcode, communecode } = req.body;
+      const { username, email, password, address, phone, notication_status, citycode, districtcode, communecode,isUser } = req.body;
       if (err instanceof multer.MulterError) {
         return res.status(400).json({ message: err.message });
       } else if (err) {
@@ -36,7 +36,7 @@ const registerUser = async (req, res) => {
       }
 
       // Nếu không có file ảnh được chọn
-      if (!req.files || req.files.length === 0 || !username || !email || !password || !address || !phone || !notication_status || !citycode || !districtcode || !communecode) {
+      if (!req.files || req.files.length === 0 || !username || !email || !password || !address || !phone || !notication_status || !citycode || !districtcode || !communecode ) {
         return res.status(202).json({ message: 'Vui lòng điền đầy đủ thông tin' });
       }
 
@@ -66,8 +66,8 @@ const registerUser = async (req, res) => {
         const imagePath = req.files[i].path;
         const imageUrl = `${req.protocol}://${req.get('host')}/${req.files[i].filename}`;
         const img = await User.create({
-          username: username, email: email, password: hashedPassword, address: address, phone: phone, notication_status: notication_status, citycode: citycode, districtcode: districtcode, communecode: communecode,
-          avatar: imageUrl,
+          username: username, email: email, password: hashedPassword, address: address, phone: phone, notication_status: notication_status, 
+          citycode: citycode, districtcode: districtcode, communecode: communecode, avatar: imageUrl,isUser:true
         });
         imgs.push(img);
       }
@@ -153,6 +153,12 @@ const loginUser = async (req, res) => {
     if (!user) {
       return res.status(201).json({
         message: 'Tài khoản hoặc mật khẩu không đúng'
+      });
+    }
+    if(user.isUser === false)
+    {
+      return res.status(201).json({
+        message: 'Tài khoản đã bị khóa vì vi phạm quy tắc cộng đồng.'
       });
     }
     // So sánh mật khẩu được cung cấp với mật khẩu đã được mã hóa

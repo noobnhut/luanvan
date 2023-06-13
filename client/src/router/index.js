@@ -94,6 +94,11 @@ const router = createRouter({
       component: () => import('../views/admin.vue'),
       children: [
         {
+          path: '',
+          name: 'admin',
+          component: () => import('../components/admin/banner.vue')
+        },
+        {
           path: 'category',
           name: 'category',
           component: () => import('../pages/admin/category.vue')
@@ -102,6 +107,16 @@ const router = createRouter({
           path: 'user',
           name: 'user',
           component: () => import('../pages/admin/user.vue')
+        },
+        {
+          path: 'post',
+          name: 'post',
+          component: () => import('../pages/admin/post.vue')
+        },
+        {
+          path: 'report',
+          name: 'report',
+          component: () => import('../pages/admin/report.vue')
         }
       ]
     },

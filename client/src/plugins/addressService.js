@@ -3,7 +3,7 @@ class AddressService {
 
   async getCountry() {
     try {
-      const data = await axios.get('https://provinces.open-api.vn/api/');
+      const data = await axios.get('https://provinces.open-api.vn/api/?depth=3');
       return data.data;
 
     } catch (error) {

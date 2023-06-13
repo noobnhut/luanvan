@@ -92,7 +92,7 @@ export default
             toast,
             updateimg,
             updateInfo,
-      
+            
         },
         mounted() {
             this.getUsers();
