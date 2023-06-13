@@ -40,6 +40,7 @@ const getReport = async (req, res) => {
         return res.status(404).json(error)
     }
 }
+
 module.exports = {
     report,
     getReport

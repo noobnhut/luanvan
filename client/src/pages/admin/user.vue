@@ -3,7 +3,7 @@
         <h2 class="text-xl font-bold text-gray-800">Quản lý người dùng</h2>
     </div>
 
-    <div class="overflow-x-auto bg-white rounded-lg shadow">
+    <div class="overflow-x-auto bg-white rounded-lg shadow cursor-pointer">
         <table class="w-full whitespace-no-wrap bg-white overflow-hidden table-striped">
             <thead>
                 <tr class="text-left ">
@@ -14,7 +14,7 @@
                     <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Số lần bị báo cáo:</th>
                     <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Tổng số bài đăng:</th>
                     <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Trạng thái tài khoản: </th>
-                    <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Mở khóa tài khoản: </th>
+              
                 </tr>
             </thead>
             <tbody class="text-sm">
@@ -63,12 +63,7 @@
                             </span>
                         </span>
                     </td>
-                    <td class="border-t">
-                        <span class="text-gray-700 px-6 py-4 flex items-center" v-if="user.isUser == 0">
-                            <button class="w-full block bg-green-400 text-white font-semibold rounded-lg
-                            px-4 py-3 " >Mở khóa</button>
-                        </span>
-                    </td>
+                    
                 </tr>
 
             </tbody>

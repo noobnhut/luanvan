@@ -41,7 +41,7 @@ const renderPost = async (req,res)=>{
         [
           {
             model:User,
-            attributes: ['id','username','avatar'],
+            attributes: ['id','username','avatar','isUser'],
             raw: true,
             nest: true,
           },

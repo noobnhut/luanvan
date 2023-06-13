@@ -26,7 +26,7 @@
                     <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">STT:</th>
                     <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Người dùng báo cáo</th>
                     <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Nội dung báo cáo</th>
-                    <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Ngày tạo:</th>
+                    <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Ngày báo cáo:</th>
 
                 </tr>
             </thead>

@@ -100,7 +100,7 @@ export default {
         });
         if (login.status === 200) {
           // Lưu thông tin người dùng vào localStorage hoặc sessionStorage
-          localStorage.setItem('user', JSON.stringify(login.data));
+          localStorage.setItem('admin', JSON.stringify(login.data));
           localStorage.setItem('token', login.data.token);
           // Chuyển hướng đến trang chính của ứng dụng
           this.$refs.toast.showToast('Đăng nhập thành công')

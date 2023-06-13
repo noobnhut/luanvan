@@ -37,6 +37,7 @@ const { routerComment } = require('./routes/commentRouter')
 const { routerSearch } = require('./routes/searchRouter');
 const { routerUserFollow } = require('./routes/followUserRouter')
 const { routerReport } = require('./routes/reportRouter')
+const {routerSendMail} = require('./routes/sendmailRouter')
 // Thiết lập body-parser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -48,7 +49,7 @@ app.use(express.json());
 
 // Định tuyến
 app.use(routerUser, routerPost, routerCat, routerAdmin, routerIMG, routerVideo, routerLike, routerComment,
-  routerFollow, routerSearch, routerUserFollow, routerReport);
+  routerFollow, routerSearch, routerUserFollow, routerReport,routerSendMail);
 // Serve các tệp tĩnh trong thư mục "uploads"
 app.use(express.static("uploads"));
 
