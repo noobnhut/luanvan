@@ -2,19 +2,27 @@
     <div class="flex items-center justify-between mb-4">
         <h2 class="text-xl font-bold text-gray-800">Quản lý người dùng</h2>
     </div>
-
+    <div class=" md:mr-2 mt-5 py-2 px-2">
+        <select id="select" name="select" v-model="isUser" @change="getUser()"
+            class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none">
+            <option disabled selected>Chọn loại bài đăng</option>
+            <option value="1">Hoạt động</option>
+            <option value="0">Bị khóa</option>
+        </select>
+    </div>
     <div class="overflow-x-auto bg-white rounded-lg shadow cursor-pointer">
         <table class="w-full whitespace-no-wrap bg-white overflow-hidden table-striped">
             <thead>
                 <tr class="text-left ">
-                    <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">STT:</th>
+                    <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">STT</th>
                     <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Tên người dùng</th>
-                    <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Địa chỉ:</th>
-                    <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Ngày tạo:</th>
-                    <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Số lần bị báo cáo:</th>
-                    <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Tổng số bài đăng:</th>
-                    <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Trạng thái tài khoản: </th>
-              
+                    <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Địa chỉ</th>
+                    <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Ngày tạo</th>
+                    <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Số lần bị báo cáo</th>
+                    <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Tổng số bài đăng</th>
+                    <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs" v-if="showIsUser">Hành
+                        động</th>
+
                 </tr>
             </thead>
             <tbody class="text-sm">
@@ -56,19 +64,20 @@
                         <span class="text-gray-700 px-6 py-4 flex items-center">{{ sumPost(user.id) }}</span>
                     </td>
 
-                    <td class="border-t">
-                        <span class="text-gray-700 px-6 py-4 flex items-center">
-                            <span v-if="user.isUser == 1" class=" text-blue-900">Hoạt động</span>
-                            <span v-if="user.isUser == 0" class=" text-red-800">Đã khóa
-                            </span>
-                        </span>
+                   
+                    <td class="border-t" v-if="showIsUser">
+                        <span @click=" send_unbanned(user.email)"
+                            class="px-2 py-2 mr-2 rounded-sm text-sm uppercase tracking-wide font-semibold bg-green-200 text-green-800 cursor-pointer">Mở khóa</span>
+
                     </td>
-                    
+
                 </tr>
 
             </tbody>
         </table>
     </div>
+  <toast ref="toast"></toast>
+
 </template>
 
 <script>
@@ -76,17 +85,24 @@ import userService from '../../plugins/userService';
 import addressService from '../../plugins/addressService';
 import postService from '../../plugins/postService';
 import dayjs from 'dayjs';
+import toast from '../../components/toast/toast.vue';
+
 export default {
     data() {
         return {
             users: [],
             citys: [],
             reports: [],
-            posts: []
+            posts: [],
+            isUser: '',
+            showIsUser: false
         }
     },
+    components:
+    {
+        toast
+    },
     mounted() {
-        userService.renderUser().then((data) => { this.users = data });
         addressService.getCountry().then(data => {
             this.citys = data;
         });
@@ -118,6 +134,42 @@ export default {
                 }
             }
             return sum;
+        },
+        getUser() {
+           
+            userService.renderUser().then((data) => { this.users = data.filter(items => items.isUser == this.isUser) });
+            if(this.isUser == 0)
+            {
+                this.showIsUser = true
+            }
+            else
+            {
+                this.showIsUser = false
+
+            }
+        },
+       async send_unbanned(email)
+        {
+           
+            try {
+               const result = await this.$axios.post(`sendmail/unbanned`,
+               {
+                    to:email
+               });
+            
+              if(result.status == 200)
+              {
+                this.$refs.toast.showToast(result.data.message);
+                setTimeout(() => {
+                   
+                   this.isUser =1
+                   this.getUser()
+                }, 1000)
+              }
+               
+            } catch (error) {
+                console.log(error)
+            }
         }
     }
 }

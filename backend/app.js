@@ -18,6 +18,7 @@ const io = new Server(server,
 
 //setup socket io
 io.on('connect', (socket) => {
+  socket.emit('status', 'online');
   console.log('có người kết nối này');
 });
 app.use((req, res, next) => {

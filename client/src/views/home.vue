@@ -22,6 +22,7 @@ import post from '../components/post/post.vue';
 import rightnav from '../components/header/rightnav.vue';
 import gototop from '../components/header/gototop.vue';
 import inputform from '../components/post/inputform.vue';
+
 export default
   {
     data() {
@@ -31,7 +32,8 @@ export default
     },
    
     mounted() {
-      
+        // Xử lý sự kiện trạng thái
+
     },
     components:
     {

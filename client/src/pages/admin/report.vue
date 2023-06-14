@@ -15,10 +15,15 @@
                 </option>
             </select>
         </div>
-        <div class=" m-2 rounded-md bg-white ">
-                <span class="font-bold">Hình thức xử lý: </span>
-                <span @click=" getMail(),sendremind()" class="px-2 py-2 mr-2 rounded-sm text-sm uppercase tracking-wide font-semibold bg-green-200 text-green-800 cursor-pointer">Nhắc nhở</span>
-                <span @click=" getMail(),sendbanned()" class="px-2 py-2 rounded-sm text-sm uppercase tracking-wide font-semibold bg-red-200 text-red-800 cursor-pointer">Khóa tài khoản</span>
+
+        <div class=" m-2 rounded-md bg-white " v-if="showIsUser">
+            <span class="font-bold">Hình thức xử lý: </span>
+            <span @click=" getMail(), sendremind()"
+                class="px-2 py-2 mr-2 rounded-sm text-sm uppercase tracking-wide font-semibold bg-green-200 text-green-800 cursor-pointer">Nhắc
+                nhở</span>
+            <span @click=" getMail(), sendbanned()"
+                class="px-2 py-2 rounded-sm text-sm uppercase tracking-wide font-semibold bg-red-200 text-red-800 cursor-pointer">Khóa
+                tài khoản</span>
         </div>
         <table class="w-full whitespace-no-wrap bg-white overflow-hidden table-striped">
             <thead>
@@ -55,8 +60,7 @@
             </tbody>
         </table>
     </div>
-  <toast ref="toast"></toast>
-
+    <toast ref="toast"></toast>
 </template>
 
 <script>
@@ -70,7 +74,8 @@ export default {
             users: [],
             citys: [],
             reports: [],
-            userid: ''
+            userid: '',
+            showIsUser: false
         }
     },
     components:
@@ -99,49 +104,45 @@ export default {
             return sum;
         },
         selectUser() {
+            this.showIsUser = true
             userService.getreport().then((data) => { this.reports = data.filter(item => item.user_reported === this.userid) })
         },
 
-        getMail()
-        {
+        getMail() {
             for (let i = 0; i < this.users.length; i++) {
-                if(this.users[i].id === this.userid)
-                {
-                    return this.users[i].email  
+                if (this.users[i].id === this.userid) {
+                    return this.users[i].email
                 }
             }
         },
-        async sendremind()
-        {
+        async sendremind() {
             const mail = this.getMail()
             try {
-               const result = await this.$axios.post(`sendmail/remind`,
-               {
-                    to:mail
-               });
-              if(result.status == 200)
-              {
-                this.$refs.toast.showToast('Gửi mail thành công');
-              }
-               
+                const result = await this.$axios.post(`sendmail/remind`,
+                    {
+                        to: mail
+                    });
+                if (result.status == 200) {
+                    this.$refs.toast.showToast(result.data.message);
+                }
+
             } catch (error) {
                 console.log(error)
             }
         },
 
-        async sendbanned()
-        {
+        async sendbanned() {
             const mail = this.getMail()
             try {
-               const result = await this.$axios.post(`sendmail/banned`,
-               {
-                    to:mail
-               });
-              if(result.status == 200)
-              {
-                this.$refs.toast.showToast('Gửi mail thành công');
-              }
-               
+                const result = await this.$axios.post(`sendmail/banned`,
+                    {
+                        to: mail
+                    });
+
+                if (result.status == 200) {
+                    this.$refs.toast.showToast(result.data.message);
+                }
+
             } catch (error) {
                 console.log(error)
             }

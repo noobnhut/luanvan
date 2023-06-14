@@ -101,7 +101,8 @@ export default {
     async login() {
       this.emailFocused = true,
         this.passwordFocused = true,
-        authService.login(this.email, this.password, this.$refs, this.user)
+        authService.login(this.email, this.password, this.$refs, this.user);
+    
     },
 
     // các re ràng buộc
