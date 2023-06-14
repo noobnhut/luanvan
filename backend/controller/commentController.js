@@ -14,7 +14,10 @@ const getAllComment = async(req,res) =>
             [
               {
                 model:User,
-                attributes: ['id','username','avatar'],
+                attributes: ['id','username','avatar','isUser'],
+                where: {
+                  isUser: true // Filter out users with isUser == false
+                },
                 raw: true,
                 nest: true,
               },

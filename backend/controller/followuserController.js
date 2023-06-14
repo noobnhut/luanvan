@@ -35,7 +35,15 @@ const renderFollow = async(req,res)=>
                 {
                     attributes:['id','userfollow','userfollowed'],
                     include:[
-                        {model:user,attributes:['id'],},  
+                        {
+                            model:user,
+                            attributes: ['id','username','avatar','isUser'],
+                            where: {
+                              isUser: true // Filter out users with isUser == false
+                            },
+                            raw: true,
+                            nest: true,
+                          },
                     ],
                     where:{userfollow}
                 }

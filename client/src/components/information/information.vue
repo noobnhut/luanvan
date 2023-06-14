@@ -1,5 +1,5 @@
 <template>
-    <div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6">
+    <div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6" >
         <div class="flex items-center px-4 py-2 mt-2 bg-white ">
             <h3 class="font-bold text-base lg:text-xl">Giới thiệu</h3>
         </div>
@@ -77,6 +77,7 @@ export default
             return {
                 isShowModel: false,
                 isShowInfo: false,
+
                 cityname: '',
                 citys: [],
                 districts: [],
@@ -128,8 +129,6 @@ export default
                     addressService.getCommune(result.data.districtcode).then(data => {
                         this.communes = data;
                     });
-
-
 
                 } catch (e) {
                     console.log(e);

@@ -70,7 +70,39 @@ const sendMailUnBanned = async (req, res) => {
     }
 
 };
+
+const sendMailRemind = async (req, res) => {
+    const { to  } = req.body;
+    const text = 'Cảnh báo tài khoản bạn.'
+    const subject = 'Cảnh báo tài khoản từ 404Social'
+    const existUser = await User.findOne({ where: { email:to } });
+    if (!existUser) {
+        res.status(200).json({ message: "Không tồn tại tài khoản" });
+    }
+    else {
+        await existUser.update({isUser:1});
+        const mailOptions = {
+            from: YOUR_EMAIL_ADDRESS,
+            to: to,
+            subject: subject,
+            text: text,
+        };
+    
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.log(error);
+                res.status(500).send('Lỗi gửi mail');
+            } else {
+                console.log('Email sent: ' + info.response);
+                res.status(200).json({ massage: 'Gửi thành công mail !!!' })
+            }
+        });
+    }
+
+};
+
 module.exports = {
     sendMailBanned ,
-    sendMailUnBanned
+    sendMailUnBanned,
+    sendMailRemind
 };

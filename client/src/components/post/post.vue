@@ -1,5 +1,5 @@
 <template>
-    <div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6 " v-for="(post,index) in posts.filter(items=>items.User.isUser == 1)" :key="index">
+    <div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6 " v-for="(post,index) in posts" :key="index">
         <!-- Header -->
         <menupost v-if="isShowModel" @cancel="onShow" :postId="postId" :citycode="post.citycode"
             :districtcode="post.districtcode" :communecode="post.communecode" />

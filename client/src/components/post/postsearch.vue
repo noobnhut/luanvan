@@ -4,7 +4,7 @@
         <span class="font-bold text-xl px-8">Mọi người</span>
         <div v-for="search in searchs">
             <div class="max-w-xl w-full ml-6 overflow-hidden mt-6 "
-                v-for="user in users.filter(item => item.id == search.id_user)">
+                v-for="user in users.filter(item => item.id == search.id_user && item.isUser == true)">
                 <!-- Header -->
                 <div class="flex items-center px-4 py-2">
                     <img class="w-12 h-12 rounded-full mr-2" :src="user.avatar" alt="Avatar">
