@@ -1,7 +1,7 @@
 <template>
     <div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6 " v-for="(post,index) in posts" :key="index">
         <!-- Header -->
-        <menupost v-if="isShowModel" @cancel="onShow" :postId="postId" :citycode="post.citycode"
+        <editpost v-if="isShowModel" @cancel="onShow" :postId="postId" :citycode="post.citycode"
             :districtcode="post.districtcode" :communecode="post.communecode" />
 
         <div class="flex items-center px-4 py-2 bg-white border-b">
@@ -161,9 +161,6 @@
 </template>
 
 <script>
-
-import dayjs from 'dayjs';
-
 // Import Swiper Vue.js components
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/css';
@@ -174,18 +171,17 @@ import { Pagination } from 'swiper';
 import userService from '../../plugins/userService';
 import postService from '../../plugins/postService';
 import addressService from '../../plugins/addressService';
-
+import editpost from './editpost.vue';
 import toast from '../toast/toast.vue';
-import menupost from '../post/menupost.vue';
 import view_comment from '../post/view_comment.vue';
 
 export default {
     components: {
         Swiper,
         SwiperSlide,
-        menupost,
         view_comment,
-        toast
+        toast,
+        editpost
     },
     props: ['type','filter'],
 
