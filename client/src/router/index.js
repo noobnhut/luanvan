@@ -117,6 +117,11 @@ const router = createRouter({
           path: 'report',
           name: 'report',
           component: () => import('../pages/admin/report.vue')
+        },
+        {
+          path: 'rank',
+          name: 'rank',
+          component: () => import('../pages/admin/rank.vue')
         }
       ]
     },

@@ -13,5 +13,5 @@ npx sequelize-cli model:generate --name History_Messenge --attributes id_convers
 npx sequelize-cli db:migrate
 
 admin 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
-npx sequelize-cli model:generate --name User_Info --attributes citycode:integer,districtcode:integer,communecode:integer
+npx sequelize-cli model:generate --name rank_user --attributes id_cat:integer,id_user:integer,count_rank:integer
 npx sequelize-cli model:generate --name User_Report --attributes user_report:integer,user_reported:integer,report_content:string
