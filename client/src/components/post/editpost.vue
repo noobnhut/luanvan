@@ -14,7 +14,7 @@
       </div>
 
       <div class="py-4 px-2">
-        <div class="mt-1 ">
+        <div class="mt-1">
           <label
             class="block text-base ml-2 font-medium text-gray-900 dark:text-white"
             >Tiêu đề :</label
@@ -39,58 +39,7 @@
           ></textarea>
         </div>
 
-        <div class="md:flex block items-center">
-          <div class="mt-5 mr-2 md:w-1/3 relative">
-            <label
-              class="block text-base ml-2 font-medium text-gray-900 dark:text-white"
-              >Giá sản phẩm :</label
-            >
-            <input
-              type="text"
-              placeholder="Giá sản phẩm"
-              @input="formatCurrency"
-              class="w-full px-4 py-1 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
-              v-model="price"
-            />
-          </div>
-          <div class="relative mr-2 mt-5 md:w-1/3">
-            <label
-              class="block text-base ml-2 font-medium text-gray-900 dark:text-white"
-              >Loại bài đăng :</label
-            >
-
-            <select
-              id="select"
-              name="select"
-              v-model="type"
-              class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm"
-            >
-              <option disabled selected>Chọn loại bài đăng</option>
-              <option value="Bán hàng">Mua bán</option>
-              <option value="Trao đổi">Trao đổi</option>
-              <option value="Trao tặng">Trao tặng</option>
-              <option value="Tìm mua">Tìm kiếm</option>
-            </select>
-          </div>
-
-          <div class="relative mt-5 md:w-1/3">
-            <label
-              class="block text-base ml-2 font-medium text-gray-900 dark:text-white"
-              >Loại sản phẩm :</label
-            >
-            <select
-              v-model="catid"
-              class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm"
-            >
-              <option disabled selected>Loại sản phẩm</option>
-              <option v-for="cat in cats" :key="cat.id" :value="cat.id">
-                {{ cat.cat_name }}
-              </option>
-            </select>
-          </div>
-        </div>
-
-        <div class="md:flex mb-2 block mt-5">
+        <div class="md:flex mb-2 block">
           <div class="relative md:mr-2 mt-5">
             <label class="ml-2">Thành phố :</label>
             <select
@@ -141,8 +90,59 @@
         </div>
 
         <!-- Image -->
+       
+        <div class="flex items-center mt-4 py-2 px-4">
+          <swiper
+            :pagination="true"
+            :modules="modules"
+            class="mySwiper"
+            :autoplay="{ delay: 1000 }"
+          >
+            <swiper-slide v-for="img in imgs">
+              <img
+                class="max-w-sm w-full mx-auto"
+                :src="img.url"
+                alt="Bài đăng"
+              />
+            </swiper-slide>
+
+          
+          </swiper>
+        </div>
+
+         <div class="flex items-center mt-4 py-2 px-4">
+          <swiper
+            :pagination="true"
+            :modules="modules"
+            class="mySwiper"
+            :autoplay="{ delay: 1000 }"
+          >
+            
+
+            <swiper-slide v-for="video in videos">
+              <video loop controls class="max-w-sm w-full mx-auto">
+                <source :src="video.url" type="video/mp4" />
+              </video>
+            </swiper-slide>
+          </swiper>
+        </div>
       </div>
 
+
+      <div class="modal-footer py-3 px-4">
+        <button
+          class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer mr-4"
+         v-if="is_clearimg" @click="clearIMG()"
+        >
+          Xóa ảnh
+        </button>
+        <button
+          class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer"
+          v-if="is_clearvideo" @click="clearVideo()"
+        >
+          Xóa video
+        </button>
+      </div>
       <div class="modal-footer py-3 px-4">
         <button
           class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer mr-4"
@@ -167,7 +167,12 @@ import toast from "../toast/toast.vue";
 
 import userService from "../../plugins/userService";
 import addressService from "../../plugins/addressService";
-
+// Import Swiper Vue.js components
+import { Swiper, SwiperSlide } from "swiper/vue";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/swiper-bundle.min.css";
+import { Pagination } from "swiper";
 export default {
   emits: ["cancel"],
   props: ["postId", "citycode", "districtcode", "communecode"], // Khai báo prop postId
@@ -184,14 +189,24 @@ export default {
       title: "",
       imgs: [],
       videos: [],
-      price: "",
       catid: "",
       cats: [],
       type: "",
+      img_delete: [],
+      video_delete:[],
+      is_clearimg: false,
+      is_clearvideo:false
     };
   },
   components: {
     toast,
+    Swiper,
+    SwiperSlide,
+  },
+  setup() {
+    return {
+      modules: [Pagination],
+    };
   },
   mounted() {
     this.user = userService.getUserToken();
@@ -207,7 +222,6 @@ export default {
     this.city_id = this.citycode;
     this.districts_code = this.districtcode;
     this.commune_id = this.communecode;
-    console.log(this.communecode);
     this.renderPost();
     this.getCat();
   },
@@ -236,8 +250,14 @@ export default {
         this.title = this.posts[0].title;
         this.post_content = this.posts[0].post_content;
         this.imgs = this.posts[0].Imgs;
+        if (this.imgs.length !== 0) {
+          this.is_clearimg = true
+        }
+
         this.videos = this.posts[0].Videos;
-        this.price = this.posts[0].price;
+        if (this.videos.length !== 0) {
+          this.is_clearvideo = true
+        }
         (this.catid = this.posts[0].Category.id),
           (this.type = this.posts[0].type);
       } catch (e) {
@@ -249,7 +269,6 @@ export default {
         const result = await this.$axios.put(`post/update/` + this.postId, {
           title: this.title,
           post_content: this.post_content,
-          price: this.price,
           type: this.type,
           id_cat: this.id_cat,
           citycode: this.city_id,
@@ -266,7 +285,23 @@ export default {
         }
       } catch (error) {}
     },
-
+    clearIMG() {
+      if (this.imgs.length !== 0) {
+        this.img_delete = this.imgs;
+        this.imgs = [];
+        this.is_clearimg = false;
+        console.log(this.img_delete);
+      }
+    },
+    clearVideo()
+    {
+      if (this.videos.length !== 0) {
+        this.video_delete = this.videos;
+        this.videos = [];
+        this.is_clearvideo = false;
+        console.log(this.video_delete);
+      }
+    }
   },
 };
 </script>

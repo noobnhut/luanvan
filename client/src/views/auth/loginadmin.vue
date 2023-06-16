@@ -53,13 +53,7 @@
                   px-4 py-3 mt-6" @click="login">Đăng nhập</button>
           </div>
 
-          <!--chuyển qua đăng kí-->
-          <p class="mt-8">
-            Bạn chưa có tài khoản ?
-            <router-link to="/register" class="text-blue-500 hover:text-blue-700 font-semibold">
-              Đăng ký tài khoản
-            </router-link>
-          </p>
+         
         </div>
       </div>
     </div>
