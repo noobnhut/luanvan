@@ -33,13 +33,13 @@ const { routerCat } = require('./routes/catRouter');
 const { routerIMG } = require('./routes/imgRouter');
 const { routerVideo } = require('./routes/videoRouter');
 const { routerLike } = require('./routes/likeRouter');
-const { routerFollow } = require('./routes/followRouter');
+const { routerSavePost } = require('./routes/savePostRouter');
 const { routerComment } = require('./routes/commentRouter')
 const { routerSearch } = require('./routes/searchRouter');
 const { routerUserFollow } = require('./routes/followUserRouter')
 const { routerReport } = require('./routes/reportRouter')
 const {routerSendMail} = require('./routes/sendmailRouter')
-const {routerNotication} = require('./routes/noticationRouter')
+
 
 // Thiết lập body-parser
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -52,7 +52,7 @@ app.use(express.json());
 
 // Định tuyến
 app.use(routerUser, routerPost, routerCat, routerAdmin, routerIMG, routerVideo, routerLike, routerComment,
-  routerFollow, routerSearch, routerUserFollow, routerReport,routerSendMail,routerNotication);
+  routerSavePost, routerSearch, routerUserFollow, routerReport,routerSendMail);
 // Serve các tệp tĩnh trong thư mục "uploads"
 app.use(express.static("uploads"));
 

@@ -2,38 +2,51 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('like_posts', {
+    await queryInterface.createTable('Posts', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-    
+      id_cat: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Categories',
+          key: 'id'
+        }
+      },
       id_user: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Users',
+          model: 'users',
           key: 'id'
         }
       },
-      id_post: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'Posts',
-          key: 'id'
-        }
+      type: {
+        type: Sequelize.ENUM('Tìm kiếm','Trao tặng','Trao đổi'),
       },
-     status: {
-        allowNull: false,
-        type: Sequelize.BOOLEAN
+      post_content: {
+        type: Sequelize.STRING
+      },
+      title: {
+        type: Sequelize.STRING
+      },
+      citycode: {
+        type: Sequelize.INTEGER
+      },
+      districtcode: {
+        type: Sequelize.INTEGER
+      },
+      communecode: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
-      }, 
+      },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -41,6 +54,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('like_posts');
+    await queryInterface.dropTable('Posts');
   }
 };

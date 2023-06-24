@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Users', {
+    await queryInterface.createTable('users', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -16,7 +16,7 @@ module.exports = {
         type: Sequelize.STRING(64)
       },
       password: {
-        type: Sequelize.STRING(64)
+        type: Sequelize.STRING(54)
       },
       address: {
         type: Sequelize.STRING(32)
@@ -24,14 +24,8 @@ module.exports = {
       phone: {
         type: Sequelize.STRING(10)
       },
-      notication_status: {
-        type: Sequelize.BOOLEAN
-      },
-      isUser: {
-        type: Sequelize.BOOLEAN
-      },
       avatar: {
-        type: Sequelize.STRING(255)
+        type: Sequelize.STRING
       },
       citycode: {
         type: Sequelize.INTEGER
@@ -39,9 +33,17 @@ module.exports = {
       districtcode: {
         type: Sequelize.INTEGER
       },
-      communecode:
-      {
+      communecode: {
         type: Sequelize.INTEGER
+      },
+      ranking_score: {
+        type: Sequelize.INTEGER
+      },
+      is_active: {
+        type: Sequelize.BOOLEAN
+      },
+      notification_status: {
+        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,
@@ -54,6 +56,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Users');
+    await queryInterface.dropTable('users');
   }
 };

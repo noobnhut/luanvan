@@ -2,47 +2,34 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Posts', {
+    await queryInterface.createTable('User_Ratings', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      id_user: {
+      rating_score: {
+        type: Sequelize.DECIMAL(3,2)
+      },
+      to_user: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Users',
+          model: 'users',
           key: 'id'
         }
       },
-      id_cat: {
+      from_user: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Categories',
+          model: 'users',
           key: 'id'
         }
       },
-     type: {
-        type: Sequelize.ENUM('Tìm kiếm','Trao tặng'),
-      },
-      post_content: {
-        type: Sequelize.STRING(128)
-      },
-     title: {
-        type: Sequelize.STRING(32)
-      },
-      citycode: {
-        type: Sequelize.INTEGER
-      },
-      districtcode: {
-        type: Sequelize.INTEGER
-      },
-      communecode:
-      {
-        type: Sequelize.INTEGER
+      rating_content: {
+        type: Sequelize.STRING(64)
       },
       createdAt: {
         allowNull: false,
@@ -55,6 +42,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Posts');
+    await queryInterface.dropTable('User_Ratings');
   }
 };

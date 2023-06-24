@@ -1,6 +1,6 @@
 const db = require('../models');
 const Post = db.Post;
-const Comment = db.comment_post;
+const Comment = db.Post_Comment;
 const User = db.User;
 
 const getAllComment = async(req,res) =>
@@ -131,6 +131,7 @@ const editComment = async (req,res)=>
         console.log(error.message);
     }
 }
+
 const deleteCommentByPost = async (req, res) => {
     try {
       const id = req.params.id;
@@ -149,7 +150,7 @@ const deleteCommentByPost = async (req, res) => {
       console.error(error);
       return res.status(500).json({ error: 'Xóa thất bại' });
     }
-  }
+}
 module.exports =
 {
     createdComment,

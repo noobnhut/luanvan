@@ -2,31 +2,31 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('rank_users', {
+    await queryInterface.createTable('messengers', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      id_cat: {
+      sender_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Categories',
+          model: 'users',
           key: 'id'
         }
       },
-      id_user: {
+      receiver_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Users',
+          model: 'users',
           key: 'id'
         }
       },
-      count_rank: {
-        type: Sequelize.INTEGER
+      nmessager: {
+        type: Sequelize.STRING(64)
       },
       createdAt: {
         allowNull: false,
@@ -39,6 +39,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('rank_users');
+    await queryInterface.dropTable('messengers');
   }
 };

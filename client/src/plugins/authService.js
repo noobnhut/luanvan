@@ -59,7 +59,7 @@ class authService {
         formData.append("citycode", city_id);
         formData.append("districtcode", districts_code);
         formData.append("communecode", commune_id);
-        formData.append("notication_status", true);
+    
         try {
             const response = await axios.post(`${this.baseurl}register`, formData, {
                 headers: {

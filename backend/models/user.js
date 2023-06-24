@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
+  class user extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,33 +11,44 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      
-    User.hasMany(models.rank_user, { foreignKey: 'id_user' });
-    User.hasMany(models.follow_post, { foreignKey: 'id_user' });
-    User.hasMany(models.like_post, { foreignKey: 'id_user' });
-    User.hasMany(models.comment_post, { foreignKey: 'id_user' });
-    User.hasMany(models.User_Follow, { foreignKey: 'userfollow' });
-    User.hasMany(models.Post, { foreignKey: 'id_user' });
-    User.hasMany(models.User_Follow, { foreignKey: 'userfollowed' });
-    User.hasMany(models.User_Report, { foreignKey: 'user_report' });
-    User.hasMany(models.User_Report, { foreignKey: 'user_reported' });
+      user.hasMany(models.User_Rating, { foreignKey: 'to_user' });
+      user.hasMany(models.User_Rating, { foreignKey: 'from_user' });
+
+      user.hasMany(models.Post, { foreignKey: 'id_user' });
+
+      user.hasMany(models.Report_User, { foreignKey: 'user_report' });
+      user.hasMany(models.Report_User, { foreignKey: 'user_reported' });
+
+      user.hasMany(models.Post,{foreignKey:'id_user'});
+      user.hasMany(models.Post_Comment,{foreignKey:'id_user'});
+      user.hasMany(models.Post_Like,{foreignKey:'id_user'});
+      user.hasMany(models.Save_Post,{foreignKey:'id_user'});
+
+      user.hasMany(models.Notification,{foreignKey:'id_user'});
+
+      user.hasMany(models.messenger, { foreignKey: 'receiver_id' });
+      user.hasMany(models.messenger, { foreignKey: 'sender_id' });
+
+      user.hasMany(models.Follow, { foreignKey: 'userfollow' });
+      user.hasMany(models.Follow, { foreignKey: 'userfollowed' });
     }
   }
-  User.init({
+  user.init({
     username: DataTypes.STRING,
     email: DataTypes.STRING,
     password: DataTypes.STRING,
     address: DataTypes.STRING,
     phone: DataTypes.STRING,
+    avatar: DataTypes.STRING,
     citycode: DataTypes.INTEGER,
     districtcode: DataTypes.INTEGER,
     communecode: DataTypes.INTEGER,
-    avatar: DataTypes.STRING,
-    notication_status: DataTypes.BOOLEAN,
-    isUser: DataTypes.BOOLEAN,
+    ranking_score: DataTypes.INTEGER,
+    is_active: DataTypes.BOOLEAN,
+    notification_status: DataTypes.BOOLEAN
   }, {
     sequelize,
-    modelName: 'User',
+    modelName: 'user',
   });
-  return User;
+  return user;
 };

@@ -1,6 +1,6 @@
 const db = require('../models');
 const Post = db.Post;
-const Share = db.follow_post;
+const Share = db.Save_Post;
 
 //sản phâm đã xem && đã thích
 const PostShare = async (req, res) => {

@@ -1,6 +1,6 @@
 const db = require('../models');
-const Report = db.User_Report;
-const User = db.User;
+const Report = db.Report_User;
+const User = db.user;
 
 const report = async (req, res) => {
 

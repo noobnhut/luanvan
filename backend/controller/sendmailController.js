@@ -1,5 +1,5 @@
 const db = require('../models');
-const User = db.User;
+const User = db.user;
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -21,12 +21,12 @@ const sendMailBanned = async (req, res) => {
     if (!existUser) {
         res.status(200).json({ message: "Không tồn tại tài khoản" });
     }
-    if(existUser.isUser === false)
+    if(existUser.is_active === false)
     {
         res.status(200).json({ message: "Tài khoản đã bị khóa từ trước." });
     }
     else {
-        await existUser.update({isUser:0});
+        await existUser.update({is_active:0});
         const mailOptions = {
             from: YOUR_EMAIL_ADDRESS,
             to: to,
@@ -56,7 +56,7 @@ const sendMailUnBanned = async (req, res) => {
         res.status(200).json({ message: "Không tồn tại tài khoản" });
     }
     else {
-        await existUser.update({isUser:1});
+        await existUser.update({is_active:1});
         const mailOptions = {
             from: YOUR_EMAIL_ADDRESS,
             to: to,
@@ -85,12 +85,12 @@ const sendMailRemind = async (req, res) => {
     if (!existUser) {
         res.status(200).json({ message: "Không tồn tại tài khoản" });
     }
-    if(existUser.isUser === false)
+    if(existUser.is_active === false)
     {
         res.status(200).json({ message: "Tài khoản đã bị khóa từ trước." });
     }
     else {
-        await existUser.update({isUser:1});
+        await existUser.update({is_active:1});
         const mailOptions = {
             from: YOUR_EMAIL_ADDRESS,
             to: to,

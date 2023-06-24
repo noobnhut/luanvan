@@ -1,6 +1,6 @@
 const db = require('../models');
-const user = db.User;
-const follow = db.User_Follow
+const user = db.user;
+const follow = db.Follow
 
 
 const userFollow = async(req,res)=>

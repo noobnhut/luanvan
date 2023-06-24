@@ -1,6 +1,6 @@
 const db = require('../models');
 const Post = db.Post;
-const Like = db.like_post;
+const Like = db.Post_Like;
 
 //sản phâm đã xem && đã thích
 const Postlike = async (req, res) => {

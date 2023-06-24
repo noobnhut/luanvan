@@ -4,7 +4,7 @@ const sequelize = require('sequelize');
 const Op = sequelize.Op;
 const unidecode = require('unidecode');
 const fs = require('fs');
-const User = db.User;
+const User = db.user;
 const invertedIndex = {};
 
 const buildInvertedIndex = async () => {

@@ -1,6 +1,6 @@
 const db = require('../models');
 const Post = db.Post;
-const User = db.User;
+const User = db.user;
 const Cat = db.Category;
 const Img = db.Img;
 const Video = db.Video;

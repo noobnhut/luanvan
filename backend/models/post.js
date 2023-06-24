@@ -11,25 +11,29 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Post.belongsTo(models.Category, { foreignKey: 'id_cat' });
-      Post.belongsTo(models.User, { foreignKey: 'id_user' });
-      Post.hasMany(models.Video, { foreignKey: 'id_post' });
-      Post.hasMany(models.Img, { foreignKey: 'id_post' });
-      Post.hasMany(models.follow_post, { foreignKey: 'id_post' });
-      Post.hasMany(models.like_post, { foreignKey: 'id_post' });
-      Post.hasMany(models.comment_post, { foreignKey: 'id_post' });
+     Post.belongsTo(models.user, { foreignKey: 'id_user' });
+     Post.belongsTo(models.Category, { foreignKey: 'id_cat' }); 
 
+     Post.hasMany(models.Img, { foreignKey: 'id_post' });
+     Post.hasMany(models.Video, { foreignKey: 'id_post' });
+
+     Post.hasMany(models.Post_Like, { foreignKey: 'id_post' });
+     Post.hasMany(models.Post_Comment, { foreignKey: 'id_post' });
+     Post.hasMany(models.Post_Comment, { foreignKey: 'rep_id' });
+     Post.hasMany(models.Save_Post, { foreignKey: 'id_post' });
+
+     Post.hasMany(models.Notification, { foreignKey: 'id_post' });
     }
   }
   Post.init({
-    id_user: DataTypes.INTEGER,
     id_cat: DataTypes.INTEGER,
-    type: DataTypes.ENUM('Tìm kiếm','Trao tặng'),
+    id_user: DataTypes.INTEGER,
+    type: DataTypes.ENUM("Tìm kiếm","Trao đổi","Trao tặng"),
     post_content: DataTypes.STRING,
     title: DataTypes.STRING,
     citycode: DataTypes.INTEGER,
     districtcode: DataTypes.INTEGER,
-    communecode: DataTypes.INTEGER, 
+    communecode: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Post',
