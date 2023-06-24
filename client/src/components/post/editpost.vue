@@ -1,53 +1,31 @@
 <template>
-  <div class="fixed w-full h-full top-0 left-0 flex items-center z-50">
+  <div class=" fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 overflow-auto ">
     <div class="absolute w-full h-full bg-gray-900 opacity-50"></div>
 
-    <div
-      class="bg-white w-11/12 h-full md:h-auto md:max-w-2xl mx-auto rounded shadow-lg z-50 overflow-y-auto"
-    >
+    <div class=" bg-white w-11/12 md:max-w-3xl mx-auto rounded shadow-lg z-50 overflow-y-auto max-h-full">
       <div class="flex flex-row py-3 px-4">
         <h5 class="text-lg font-semibold flex-grow">Cập nhập bài đăng</h5>
-        <i
-          class="uil-multiply flex-none cursor-pointer bg-gray-400 rounded-xl"
-          @click="onclose"
-        ></i>
+        <i class="uil-multiply flex-none cursor-pointer bg-gray-400 rounded-xl" @click="onclose"></i>
       </div>
-
-      <div class="py-4 px-2">
+      <div class=" py-4 px-2 overflow-y-auto ">
         <div class="mt-1">
-          <label
-            class="block text-base ml-2 font-medium text-gray-900 dark:text-white"
-            >Tiêu đề :</label
-          >
-          <input
-            type="text"
-            placeholder="Tiêu đề"
+          <label class="block text-base ml-2 font-medium text-gray-900 dark:text-white">Tiêu đề :</label>
+          <input type="text" placeholder="Tiêu đề"
             class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
-            v-model="title"
-          />
+            v-model="title" />
         </div>
 
         <div class="mt-2">
-          <label
-            class="block text-base ml-2 font-medium text-gray-900 dark:text-white"
-            >Nội dung bài đăng :</label
-          >
-          <textarea
-            class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
-            placeholder="Nhập nội dung ..."
-            v-model="post_content"
-          ></textarea>
+          <label class="block text-base ml-2 font-medium text-gray-900 dark:text-white">Nội dung bài đăng :</label>
+          <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
+            placeholder="Nhập nội dung ..." v-model="post_content"></textarea>
         </div>
 
         <div class="md:flex mb-2 block">
           <div class="relative md:mr-2 mt-5">
             <label class="ml-2">Thành phố :</label>
-            <select
-              v-model="city_id"
-              required
-              @change="onCitySelected()"
-              class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm"
-            >
+            <select v-model="city_id" required @change="onCitySelected()"
+              class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
               <option disabled>Thành phố</option>
               <option v-for="city in citys" :key="city.code" :value="city.code">
                 {{ city.name }}
@@ -56,33 +34,20 @@
           </div>
           <div class="relative md:mr-2 mt-5">
             <label class="ml-2">Quận huyện :</label>
-            <select
-              v-model="districts_code"
-              @change="onDistrictSelected()"
-              class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm"
-            >
+            <select v-model="districts_code" @change="onDistrictSelected()"
+              class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
               <option disabled selected>Quận/Huyện</option>
-              <option
-                v-for="district in districts"
-                :key="district.code"
-                :value="district.code"
-              >
+              <option v-for="district in districts" :key="district.code" :value="district.code">
                 {{ district.name }}
               </option>
             </select>
           </div>
           <div class="relative mt-5">
             <label class="ml-2">Xã phường :</label>
-            <select
-              v-model="commune_id"
-              class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm"
-            >
+            <select v-model="commune_id"
+              class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
               <option disabled selected>Xã/Phường</option>
-              <option
-                v-for="commune in communes"
-                :key="commune.code"
-                :value="commune.code"
-              >
+              <option v-for="commune in communes" :key="commune.code" :value="commune.code">
                 {{ commune.name }}
               </option>
             </select>
@@ -90,75 +55,57 @@
         </div>
 
         <!-- Image -->
-       
+
         <div class="flex items-center mt-4 py-2 px-4">
-          <swiper
-            :pagination="true"
-            :modules="modules"
-            class="mySwiper"
-            :autoplay="{ delay: 1000 }"
-          >
-            <swiper-slide v-for="img in imgs">
-              <img
-                class="max-w-sm w-full mx-auto"
-                :src="img.url"
-                alt="Bài đăng"
-              />
-            </swiper-slide>
+          <div class="container grid grid-cols-3 gap-2 mx-auto">
 
+           
+              <div class="flex justify-center items-center bg-gray-300 h-screen "  v-for="img in imgs">
+                <div class="w-64 h-64 bg-gray-500 rounded-lg overflow-hidden shadow-lg">
+                  <img :src="img.url" alt="Your Image" class="w-full h-full object-cover filter blur-sm">
+                </div>
+              </div>
           
-          </swiper>
-        </div>
 
-         <div class="flex items-center mt-4 py-2 px-4">
-          <swiper
-            :pagination="true"
-            :modules="modules"
-            class="mySwiper"
-            :autoplay="{ delay: 1000 }"
-          >
-            
-
-            <swiper-slide v-for="video in videos">
-              <video loop controls class="max-w-sm w-full mx-auto">
+            <div class="w-full rounded" v-for="video in videos">
+              <video loop controls >
                 <source :src="video.url" type="video/mp4" />
               </video>
-            </swiper-slide>
-          </swiper>
+          </div>
+
         </div>
+        </div>
+        
       </div>
 
 
       <div class="modal-footer py-3 px-4">
         <button
           class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer mr-4"
-         v-if="is_clearimg" @click="clearIMG()"
-        >
+          v-if="is_clearimg" @click="clearIMG()">
           Xóa ảnh
         </button>
         <button
           class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer"
-          v-if="is_clearvideo" @click="clearVideo()"
-        >
+          v-if="is_clearvideo" @click="clearVideo()">
           Xóa video
         </button>
       </div>
       <div class="modal-footer py-3 px-4">
         <button
           class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer mr-4"
-          @click="updateInfo"
-        >
+          @click="updateInfo">
           Cập nhập
         </button>
         <button
           class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer"
-          @click="onclose()"
-        >
+          @click="onclose()">
           Đóng
         </button>
       </div>
     </div>
   </div>
+
   <toast ref="toast"></toast>
 </template>
 
@@ -193,9 +140,9 @@ export default {
       cats: [],
       type: "",
       img_delete: [],
-      video_delete:[],
+      video_delete: [],
       is_clearimg: false,
-      is_clearvideo:false
+      is_clearvideo: false
     };
   },
   components: {
@@ -283,7 +230,7 @@ export default {
             location.reload();
           }, 1000);
         }
-      } catch (error) {}
+      } catch (error) { }
     },
     clearIMG() {
       if (this.imgs.length !== 0) {
@@ -293,8 +240,7 @@ export default {
         console.log(this.img_delete);
       }
     },
-    clearVideo()
-    {
+    clearVideo() {
       if (this.videos.length !== 0) {
         this.video_delete = this.videos;
         this.videos = [];
