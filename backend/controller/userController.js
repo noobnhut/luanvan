@@ -67,7 +67,7 @@ const registerUser = async (req, res) => {
         const imageUrl = `${req.protocol}://${req.get('host')}/${req.files[i].filename}`;
         const img = await User.create({
           username: username, email: email, password: hashedPassword, address: address, phone: phone, notification_status: true, 
-          citycode: citycode, districtcode: districtcode, communecode: communecode, avatar: imageUrl,is_active:true
+          citycode: citycode, districtcode: districtcode, communecode: communecode, avatar: imageUrl,is_active:true,priority:1,ranking_score:0
         });
         imgs.push(img);
       }
@@ -137,11 +137,11 @@ const updateInfo = async (req, res) => {
     });
   }
 }
-
+//login user
 const loginUser = async (req, res) => {
   const {
     email,
-    password,
+    password
   } = req.body;
   try {
     // Tìm kiếm khách hàng với email cung cấp
@@ -151,8 +151,8 @@ const loginUser = async (req, res) => {
       }
     });
     if (!user) {
-      return res.status(201).json({
-        message: 'Email không tồn tại'
+      return res.status(400).json({
+        error: 'Tài khoản hoặc mật khẩu không đúng'
       });
     }
     if(user.is_active === false)
@@ -164,9 +164,8 @@ const loginUser = async (req, res) => {
     // So sánh mật khẩu được cung cấp với mật khẩu đã được mã hóa
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      
-      return res.status(201).json({
-        message: isMatch
+      return res.status(400).json({
+        error: 'Tài khoản hoặc mật khẩu không đúng'
       });
     }
 
@@ -192,11 +191,11 @@ const loginUser = async (req, res) => {
       token
     });
   } catch (error) {
-    console.log(error.message);
+    console.log(error);
     res.status(500).json({
-      error: 'Đăng nhập thất bại'
+      error: 'Đăng nhập thất sssss'
     });
-    console.log("loi" + error)
+   
   }
 };
 
@@ -234,6 +233,7 @@ const getUser = async (req, res) => {
     });
   }
 };
+
 const updatePass = async (req, res) => {
   const userId = req.params.id;
   const { oldPassword, newPassword, email } = req.body;
@@ -254,6 +254,7 @@ const updatePass = async (req, res) => {
     return res.status(200).json({ message: 'Cập nhập thành công mật khẩu' })
   }
 };
+
 const getIsUser = async(req,res)=>
 {
   try {

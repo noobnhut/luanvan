@@ -19,7 +19,6 @@ module.exports = (sequelize, DataTypes) => {
 
      Post.hasMany(models.Post_Like, { foreignKey: 'id_post' });
      Post.hasMany(models.Post_Comment, { foreignKey: 'id_post' });
-     Post.hasMany(models.Post_Comment, { foreignKey: 'rep_id' });
      Post.hasMany(models.Save_Post, { foreignKey: 'id_post' });
 
      Post.hasMany(models.Notification, { foreignKey: 'id_post' });
@@ -29,11 +28,13 @@ module.exports = (sequelize, DataTypes) => {
     id_cat: DataTypes.INTEGER,
     id_user: DataTypes.INTEGER,
     type: DataTypes.ENUM("Tìm kiếm","Trao đổi","Trao tặng"),
+    priority: DataTypes.ENUM("1","2","3","4"),
     post_content: DataTypes.STRING,
     title: DataTypes.STRING,
     citycode: DataTypes.INTEGER,
     districtcode: DataTypes.INTEGER,
-    communecode: DataTypes.INTEGER
+    communecode: DataTypes.INTEGER,
+    status_gift:DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Post',

@@ -22,7 +22,7 @@ const createPost = async (req, res) => {
       return res.status(200).json('Thông tin nhập bị thiếu');
     }
     else {
-      const post = await Post.create({ id_user, id_cat, type, post_content, title, citycode, districtcode, communecode });
+      const post = await Post.create({ id_user, id_cat, type, post_content, title, citycode, districtcode, communecode ,status_gift:false, priority:4});
       if (post) {
         const id_post = post.id;
         return res.status(200).json(id_post)
@@ -38,7 +38,7 @@ const renderPost = async (req, res) => {
     const post = await Post.findAll(
       {
         attributes: [
-          'id', 'type', 'post_content', 'title', 'citycode', 'districtcode', 'communecode', 'createdAt'
+          'id', 'type', 'post_content', 'title', 'citycode', 'districtcode', 'communecode', 'createdAt', 'status_gift','priority'
         ],
         include:
           [
@@ -79,6 +79,7 @@ const renderPost = async (req, res) => {
     return res.status(404).json('Server error' + error);
   }
 }
+
 const getPostCountByCategory = async (req, res) => {
   try {
     const result = await Post.findAll(
@@ -99,6 +100,7 @@ const getPostCountByCategory = async (req, res) => {
   }
 
 };
+
 const getPostByType = async (req, res) => {
   try {
     const sumPost = await Post.count();
@@ -120,6 +122,7 @@ const getPostByType = async (req, res) => {
     console.log(error)
   }
 }
+
 const getPostInteraction = async (req, res) => {
   try {
     const sumPost = await Post.count();
@@ -144,6 +147,7 @@ const getPostInteraction = async (req, res) => {
     console.log(error);
   }
 };
+
 const deletePost = async (req, res) => {
   //thực hiện kiểm tra id cần xóa
 

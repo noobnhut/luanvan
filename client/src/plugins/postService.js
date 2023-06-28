@@ -98,7 +98,8 @@ class postService {
                 {
                     id_user: id_user,
                     id_post: id,
-                    comment_content: comments
+                    comment_content: comments,
+                    rep_id:null
                 })
 
             return result;

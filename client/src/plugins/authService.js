@@ -38,7 +38,7 @@ class authService {
                 refs.toast.showToast('Đăng nhập thành công');
                 user = userService.getUserToken();
                 setTimeout(() => {
-                    window.location.href = `${import.meta.env.VITE_API_BASE_URL_API}information/${user.username}/${user.id}`;
+                    window.location.href = `${import.meta.env.VITE_API_BASE_URL_API}`;
                 }, 1000)
 
             }

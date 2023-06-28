@@ -5,15 +5,15 @@
             :districtcode="post.districtcode" :communecode="post.communecode" />
 
         <div class="flex items-center px-4 py-2 bg-white border-b">
-            <img class="w-10 h-10 rounded-full mr-2" :src="post.User.avatar" alt="Avatar">
+            <img class="w-10 h-10 rounded-full mr-2" :src="post.user.avatar" alt="Avatar">
 
             <div class="flex-grow">
-                <h3 @click="goIn4(post.User.username, post.User.id)" class="text-gray-900 font-medium cursor-pointer">{{
-                    post.User.username }}</h3>
+                <h3 @click="goIn4(post.user.username, post.user.id)" class="text-gray-900 font-medium cursor-pointer">{{
+                    post.user.username }}</h3>
                 <p class="text-gray-500 text-sm">{{ getTimeFromCreatedAt(post.createdAt) }}</p>
             </div>
            
-            <div class="ml-auto" :class="getclass(post.User.id)">
+            <div class="ml-auto" :class="getclass(post.user.id)">
                 <i class="uil-align-justify cursor-pointer" @click="toggleDropdown(post)"></i>
                 <div :id="'dropdownHover_' + post.id"
                     class="z-10 absolute bg-white divide-y divide-gray-100 rounded-lg mr-2" v-show="isDropdownOpen(post.id)"
@@ -100,7 +100,7 @@
                     <span><i class="uil uil-share" @click="share(post)"></i></span>
                 </button>
 
-                <div class="ml-auto" :class="getclass2(post.User.id)">
+                <div class="ml-auto" :class="getclass2(post.user.id)">
                     <span v-if="follows.some(item => item.id_post === post.id && item.id_user === user.id)">
                         <!-- Sử dụng v-for để lặp lại các sản phẩm trong danh sách thích -->
                         <span
@@ -207,7 +207,7 @@ export default {
         postService.renderPost().then((data) => {
             
             if (this.type === '' && this.filter === '') {
-                this.posts = data.filter(item => item.User.id == this.$route.params.id);
+                this.posts = data.filter(item => item.user.id == this.$route.params.id);
             }
             if(this.filter !== '' && this.type === '')
             {

@@ -30,9 +30,8 @@ module.exports = {
       },
       rep_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
         references: {
-          model: 'Posts',
+          model: 'Post_Comments',
           key: 'id'
         }
       },

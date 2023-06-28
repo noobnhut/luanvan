@@ -8,7 +8,7 @@ const router = createRouter({
   routes: [
     //Đăng kí
     {
-      path: '/',
+      path: '/login',
       name: 'login',
       component: () => import('../views/auth/login.vue')
     },
@@ -22,7 +22,7 @@ const router = createRouter({
 
     // Trang chủ
     {
-      path: '/home',
+      path: '/',
       name: 'home',
       component: () => import('../views/home.vue'),
       children: [

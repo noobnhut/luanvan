@@ -28,8 +28,14 @@ module.exports = {
       type: {
         type: Sequelize.ENUM('Tìm kiếm','Trao tặng','Trao đổi'),
       },
+      priority: {
+        type: Sequelize.ENUM('1','2','3','4'),
+      },
       post_content: {
         type: Sequelize.STRING
+      },
+     status_gift: {
+        type: Sequelize.BOOLEAN
       },
       title: {
         type: Sequelize.STRING

@@ -45,6 +45,9 @@ module.exports = {
       notification_status: {
         type: Sequelize.BOOLEAN
       },
+      priority: {
+        type: Sequelize.ENUM('1','2','3','4'),
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

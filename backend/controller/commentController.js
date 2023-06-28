@@ -37,7 +37,7 @@ const getAllComment = async(req,res) =>
 }
 
 const createdComment = async (req, res) => {
-    const { id_user, id_post, comment_content } = req.body;
+    const { id_user, id_post, comment_content ,rep_id } = req.body;
 
     try {
         const existingUser = await User.findOne({ where: { id: id_user } });
@@ -50,27 +50,12 @@ const createdComment = async (req, res) => {
             return res.status(200).json('Thông tin nhập bị thiếu');
         }
         else {
-            const comment = await Comment.create({ id_user, id_post, comment_content });
-            const commentbyid = await Comment.findAll(
-                {
-                  attributes: [  'id', 'comment_content' ,'createdAt' ],
-                  include:
-                  [
-                    {
-                      model:User,attributes: ['id','username','avatar'],raw: true,nest: true,
-                    },
-                    {
-                      model:Post,attributes: ['id'], raw: true,nest: true,
-                    },
-                  ],
-                  where: { id: comment.id  },
-                });
-                
-            res.io.emit('comment',commentbyid);
-            return res.status(200).json(commentbyid)
+            const comment = await Comment.create({ id_user, id_post, comment_content,rep_id });
+            return res.status(200).json(comment)
           
         }
     } catch (error) {
+      console.log(error)
         return res.status(404).json('Thêm thất bại !')
     }
 }
