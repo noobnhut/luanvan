@@ -266,6 +266,18 @@ const getIsUser = async(req,res)=>
     console.log(error)
   }
 }
+
+const getRank = async(req,res)=>
+{
+  try {
+    const users = await User.findAll({
+      attributes: ['username', 'ranking_score', 'priority'],
+    });
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(400).json({message:"Thất bại" + error})
+  }
+}
 module.exports = {
   registerUser,
   loginUser,
@@ -274,5 +286,7 @@ module.exports = {
   getUserById,
   updatePass,
   getUser,
-  getIsUser
+  getIsUser,
+  getRank,
+  
 };

@@ -22,7 +22,7 @@ const createPost = async (req, res) => {
       return res.status(200).json('Thông tin nhập bị thiếu');
     }
     else {
-      const post = await Post.create({ id_user, id_cat, type, post_content, title, citycode, districtcode, communecode ,status_gift:false, priority:4});
+      const post = await Post.create({ id_user, id_cat, type, post_content, title, citycode, districtcode, communecode, status_gift: false, priority: 4 });
       if (post) {
         const id_post = post.id;
         return res.status(200).json(id_post)
@@ -38,7 +38,7 @@ const renderPost = async (req, res) => {
     const post = await Post.findAll(
       {
         attributes: [
-          'id', 'type', 'post_content', 'title', 'citycode', 'districtcode', 'communecode', 'createdAt', 'status_gift','priority'
+          'id', 'type', 'post_content', 'title', 'citycode', 'districtcode', 'communecode', 'createdAt', 'status_gift', 'priority'
         ],
         include:
           [
@@ -85,10 +85,10 @@ const getPostCountByCategory = async (req, res) => {
     const result = await Post.findAll(
       {
         attributes: ['id_cat', [sequelize.fn('COUNT', 'Category.id'), 'PostCount']],
-        include:[
+        include: [
           {
-            model:Cat,
-            attributes:['cat_name']
+            model: Cat,
+            attributes: ['cat_name']
           }
         ],
         group: ['id_cat']
@@ -112,12 +112,13 @@ const getPostByType = async (req, res) => {
     const SharePercentage = (ShareCount / sumPost) * 100;
     const SearchPercentage = (SearchCount / sumPost) * 100;
 
-    return res.json({ 
-      trade: TradeCount, share: ShareCount, 
-      search: SearchCount, sum: sumPost, 
-      TradePercentage: TradePercentage, 
-      SharePercentage: SharePercentage, 
-      SearchPercentage: SearchPercentage })
+    return res.json({
+      trade: TradeCount, share: ShareCount,
+      search: SearchCount, sum: sumPost,
+      TradePercentage: TradePercentage,
+      SharePercentage: SharePercentage,
+      SearchPercentage: SearchPercentage
+    })
   } catch (error) {
     console.log(error)
   }
@@ -234,6 +235,33 @@ const updatePost = async (req, res) => {
   }
 }
 
+const acceptPost = async (req, res) => {
+  try {
+    const { id_post, usergift, status_gift } = req.body;
+    const post = await Post.findByPk(id_post);
+    const user = await User.findByPk(usergift)
+    if (status_gift == false) {
+      const update = await post.update({ status_gift: true })
+      const score = user.ranking_score + 1;
+      const updateUser = await user.update({ ranking_score: score });
+      if (user.ranking_score >= 0 && user.ranking_score <= 4) {
+        await user.update({ priority: 1 });
+      } else if (user.ranking_score >= 5 && user.ranking_score <= 9) {
+        await user.update({ priority: 2 });
+      } else if (user.ranking_score >= 10 && user.ranking_score <= 14) {
+        await user.update({ priority: 3 });
+      } else {
+        await user.update({ priority: 4 });
+      }
+      res.status(200).json({ message: "Xác nhận thành công" })
+    }
+    else {
+      res.status(200).json({ message: "Sản phẩm đã được tặng", status_gift })
+    }
+  } catch (error) {
+    res.status(400).json({ massage: "Thất bại" })
+  }
+}
 module.exports =
 {
   createPost,
@@ -242,5 +270,6 @@ module.exports =
   updatePost,
   getPostCountByCategory,
   getPostByType,
-  getPostInteraction
+  getPostInteraction,
+  acceptPost
 }
