@@ -14,24 +14,8 @@ class postService {
             console.log(e);
         }
     }
-    //handle post
-    async deletePostAll(id) {
-        try {
-            const result = await axios.delete(`${this.url}post/deleteimgbypost/` + id);
-            if (result.status === 200) {
-                await Promise.all([
-                    this.deleteVideo(id),
-                    this.deleteComment(id),
-                    this.deleteFollow(id),
-                    this.deleteLike(id),
-                    this.deletePost(id),
-                ]);
-            }
-            location.reload()
-        } catch (e) {
-            console.log(e);
-        }
-    }
+   
+   
     async deleteVideo(id) {
         try {
             const result = await axios.delete(`${this.url}post/deleteVideobypost/` + id);

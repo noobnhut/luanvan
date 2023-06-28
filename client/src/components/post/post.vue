@@ -245,7 +245,7 @@ export default {
         async deletePost() {
             if (this.id) {
                 const id = this.id
-                await postService.deletePostAll(id)
+                await postService.deletePost(id)
             }
         },
         

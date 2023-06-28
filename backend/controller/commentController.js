@@ -1,7 +1,7 @@
 const db = require('../models');
 const Post = db.Post;
 const Comment = db.Post_Comment;
-const User = db.User;
+const User = db.user;
 
 const getAllComment = async(req,res) =>
 {
@@ -14,9 +14,9 @@ const getAllComment = async(req,res) =>
             [
               {
                 model:User,
-                attributes: ['id','username','avatar','isUser'],
+                attributes: ['id','username','avatar','is_active'],
                 where: {
-                  isUser: true // Filter out users with isUser == false
+                  is_active: true // Filter out users with is_active == false
                 },
                 raw: true,
                 nest: true,

@@ -119,9 +119,9 @@ const router = createRouter({
           component: () => import('../pages/admin/report.vue')
         },
         {
-          path: 'rank',
-          name: 'rank',
-          component: () => import('../pages/admin/rank.vue')
+          path: 'statistical',
+          name: 'statistical',
+          component: () => import('../pages/admin/statistical.vue')
         }
       ]
     },

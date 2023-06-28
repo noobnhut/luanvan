@@ -3,11 +3,17 @@ const {
     createPost,
     renderPost,
     deletePost,
-    updatePost
+    updatePost,
+    getPostCountByCategory,
+    getPostByType,
+    getPostInteraction
 } =require("../controller/postController.js") ;
 const routerPost = express.Router();
 routerPost.post('/api/post/create', createPost);
 routerPost.get('/api/post/render', renderPost);
+routerPost.get('/api/post/renderbycat', getPostCountByCategory);
+routerPost.get('/api/post/renderinteraction', getPostInteraction)
+routerPost.get('/api/post/renderbytype',  getPostByType);
 routerPost.delete('/api/post/delete/:id', deletePost);
 routerPost.put('/api/post/update/:id',  updatePost);
 

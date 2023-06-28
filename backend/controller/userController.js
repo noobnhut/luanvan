@@ -164,6 +164,7 @@ const loginUser = async (req, res) => {
     // So sánh mật khẩu được cung cấp với mật khẩu đã được mã hóa
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      
       return res.status(201).json({
         message: isMatch
       });
@@ -253,6 +254,17 @@ const updatePass = async (req, res) => {
     return res.status(200).json({ message: 'Cập nhập thành công mật khẩu' })
   }
 };
+const getIsUser = async(req,res)=>
+{
+  try {
+    const sumAccount = await User.count();
+    const activeCount = await User.count({ where: { is_active: true } });
+    const blockCount = await User.count({ where: { is_active: false } });
+    return res.json({active:activeCount,block:blockCount,sumAccount})
+  } catch (error) {
+    console.log(error)
+  }
+}
 module.exports = {
   registerUser,
   loginUser,
@@ -260,5 +272,6 @@ module.exports = {
   updateInfo,
   getUserById,
   updatePass,
-  getUser
+  getUser,
+  getIsUser
 };

@@ -99,7 +99,7 @@ export default {
           // Chuyển hướng đến trang chính của ứng dụng
           this.$refs.toast.showToast('Đăng nhập thành công')
           setTimeout(() => {
-            this.$router.push({ name: 'admin' });
+            window.location.href = `http://localhost:5173/adminlogin/`;
           }, 1000)
 
         }

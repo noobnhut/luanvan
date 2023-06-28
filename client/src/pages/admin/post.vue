@@ -1,4 +1,30 @@
 <template>
+
+    <div class="w-full px-6 mx-auto mb-10">
+        <div class="relative flex items-center p-0 mt-6 overflow-hidden bg-center bg-cover min-h-75 rounded-2xl" style="background-image: url('https://haycafe.vn/wp-content/uploads/2022/01/Hinh-nen-Macbook-3D-moi-nhat.jpg'); background-position-y: 50%">
+            <span class="absolute inset-y-0 w-full h-full bg-center bg-cover bg-gradient-to-tl from-purple-700 to-pink-500 opacity-60"></span>
+          </div>
+        <div class="relative flex flex-col flex-auto min-w-0 p-4 mx-6 -mt-16 overflow-hidden break-words border-0 shadow-blur rounded-2xl bg-white/80 bg-clip-border backdrop-blur-2xl backdrop-saturate-200">
+          <div class="flex flex-wrap -mx-3">
+            <div class="flex-none w-auto max-w-full px-3">
+              
+            </div>
+            <div class="flex-none w-auto max-w-full px-3 my-auto">
+              <div class="h-full">
+                <h5 class="mb-1">Quản lý bài đăng</h5>
+              </div>
+            </div>
+            <div class="w-full max-w-full px-3 mx-auto mt-4 sm:my-auto sm:mr-0 md:w-1/2 md:flex-none lg:w-4/12">
+              <div class="relative right-0">
+                <ul class="relative flex flex-wrap p-1 list-none bg-transparent rounded-xl flex-col on-resize h-20" >
+                  
+               </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     <div class="flex items-center justify-between mb-4">
         <h2 class="text-xl font-bold text-gray-800">Quản lý bài đăng</h2>
     </div>
@@ -14,7 +40,7 @@
                 </option>
             </select>
         </div>
-
+     
         <div class=" relative md:mr-2 mt-5">
             <label>Chọn danh mục sản phẩm:</label>
             <select v-model="catid"
@@ -41,7 +67,7 @@
             bài đăng</span>
     </div>
     <div class="overflow-x-auto bg-white rounded-lg shadow">
-        <table class="w-full whitespace-no-wrap bg-white overflow-hidden table-striped cursor-pointer">
+        <table class="w-full whitespace-no-wrap bg-white overflow-hidden table-striped ">
             <thead>
                 <tr class="text-left ">
                     <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">STT:</th>
@@ -53,12 +79,13 @@
                     <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Tổng lượt thích</th>
                     <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Tổng lưu bài đăng</th>
                     <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs">Ngày tạo</th>
+                    <th class="px-6 py-3 text-gray-500 font-bold tracking-wider uppercase text-xs"> </th>
                 </tr>
             </thead>
             <tbody class="text-sm">
 
                 <tr class="focus-within:bg-gray-200 overflow-hidden"
-                    v-for="(post, index) in posts.filter(items => items.User.isUser == 1)" :key="index">
+                    v-for="(post, index) in posts.filter(items => items.user.is_active == 1)" :key="index">
                     <td class="border-t">
                         <span class="text-gray-700 px-6 py-4 flex items-center">{{ index + 1 }}</span>
                     </td>
@@ -109,10 +136,16 @@
                     <td class="border-t">
                         <span class="text-gray-700 px-6 py-4 flex items-center">{{ formattedDate(post.createdAt) }}</span>
                     </td>
+
+                    <td class="border-t">
+                        <span class="text-gray-700 px-6 py-4 flex items-center" @click="deletePost(post.id)">Xóa bài đăng</span>
+                    </td>
                 </tr>
 
             </tbody>
         </table>
+        <div> <p class="sr-only mt-2">aaa</p></div>
+
     </div>
 
     <!-- Image -->
@@ -142,7 +175,8 @@
             <div class="py-3 px-4">
 
                 <button
-                    class="  py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer"
+                    class="  py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg 
+                    -pointer"
                     @click="oncloseIMG()">Đóng</button>
             </div>
         </div>
@@ -246,7 +280,7 @@ export default {
                     `getcat`
                 );
                 this.cats = result.data;
-
+                console.log(this.cats)
 
             } catch (e) {
                 console.log(e);
@@ -266,7 +300,7 @@ export default {
 
             } else if (this.userid && !this.catid && !this.type) {
                 postService.renderPost().then((data) => {
-                    this.posts = data.filter(items => items.User.id === this.userid)
+                    this.posts = data.filter(items => items.user.id === this.userid)
                 });
 
             } else if (!this.userid && this.catid && !this.type) {
@@ -283,22 +317,27 @@ export default {
             } else if (!this.catid) {
 
                 postService.renderPost().then((data) => {
-                    this.posts = data.filter(items => items.type === this.type && items.User.id === this.userid)
+                    this.posts = data.filter(items => items.type === this.type && items.user.id === this.userid)
                 });
 
             } else if (!this.type) {
 
                 postService.renderPost().then((data) => {
-                    this.posts = data.filter(items => items.Category.id === this.catid && items.User.id === this.userid)
+                    this.posts = data.filter(items => items.Category.id === this.catid && items.user.id === this.userid)
 
                 });
 
             } else {
                 postService.renderPost().then((data) => {
-                this.posts = data.filter(items => items.type === this.type && items.User.id === this.userid && items.Category.id === this.catid)
+                this.posts = data.filter(items => items.type === this.type && items.user.id === this.userid && items.Category.id === this.catid)
             });
             }
-        }
+        },
+        async deletePost(id) {
+           
+                await postService.deletePost(id)
+            
+        },
 
     }
 }
