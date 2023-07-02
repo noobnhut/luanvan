@@ -1,5 +1,6 @@
 <template>
-    <div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6 " v-for="(post,index) in posts" :key="index">
+    <div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6 " v-for="(post, index) in posts"
+        :key="index">
         <!-- Header -->
         <editpost v-if="isShowModel" @cancel="onShow" :postId="postId" :citycode="post.citycode"
             :districtcode="post.districtcode" :communecode="post.communecode" />
@@ -12,7 +13,7 @@
                     post.user.username }}</h3>
                 <p class="text-gray-500 text-sm">{{ getTimeFromCreatedAt(post.createdAt) }}</p>
             </div>
-           
+
             <div class="ml-auto" :class="getclass(post.user.id)">
                 <i class="uil-align-justify cursor-pointer" @click="toggleDropdown(post)"></i>
                 <div :id="'dropdownHover_' + post.id"
@@ -29,6 +30,14 @@
                         </li>
                     </ul>
                 </div>
+            </div>
+
+            <div class="ml-auto" :class="getclass3(post)">
+                <button
+                    class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer"
+                    @click="acceptOpen(post)">
+                    Đã nhận hàng tặng
+                </button>
             </div>
 
         </div>
@@ -53,7 +62,7 @@
             <p class="text-slate-700 md:text-sm lg:text-base text-xs">
                 {{ post.post_content }}
             </p>
-           
+
         </div>
 
         <!-- Image -->
@@ -125,7 +134,8 @@
             <div class="flex items-center mt-2">
                 <img class="w-6 h-6 rounded-full mr-2" :src="user.avatar" alt="Avatar">
                 <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none text-sm" type="text"
-                    v-model="comments" placeholder="Thêm bình luận..." :ref="'input_' + index" v-on:keyup.enter="comment(post.id)"></textarea>
+                    v-model="comments" placeholder="Thêm bình luận..." :ref="'input_' + index"
+                    v-on:keyup.enter="comment(post.id)"></textarea>
             </div>
 
         </div>
@@ -157,6 +167,32 @@
             </div>
         </div>
     </div>
+    <!--modal xác nhận hàng tặng-->
+    <div class=" fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 " v-show="isShowaccept">
+        <div class="absolute w-full h-full bg-gray-900 opacity-50" @click="oncloseaccept"></div>
+
+        <div class=" bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto ">
+            <div class="flex flex-row py-3 px-4">
+                <h5 class="text-lg font-semibold flex-grow">Xác nhận đã nhận hàng</h5>
+                <i class="uil-multiply flex-none cursor-pointer bg-gray-400 rounded-xl" @click="oncloseaccept"></i>
+            </div>
+            <div class="px-4">
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 ">Bạn có muốn xác nhận là <span
+                            class="font-bold ">đã nhận được hàng?</span> </label>
+
+                </div>
+            </div>
+            <div class="py-3 px-4">
+                <button
+                    class="  py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer mr-4"
+                    @click="acceptPost()">Xác nhận</button>
+                <button
+                    class="  py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer"
+                    @click="oncloseaccept()">Đóng</button>
+            </div>
+        </div>
+    </div>
     <toast ref="toast"></toast>
 </template>
 
@@ -183,7 +219,7 @@ export default {
         toast,
         editpost
     },
-    props: ['type','filter'],
+    props: ['type', 'filter'],
 
     data() {
         return {
@@ -191,7 +227,7 @@ export default {
             follows: [], likes: [],
             hidden: false, isShowdelete: false, isShowModel: false, isShowcomment: false,
             user: '', id: '', result: '', comments: '', postId: ''
-            , dropdownStates: {},
+            , dropdownStates: {}, isShowaccept: false, post: ''
         }
     },
 
@@ -203,21 +239,21 @@ export default {
 
     mounted() {
         this.user = userService.getUserToken();
-
+        if (this.user == null) {
+            this.user = []
+        }
         postService.renderPost().then((data) => {
-            
+
             if (this.type === '' && this.filter === '') {
                 this.posts = data.filter(item => item.user.id == this.$route.params.id);
             }
-            if(this.filter !== '' && this.type === '')
-            {
-                this.posts = data.filter(item=>item.id == this.filter)
+            if (this.filter !== '' && this.type === '') {
+                this.posts = data.filter(item => item.id == this.filter)
             }
-            if(this.type !== '' && this.filter === '' )
-            {
-                this.posts = data.filter(item=>item.type == this.type)
+            if (this.type !== '' && this.filter === '') {
+                this.posts = data.filter(item => item.type == this.type)
             }
-            
+
         });
 
         postService.getLike().then((data) => { this.likes = data });
@@ -248,7 +284,7 @@ export default {
                 await postService.deletePost(id)
             }
         },
-        
+
         //handle like
         async addlike(postid) {
             const id_user = this.user.id
@@ -296,10 +332,24 @@ export default {
                 postService.getfollow().then((data) => { this.follows = data })
             }
         },
+        async acceptPost() {
 
+            try {
+                const result = await this.$axios.put('post/acceptPost',
+                    {
+                        id_post: this.post.id, usergift: this.post.user.id, status_gift: this.post.status_gift
+                    })
+                this.$refs.toast.showToast(result.data.message);
+                this.isShowaccept = false
+            } catch (error) {
+                console.log(error)
+            }
+
+
+        },
         // đóng mở các component con 
         getclass(id) {
-            if (id !== this.user.id) {
+            if (id !== this.user.id || !this.user) {
                 return 'hidden'
             }
             else {
@@ -307,12 +357,28 @@ export default {
             }
         },
         getclass2(id) {
-            if (id !== this.user.id) {
+            if (id !== this.user.id || !this.user) {
                 return ''
             }
             else {
                 return 'hidden'
             }
+        },
+        getclass3(post) {
+           
+                if ((post.user.id !== this.user.id || !this.user) && post.type === "Trao tặng") {
+                    return ''
+                }
+                else {
+                    return 'hidden'
+                }
+            
+
+        },
+        acceptOpen(post) {
+            this.isShowaccept = true
+            this.post = post
+         
         },
         toggleDropdown(post) {
             if (this.isDropdownOpen(post.id)) {
@@ -348,6 +414,9 @@ export default {
             this.postId = id
             this.isShowcomment = !this.isShowcomment
         },
+        oncloseaccept() {
+            this.isShowaccept = !this.isShowaccept
+        }
     }
 };
 </script>

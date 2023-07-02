@@ -16,6 +16,10 @@
             <i class=" text-violet-500 uil-search mr-4 md:text-xl"></i>
             <h3 class="font-semibold   hidden text-xs  md:block  lg:text-base sm:block lg:block">Tìm kiếm</h3>
           </router-link>
+          <router-link to="/trade" class="flex items-center py-4  ">
+            <i class=" text-violet-500 uil-search mr-4 md:text-xl"></i>
+            <h3 class="font-semibold   hidden text-xs  md:block  lg:text-base sm:block lg:block">Trao đổi</h3>
+          </router-link>
           <hr class="h-px bg-gray-200 border-0 dark:bg-gray-700">
           <a v-if="checkLogin" @click="goIn4" class="flex items-center py-4 cursor-pointer ">
             <i class=" text-violet-500  uil-chat-bubble-user mr-4 md:text-xl"></i>

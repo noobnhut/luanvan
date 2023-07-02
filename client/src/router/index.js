@@ -37,6 +37,11 @@ const router = createRouter({
           component: () => import('../pages/home/donate.vue')
         },
         {
+          path: 'trade', // trao tặng
+          name: 'trade',
+          component: () => import('../pages/home/trade.vue')
+        },
+        {
           path: 'search', // tìm mua
           name: 'search',
           component: () => import('../pages/home/search.vue')
