@@ -3,7 +3,7 @@ https://github.com/envomer/tailwindcss-chat
 https://flowbite.com/
 https://fontawesome.com/icons/ellipsis?f=classic&s=solid
 https://github.com/stopwords/vietnamese-stopwords/blob/master/vietnamese-stopwords.txt
-
+https://morioh.com/p/da2adf3f7eac
 npx sequelize-cli db:migrate
 
 admin 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918

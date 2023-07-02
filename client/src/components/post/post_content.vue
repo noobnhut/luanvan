@@ -36,6 +36,8 @@
             <option disabled selected>Chọn loại bài đăng</option>
             <option value="Tìm kiếm">Tìm kiếm</option>
             <option value="Trao tặng">Trao tặng</option>
+            <option value="Trao đổi">Trao đổi</option>
+
           </select>
         </div>
         

@@ -53,43 +53,12 @@
             </select>
           </div>
         </div>
-
-        <!-- Image -->
-
-        <div class="flex items-center mt-4 py-2 px-4">
-          <div class="container grid grid-cols-3 gap-2 mx-auto">
-
-           
-              <div class="flex justify-center items-center bg-gray-300 h-screen "  v-for="img in imgs">
-                <div class="w-64 h-64 bg-gray-500 rounded-lg overflow-hidden shadow-lg">
-                  <img :src="img.url" alt="Your Image" class="w-full h-full object-cover filter blur-sm">
-                </div>
-              </div>
-          
-
-            <div class="w-full rounded" v-for="video in videos">
-              <video loop controls >
-                <source :src="video.url" type="video/mp4" />
-              </video>
-          </div>
-
-        </div>
-        </div>
         
       </div>
 
-
+      
       <div class="modal-footer py-3 px-4">
-        <button
-          class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer mr-4"
-          v-if="is_clearimg" @click="clearIMG()">
-          Xóa ảnh
-        </button>
-        <button
-          class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer"
-          v-if="is_clearvideo" @click="clearVideo()">
-          Xóa video
-        </button>
+        
       </div>
       <div class="modal-footer py-3 px-4">
         <button
@@ -141,8 +110,7 @@ export default {
       type: "",
       img_delete: [],
       video_delete: [],
-      is_clearimg: false,
-      is_clearvideo: false
+    
     };
   },
   components: {
@@ -232,22 +200,8 @@ export default {
         }
       } catch (error) { }
     },
-    clearIMG() {
-      if (this.imgs.length !== 0) {
-        this.img_delete = this.imgs;
-        this.imgs = [];
-        this.is_clearimg = false;
-        console.log(this.img_delete);
-      }
-    },
-    clearVideo() {
-      if (this.videos.length !== 0) {
-        this.video_delete = this.videos;
-        this.videos = [];
-        this.is_clearvideo = false;
-        console.log(this.video_delete);
-      }
-    }
+    
+    
   },
 };
 </script>
