@@ -8,57 +8,124 @@
         <i class="uil-multiply flex-none cursor-pointer bg-gray-400 rounded-xl" @click="onclose"></i>
       </div>
       <div class=" py-4 px-2 overflow-y-auto ">
-        <div class="mt-1">
-          <label class="block text-base ml-2 font-medium text-gray-900 dark:text-white">Tiêu đề :</label>
-          <input type="text" placeholder="Tiêu đề"
-            class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
-            v-model="title" />
+        <div class="grid grid-cols-2 ">
+          <!--left update-->
+          <div class="py-2 px-2">
+            <div class="mt-1">
+              <label class="block text-base ml-2 font-medium text-gray-900 dark:text-white">Tiêu đề :</label>
+              <input type="text" placeholder="Tiêu đề"
+                class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
+                v-model="title" />
+            </div>
+
+            <div class="mt-2">
+              <label class="block text-base ml-2 font-medium text-gray-900 dark:text-white">Nội dung bài đăng :</label>
+              <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
+                placeholder="Nhập nội dung ..." v-model="post_content"></textarea>
+            </div>
+
+            <div class=" mb-2 block">
+              <div class="relative md:mr-2 mt-5">
+                <label class="ml-2">Thành phố :</label>
+                <select v-model="city_id" required @change="onCitySelected()"
+                  class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
+                  <option disabled>Thành phố</option>
+                  <option v-for="city in citys" :key="city.code" :value="city.code">
+                    {{ city.name }}
+                  </option>
+                </select>
+              </div>
+              <div class="relative md:mr-2 mt-5">
+                <label class="ml-2">Quận huyện :</label>
+                <select v-model="districts_code" @change="onDistrictSelected()"
+                  class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
+                  <option disabled selected>Quận/Huyện</option>
+                  <option v-for="district in districts" :key="district.code" :value="district.code">
+                    {{ district.name }}
+                  </option>
+                </select>
+              </div>
+              <div class="relative mt-5">
+                <label class="ml-2">Xã phường :</label>
+                <select v-model="commune_id"
+                  class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
+                  <option disabled selected>Xã/Phường</option>
+                  <option v-for="commune in communes" :key="commune.code" :value="commune.code">
+                    {{ commune.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <!--right update-->
+          <div class="py-2">
+
+            <!-- Image -->
+            <div class="flex items-center mt-4 py-2 px-4">
+
+              <swiper :pagination="true" :modules="modules" class="mySwiper" :autoplay="{ delay: 1000 }">
+                <swiper-slide v-for="img in imgs">
+                  <img class="max-w-sm w-full mx-auto" :src="img.url" alt="Bài đăng">
+                </swiper-slide>
+
+                <swiper-slide v-for="img in imgs_new">
+                  <img class="max-w-sm w-full mx-auto" :src="img.url" alt="Bài đăng">
+                </swiper-slide>
+
+                <swiper-slide v-for="video in videos">
+                  <video loop controls class="max-w-sm w-full mx-auto ">
+                    <source :src="video.url" type="video/mp4" />
+                  </video>
+                </swiper-slide>
+
+
+                <swiper-slide v-for="video in videos_new">
+                  <video loop controls class="max-w-sm w-full mx-auto ">
+                    <source :src="video.url" type="video/mp4" />
+                  </video>
+                </swiper-slide>
+              </swiper>
+            </div>
+            <!--delete ảnh và video-->
+            <button
+              class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer mr-4 "
+              @click="deleteimg()">
+              Xóa ảnh
+            </button>
+            <button
+              class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer"
+              @click="deletevideo()">
+              Xóa video
+            </button>
+
+            <!--thêm ảnh và video mới-->
+            <div class=" mt-2 px-2 py-2">
+
+              <label for="video-file">
+                <div
+                  class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer mr-4 ">
+                  Thêm video
+                </div>
+                <input id="video-file" type="file" accept=".mp4" @change="onFileSelectedVideo" multiple hidden />
+              </label>
+
+              <label for="img-file">
+                <div
+                  class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer mr-4 ">
+                  Thêm ảnh
+                </div>
+                <input id="img-file" type="file" @change="onFileSelected" multiple hidden
+                  accept=".png, .jpeg, .gif, .jpg" />
+              </label>
+            </div>
+          </div>
         </div>
 
-        <div class="mt-2">
-          <label class="block text-base ml-2 font-medium text-gray-900 dark:text-white">Nội dung bài đăng :</label>
-          <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
-            placeholder="Nhập nội dung ..." v-model="post_content"></textarea>
-        </div>
-
-        <div class="md:flex mb-2 block">
-          <div class="relative md:mr-2 mt-5">
-            <label class="ml-2">Thành phố :</label>
-            <select v-model="city_id" required @change="onCitySelected()"
-              class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
-              <option disabled>Thành phố</option>
-              <option v-for="city in citys" :key="city.code" :value="city.code">
-                {{ city.name }}
-              </option>
-            </select>
-          </div>
-          <div class="relative md:mr-2 mt-5">
-            <label class="ml-2">Quận huyện :</label>
-            <select v-model="districts_code" @change="onDistrictSelected()"
-              class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
-              <option disabled selected>Quận/Huyện</option>
-              <option v-for="district in districts" :key="district.code" :value="district.code">
-                {{ district.name }}
-              </option>
-            </select>
-          </div>
-          <div class="relative mt-5">
-            <label class="ml-2">Xã phường :</label>
-            <select v-model="commune_id"
-              class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
-              <option disabled selected>Xã/Phường</option>
-              <option v-for="commune in communes" :key="commune.code" :value="commune.code">
-                {{ commune.name }}
-              </option>
-            </select>
-          </div>
-        </div>
-        
       </div>
 
-      
+
       <div class="modal-footer py-3 px-4">
-        
+
       </div>
       <div class="modal-footer py-3 px-4">
         <button
@@ -108,9 +175,11 @@ export default {
       catid: "",
       cats: [],
       type: "",
-      img_delete: [],
-      video_delete: [],
-    
+      imgs_new: [],
+      videos_new: [],
+      avatar: null,
+      video: null
+
     };
   },
   components: {
@@ -179,8 +248,82 @@ export default {
         console.log(e);
       }
     },
+    deleteimg() {
+
+      if (this.imgs.length > 0) {
+        this.imgs = []
+        //this.imgs.push({url:"https://png.pngtree.com/thumb_back/fh260/background/20201226/pngtree-large-patch-of-color-abstract-background-image_515696.jpg"})
+      }
+      else {
+        this.$refs.toast.showToast("Không có ảnh để xóa");
+      }
+    },
+    deletevideo() {
+      if (this.videos.length > 0) {
+        this.videos = []
+      }
+      else {
+        this.$refs.toast.showToast("Không có video để xóa");
+      }
+    },
+
+    //post/create
+    onFileSelected(event) {
+      const files = event.target.files;
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const imageUrl = URL.createObjectURL(file);
+        this.imgs_new.push({ id: i, url: imageUrl });
+      }
+      this.avatar = files;
+    },
+    onFileSelectedVideo(event) {
+      const files = event.target.files;
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const imageUrl = URL.createObjectURL(file);
+        this.videos_new.push({ id: i, url: imageUrl });
+      }
+      this.video = files;
+    },
     async updateInfo() {
       try {
+        if (this.avatar) {
+          const formImg = new FormData();
+          for (let i = 0; i < this.avatar.length; i++) {
+            const file = this.avatar[i];
+            formImg.append("avatar", file);
+          }
+          try {
+            const addimg = await this.$axios.post(
+                `post/addimg/${this.postId}`,
+                formImg,
+                {
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                  },
+                }
+              ); 
+          } catch (error) {
+            console.log(error)
+          }
+        }
+        if (this.video) {
+            const formVideo = new FormData();
+            for (let i = 0; i < this.video.length; i++) {
+              const file = this.video[i];
+              formVideo.append("video", file);
+            }
+            const addvideo = await this.$axios.post(
+                `post/addvideo/${this.postId}`,
+                formVideo,
+                {
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                  },
+                }
+              );
+          }
         const result = await this.$axios.put(`post/update/` + this.postId, {
           title: this.title,
           post_content: this.post_content,
@@ -198,10 +341,11 @@ export default {
             location.reload();
           }, 1000);
         }
+
       } catch (error) { }
     },
-    
-    
+
+
   },
 };
 </script>
