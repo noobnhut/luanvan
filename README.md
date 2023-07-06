@@ -6,6 +6,7 @@ https://github.com/stopwords/vietnamese-stopwords/blob/master/vietnamese-stopwor
  https://devpress.csdn.net/vue/62f0d8597e6682346618365d.html
 npx sequelize-cli db:migrate
 https://codesandbox.io/p/sandbox/fnw0gf?file=%2Fsrc%2FApp.vue%3A1%2C1
+https://ej2.syncfusion.com/vue/documentation/rating/vue-3-getting-started
 admin 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
 npx sequelize-cli model:generate --name User_Report --attributes user_report:integer,user_reported:integer,report_content:string
 

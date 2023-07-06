@@ -25,8 +25,11 @@ module.exports = {
           key: 'id'
         }
       },
-      nmessager: {
+      messager: {
         type: Sequelize.STRING(64)
+      },
+      deleted: {
+        type: Sequelize.INTEGER,
       },
       createdAt: {
         allowNull: false,

@@ -5,7 +5,7 @@ const {
 } =require("../controller/noticationController") ;
 const routerNotication = express.Router();
 
-routerNotication.get('/api/rank/get/:id',getRank);
+routerNotication.get('/api/rank/get',getRank);
 
 module.exports = { 
     routerNotication,

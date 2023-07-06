@@ -12,7 +12,7 @@
       <rightnav />
     </div>
   </div>
-  <gototop />
+
 </template>
 
 <script>
@@ -20,7 +20,7 @@ import navbar from '../components/header/navbar.vue';
 import leftnav from '../components/header/leftnav.vue'
 import post from '../components/post/post.vue';
 import rightnav from '../components/header/rightnav.vue';
-import gototop from '../components/header/gototop.vue';
+
 import inputform from '../components/post/inputform.vue';
 
 export default
@@ -41,7 +41,6 @@ export default
       post,
       leftnav,
       rightnav,
-      gototop,
       inputform
 
     }

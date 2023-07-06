@@ -38,9 +38,11 @@
                     </span>
 
                     <button @click="onShowReport"
-                        class=" mt-4 py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer">Báo
+                        class=" mt-4 py-2 px-4 mr-2 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer">Báo
                         cáo người dùng</button>
 
+                        <button @click="onShowRating"
+                        class=" mt-4 py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer">Đánh giá người dùng </button>
                 </div>
             </div>
 
@@ -52,6 +54,11 @@
                             :class="['inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300', { 'text-blue-600 border-blue-600 rounded-t-lg font-bold': activeTab === 'user' }]"
                             class=" active inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">Bài
                             đăng</a>
+                    </li>
+                    <li class="mr-2 cursor-pointer ">
+                        <a @click="isUserRatingBtn"
+                            :class="['inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300', { 'text-blue-600 border-blue-600 rounded-t-lg font-bold': activeTab === 'rating' }]"
+                            class=" active inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">Danh sách đánh giá</a>
                     </li>
                     <li class="mr-2 cursor-pointer" v-if="showOnlyUser">
                         <a @click="isFollowBtn"
@@ -70,6 +77,8 @@
             <post type="" filter="" v-if="isUser" />
             <postfollow v-if="isFollow" />
             <followuser v-if="isFollowUser" />
+            <ratingView v-if="isShowRatingView"/>
+
         </div>
         <div class=" p-4 hidden  lg:block md:col-span-1 lg:col-span-1">
             <rightnav />
@@ -77,6 +86,7 @@
     </div>
 
     <reportuser v-if="isShowReport" @cancel="onShowReport"/>
+    <ratingForm v-if="isShowRating" @cancel="onShowRating"/>
     <gototop />
 </template>
   
@@ -92,6 +102,8 @@ import userService from '../plugins/userService';
 import information from '../components/information/information.vue'
 import followuser from '../components/information/followuser.vue';
 import reportuser from '../components/information/reportuser.vue';
+import ratingForm from '../components/rating/ratingForm.vue';
+import ratingView from '../components/rating/viewrating.vue'
 export default
     {
         data() {
@@ -108,7 +120,9 @@ export default
                 isShowReport:false,
                 followusers: [],
                 isShowUser:true,
-                viewText:''
+                viewText:'',
+                isShowRating:false,
+                isShowRatingView:false
             }
         },
         components:
@@ -121,7 +135,9 @@ export default
             information,
             postfollow,
             followuser,
-            reportuser
+            reportuser,
+            ratingForm,
+            ratingView
         },
         mounted() {
             this.user = userService.getUserToken();
@@ -162,22 +178,37 @@ export default
                     console.log(error)     
             }},
             isUserBtn() {
+
                 this.isUser = true
                 this.isFollow = false
                 this.activeTab = 'user'
                 this.isFollowUser = false
+                this.isShowRatingView=false
             },
             isFollowBtn() {
                 this.isUser = false
                 this.activeTab = 'follow'
                 this.isFollow = true
                 this.isFollowUser = false
+                this.isShowRatingView=false
+
             },
             isFollowUserBtn() {
                 this.isFollowUser = true
                 this.activeTab = 'followuser'
                 this.isUser = false
                 this.isFollow = false
+                this.isShowRatingView=false
+
+            },
+            isUserRatingBtn()
+            {
+                this.isFollowUser = false
+                this.activeTab = 'rating'
+                this.isUser = false
+                this.isFollow = false
+                this.isShowRatingView=true
+
             },
             onShowReport()
             {
@@ -198,6 +229,10 @@ export default
                     console.log(e);
                 }
             },
+            onShowRating()
+            {
+                this.isShowRating = !this.isShowRating
+            }
         }
     }
 </script>

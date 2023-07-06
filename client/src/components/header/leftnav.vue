@@ -30,14 +30,49 @@
           <i class=" text-violet-500   uil-facebook-messenger mr-4 md:text-xl"></i>
           <h3 class="font-semibold   hidden text-xs  md:block  lg:text-base sm:block lg:block">Nhắn tin</h3>
         </router-link>
-        <label v-if="checkLogin" @click="onShow" class="flex items-center mt-4 py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer ">
-          <i class=" text-violet-500  uil-plus-square mr-4 md:text-xl"></i>
-          <h3 class="font-semibold  hidden text-xs  md:block  lg:text-base sm:block lg:block" >Tạo bài đăng</h3>
-        </label>
-        <label v-if="checkLogin" @click="outWeb" class="flex items-center mt-4 py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer ">
-          <i class="text-violet-500 uil-exit mr-4 md:text-xl"></i>
-          <h3 class="font-semibold  hidden text-xs  md:block  lg:text-base sm:block lg:block" >Đăng xuất</h3>
-        </label>
+
+        <div class="bg-white shadow-md rounded-md overflow-hidden max-w-lg mx-auto mt-16">
+          <div class="bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white py-2 px-4">
+              <h2 class="text-xl font-semibold text-gray-800">Bảng xếp hạng</h2>
+          </div>
+          <div class="max-h-80 min-h-10 overflow-y-auto">
+              <ul class="divide-y divide-gray-200" v-for="(rank, index) in ranks">
+                  <li class="flex items-center py-4 px-6">
+                      <span class="text-gray-700 text-lg font-medium mr-4">{{ index + 1 }}.</span>
+                      <img class="w-12 h-12 rounded-full object-cover mr-4" :src="rank.avatar" alt="User avatar">
+                      <div class="flex-1">
+                          <h3 class="text-lg font-medium text-gray-800">{{ rank.username }}</h3>
+                          <p class="text-gray-600 text-base">{{ rank.ranking_score }} điểm</p>
+                      </div>
+                  </li>
+                  <li class="flex items-center py-4 px-6">
+                    <span class="text-gray-700 text-lg font-medium mr-4">{{ index + 2 }}.</span>
+                    <img class="w-12 h-12 rounded-full object-cover mr-4" :src="rank.avatar" alt="User avatar">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-medium text-gray-800">{{ rank.username }}</h3>
+                        <p class="text-gray-600 text-base">{{ rank.ranking_score }} điểm</p>
+                    </div>
+                </li>
+                <li class="flex items-center py-4 px-6">
+                  <span class="text-gray-700 text-lg font-medium mr-4">{{ index + 1 }}.</span>
+                  <img class="w-12 h-12 rounded-full object-cover mr-4" :src="rank.avatar" alt="User avatar">
+                  <div class="flex-1">
+                      <h3 class="text-lg font-medium text-gray-800">{{ rank.username }}</h3>
+                      <p class="text-gray-600 text-base">{{ rank.ranking_score }} điểm</p>
+                  </div>
+              </li>
+              <li class="flex items-center py-4 px-6">
+                <span class="text-gray-700 text-lg font-medium mr-4">{{ index + 1 }}.</span>
+                <img class="w-12 h-12 rounded-full object-cover mr-4" :src="rank.avatar" alt="User avatar">
+                <div class="flex-1">
+                    <h3 class="text-lg font-medium text-gray-800">{{ rank.username }}</h3>
+                    <p class="text-gray-600 text-base">{{ rank.ranking_score }} điểm</p>
+                </div>
+            </li>
+              </ul>
+          </div>
+      </div>
+
        
       </div>
   <toast ref="toast"></toast>
@@ -57,6 +92,7 @@ export default
     return {
       isShowModel: false,
       user:'',
+      ranks:[],
       checkLogin:true
     }
   },
@@ -72,6 +108,7 @@ export default
    {
     this.checkLogin = false
    }
+   this.getRank()
   },
   methods: {
     outWeb() {
@@ -88,7 +125,16 @@ export default
     goIn4()
     {
       window.location.href = `${import.meta.env.VITE_API_BASE_URL_API}information/${this.user.username}/${this.user.id}`;
-    }
+    },
+    async getRank()
+      {
+        try {
+            const result = await this.$axios.get('rank/get');
+            this.ranks= result.data
+        } catch (error) {
+            console.log(error)
+        }
+      },
   }
 }
 </script>

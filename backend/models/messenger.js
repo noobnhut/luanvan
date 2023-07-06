@@ -18,7 +18,9 @@ module.exports = (sequelize, DataTypes) => {
   messenger.init({
     sender_id: DataTypes.INTEGER,
     receiver_id: DataTypes.INTEGER,
-    nmessager: DataTypes.STRING
+    messager: DataTypes.STRING,
+    deleted: DataTypes.INTEGER,
+
   }, {
     sequelize,
     modelName: 'messenger',
