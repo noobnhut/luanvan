@@ -71,20 +71,6 @@ const router = createRouter({
       component: () => import('../views/searchview.vue')
     },
 
-    // ứng dụng chat
-    {
-      path: '/messenger',
-      name: 'messenger',
-      component: () => import('../views/messenger.vue'),
-      children: [
-        {
-          path: 'chat/:id_user/:id_room',
-          name: 'chat',
-          component: () => import('../pages/messenger/chatcenter.vue')
-        }
-      ]
-    },
-
 
     //admin page
     {

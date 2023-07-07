@@ -16,11 +16,26 @@ const io = new Server(server,
     transports: ["polling", "websocket"],
   });
 
-//setup socket io
-io.on('connect', (socket) => {
-  socket.emit('status', 'online');
-  console.log('có người kết nối này');
-});
+  const users = {};
+
+  io.on('connection', (socket) => {
+    socket.on('userConnected', (userId) => {
+      users[userId] = socket.id;
+      io.emit('UpdateUserStatus',users)
+      console.log('User connected:', userId);
+      console.log('Online users:', users);
+    });
+  
+    socket.on('userDisconnect', (userId) => {
+        delete users[userId];
+        io.emit('Updatedisconnect',users)
+        console.log('User disconnected:', userId);
+        console.log('Online users:', users);
+      
+    });
+  });
+  
+  
 app.use((req, res, next) => {
   res.io = io
   next()

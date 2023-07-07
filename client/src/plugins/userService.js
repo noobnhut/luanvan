@@ -17,7 +17,15 @@ class userService {
       console.log(error)
     }
   }
-
+  async getUserByID(id)
+  {
+    try {
+      const result = await axios.get(`${this.url}user/getbyid/`+ id);
+      return result.data;
+    } catch (error) {
+      console.log(error)
+    }
+  }
   async updateimg(avatar, id) {
     const formData = new FormData();
     formData.append('avatar', avatar);
