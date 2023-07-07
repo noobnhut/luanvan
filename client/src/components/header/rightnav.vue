@@ -51,25 +51,8 @@
                             <h3 class="text-lg font-medium text-gray-800">{{ user.username }}</h3>
                             <p class="text-gray-600 text-base">Hoạt động</p>
                         </div>
-                    </div><div class="flex items-center">
-                        <img class="w-12 h-12 rounded-full object-cover mr-4" :src="user.avatar" alt="User avatar">
-                        <div class="flex-1">
-                            <h3 class="text-lg font-medium text-gray-800">{{ user.username }}</h3>
-                            <p class="text-gray-600 text-base">Hoạt động</p>
-                        </div>
-                    </div><div class="flex items-center">
-                        <img class="w-12 h-12 rounded-full object-cover mr-4" :src="user.avatar" alt="User avatar">
-                        <div class="flex-1">
-                            <h3 class="text-lg font-medium text-gray-800">{{ user.username }}</h3>
-                            <p class="text-gray-600 text-base">Hoạt động</p>
-                        </div>
-                    </div><div class="flex items-center">
-                        <img class="w-12 h-12 rounded-full object-cover mr-4" :src="user.avatar" alt="User avatar">
-                        <div class="flex-1">
-                            <h3 class="text-lg font-medium text-gray-800">{{ user.username }}</h3>
-                            <p class="text-gray-600 text-base">Hoạt động</p>
-                        </div>
                     </div>
+                    
                 </div>
             </div>
         </div>

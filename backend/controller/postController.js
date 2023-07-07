@@ -8,6 +8,10 @@ const Like = db.Post_Like;
 const Save = db.Save_Post;
 const Comment = db.Post_Comment;
 const sequelize = require('sequelize');
+const axios = require('axios')
+const dotenv = require('dotenv');
+dotenv.config();
+const KEY_MAP = process.env.KEY_MAP;
 const createPost = async (req, res) => {
   const { id_user, id_cat, type, post_content, title, citycode, districtcode, communecode } = req.body;
 
@@ -262,6 +266,47 @@ const acceptPost = async (req, res) => {
     res.status(400).json({ massage: "Thất bại" })
   }
 }
+
+const resultPost = async (req, res) => {
+  try {
+    // Lấy dữ liệu từ post
+    const posts = await Post.findAll();
+
+    // Lấy thông tin về city, district, commune từ API provinces
+    const cityAPI = await axios.get('https://provinces.open-api.vn/api/');
+    const apicityData = cityAPI.data;
+    const districtAPI = await axios.get('https://provinces.open-api.vn/api/d/');
+    const apidistrictData = districtAPI.data;
+    const communeAPI = await axios.get('https://provinces.open-api.vn/api/w/');
+    const apicommuneData = communeAPI.data;
+
+    // Tạo một map để lưu trữ thông tin city, district, commune dựa trên code
+    const cityMap = new Map(apicityData.map(city => [city.code, city.name]));
+    const districtMap = new Map(apidistrictData.map(district => [district.code, district.name]));
+    const communeMap = new Map(apicommuneData.map(commune => [commune.code, commune.name]));
+
+    // Tạo mảng chứa idpost và tên của city, district, commune
+    const postAdress = posts.map(post => ({
+      idpost: post.id,
+      address: ` ${communeMap.get(post.communecode)},${districtMap.get(post.districtcode)},${cityMap.get(post.citycode)}`
+    }));
+
+    //API map để lấy được lat và lon
+    // const Raw = postAdress.map(async raw => {
+    //   const apiMap = await axios.get(`http://api.positionstack.com/v1/forward?access_key=${KEY_MAP}&query=${raw.address}`);
+    //   return apiMap.data;
+    // })
+    // const rawData = await Promise.all(Raw);
+    const apiMap = await axios.get(`http://api.positionstack.com/v1/forward?access_key=${KEY_MAP}&query="Xã Bà Điểm,Huyện Hóc Môn,Thành phố Hồ Chí Minh"`);
+    const data = apiMap.data.data;
+    res.json(data);
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'An error occurred' });
+  }
+}
+
 module.exports =
 {
   createPost,
@@ -271,5 +316,6 @@ module.exports =
   getPostCountByCategory,
   getPostByType,
   getPostInteraction,
-  acceptPost
+  acceptPost,
+  resultPost
 }

@@ -2,7 +2,7 @@ const db = require('../models');
 const Post = db.Post;
 const User = db.user;
 const { Op } = require('sequelize');
-
+const axios = require('axios')
 const getRank = async (req, res) => {
    
    try {
@@ -24,5 +24,5 @@ const getRank = async (req, res) => {
 }
 
 module.exports = {
-    getRank
+    getRank,
 }
