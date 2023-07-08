@@ -46,5 +46,6 @@ npx sequelize-cli model:generate --name messenger --attributes sender_id:integer
 
 npx sequelize-cli model:generate --name Follow --attributes userfollow:integer,userfollowed:integer
 
+npx sequelize-cli model:generate --name NotificationSetting --attributes id_user:integer,status:boolean,location_radius:double
 
 npx sequelize-cli model:generate --name Admin --attributes email:string,password:string

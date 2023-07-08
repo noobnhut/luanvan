@@ -56,6 +56,7 @@ const { routerReport } = require('./routes/reportRouter')
 const {routerSendMail} = require('./routes/sendmailRouter')
 const { routerRating} = require('./routes/RatingRouter')
 const {routerNotication} = require('./routes/noticationRouter')
+const {routerMessage}= require('./routes/chatRouter')
 // Thiết lập body-parser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -67,7 +68,7 @@ app.use(express.json());
 
 // Định tuyến
 app.use(routerUser, routerPost, routerCat, routerAdmin, routerIMG, routerVideo, routerLike, routerComment,
-  routerSavePost, routerSearch, routerUserFollow, routerReport,routerSendMail,routerRating,routerNotication);
+  routerSavePost, routerSearch, routerUserFollow, routerReport,routerSendMail,routerRating,routerNotication,routerMessage);
 // Serve các tệp tĩnh trong thư mục "uploads"
 app.use(express.static("uploads"));
 

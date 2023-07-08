@@ -48,7 +48,7 @@
             <i class="uil-facebook-messenger text-3xl md:text-xl"></i>
           </div>
         </div>
-        <div class="profile-pic ml-2">
+        <div class="profile-pic ml-2" @click="onShowNotification">
           <div
             class="rounded-full w-10 h-10 object-cover bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 flex items-center justify-center">
             <i class="uil-github text-3xl md:text-xl"></i>
@@ -59,17 +59,20 @@
     </div>
   </nav>
 
-
+  
   <toast ref="toast"></toast>
   <post_content v-if="isShowModel" @cancel="onShow"></post_content>
   <changepass v-if="showchange" @cancel="onShowChange"/>
+  <notification @cancel="onShowNotification()" v-if="showNotification"/>
 </template>
   
 <script>
+import notification from '../notification.vue';
 import toast from '../toast/toast.vue';
 import post_content from '../post/post_content.vue';
 import userService from '../../plugins/userService';
 import changepass from '../information/changepass.vue';
+import socketService from '../../plugins/socketService';
 export default {
 
   name: "NavigationBar",
@@ -81,7 +84,8 @@ export default {
       hidden: true,
       showchange:false,
       searchQuery:'',
-      checkLogin:true
+      checkLogin:true,
+      showNotification:false
     };
   },
 
@@ -89,7 +93,8 @@ export default {
   {
     toast,
     post_content,
-    changepass
+    changepass,
+    notification
 
   },
   created() {
@@ -116,6 +121,7 @@ export default {
     },
     
     outWeb() {
+      socketService.userDisconnect(this.user.id)
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       this.$refs.toast.showToast('Đăng xuất thành công')
@@ -138,7 +144,12 @@ export default {
     {
       console.log(this.searchQuery)
      window.location.href = `http://localhost:5173/searchview?q=${this.searchQuery}`;
+    },
+    onShowNotification()
+    {
+      this.showNotification = !this.showNotification
     }
+
   },
 };
 </script>

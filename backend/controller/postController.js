@@ -297,9 +297,14 @@ const resultPost = async (req, res) => {
     //   return apiMap.data;
     // })
     // const rawData = await Promise.all(Raw);
-    const apiMap = await axios.get(`http://api.positionstack.com/v1/forward?access_key=${KEY_MAP}&query="Xã Bà Điểm,Huyện Hóc Môn,Thành phố Hồ Chí Minh"`);
-    const data = apiMap.data.data;
-    res.json(data);
+    const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+    params: {
+      address: "180 cao lo",
+      key: `${KEY_MAP}` // Thay YOUR_API_KEY bằng khóa API bạn đã nhận được
+    }
+  });
+    const data = response .data;
+    res.json(data.result );
 
   } catch (error) {
     console.log(error);

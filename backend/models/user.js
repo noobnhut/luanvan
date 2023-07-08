@@ -31,6 +31,9 @@ module.exports = (sequelize, DataTypes) => {
 
       user.hasMany(models.Follow, { foreignKey: 'userfollow' });
       user.hasMany(models.Follow, { foreignKey: 'userfollowed' });
+
+      user.hasMany(models.NotificationSetting, { foreignKey: 'id_user' });
+
     }
   }
   user.init({

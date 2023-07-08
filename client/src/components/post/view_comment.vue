@@ -78,7 +78,6 @@
 
 <script>
 import dayjs from "dayjs";
-import socket from '../../plugins/socket'
 import userService from "../../plugins/userService";
 import postService from "../../plugins/postService";
 export default {
@@ -99,13 +98,9 @@ export default {
     },
     components: {},
     mounted() {
-        socket.connect();
         this.user = userService.getUserToken();
         postService.renderPost().then((data) => { this.posts = data });
-        postService.getcomment().then((data) => { this.comments = data });
-        socket.on('comment', (comment) => {
-                this.comments.push(comment[0])
-            });
+        postService.getcomment().then((data) => { this.comments = data }); 
     },
     
 

@@ -17,43 +17,5 @@
     <img class="mt-4 w-16 rounded-full" src="../../assets/login.gif" alt="" />
   </div>
 
- 
- 
 </template>
 
-<script>
-import userService from "../../plugins/userService";
-import chatVue from "../chat.vue";
-export default {
-  data() {
-    return {
-      user: "",
-      users: [],
-      showBanner: true,
-      user_receive: "",
-      showChat: false,
-    };
-  },
-  components: { chatVue },
-  mounted() {
-    this.user = userService.getUserToken();
-    if (this.user) {
-      this.showBanner = false;
-    }
-    this.getUser();
-  },
-  methods: {
-    async getUser() {
-      try {
-        const result = await this.$axios.get("user/get");
-        this.users = result.data;
-      } catch (error) {
-        console.log(error);
-      }
-    },
-    openChat() {
-      this.showChat = !this.showChat;
-    },
-  },
-};
-</script>

@@ -65,20 +65,21 @@
 
         </div>
 
-        <!-- Image -->
         <div class="flex items-center mt-4 py-2 px-4">
-
             <swiper :pagination="true" :modules="modules" class="mySwiper" :autoplay="{ delay: 1000 }">
                 <swiper-slide v-for="img in post.Imgs">
-                    <img class="max-w-sm w-full mx-auto" :src="img.url" alt="Bài đăng">
+                    <img class="max-w-sm w-full mx-auto h-32 md:h-64" :src="img.url" alt="Bài đăng">
                 </swiper-slide>
                 <swiper-slide v-for="video in post.Videos">
-                    <video loop controls class="max-w-sm w-full mx-auto ">
+                    <video loop controls class="max-w-sm w-full mx-auto h-32 md:h-64">
                         <source :src="video.url" type="video/mp4" />
                     </video>
                 </swiper-slide>
             </swiper>
         </div>
+        
+        
+        
 
         <!-- Footer action  -->
         <div class="px-4 py-2 bg-white">

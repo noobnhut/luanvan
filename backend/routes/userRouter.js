@@ -8,11 +8,10 @@ const {
      updatePass,
      getUser,
      getIsUser,
-     getRank
+   
 } =require("../controller/userController.js") ;
 const routerUser = express.Router();
 routerUser.get('/api/user/getbyid/:id', getUserById);
-routerUser.get('/api/user/getrank', getRank);
 routerUser.get('/api/user/get', getUser);
 routerUser.get('/api/user/getIsUser', getIsUser);
 routerUser.post('/api/register', registerUser);
