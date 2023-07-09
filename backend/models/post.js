@@ -34,7 +34,9 @@ module.exports = (sequelize, DataTypes) => {
     citycode: DataTypes.INTEGER,
     districtcode: DataTypes.INTEGER,
     communecode: DataTypes.INTEGER,
-    status_gift:DataTypes.BOOLEAN
+    status_gift:DataTypes.BOOLEAN,
+    longtitube:DataTypes.DOUBLE,
+    latitube:DataTypes.DOUBLE
   }, {
     sequelize,
     modelName: 'Post',

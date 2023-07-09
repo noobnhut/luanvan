@@ -49,6 +49,12 @@ module.exports = {
       communecode: {
         type: Sequelize.INTEGER
       },
+      longtitube: {
+        type: Sequelize.DOUBLE
+      },
+      latitube: {
+        type: Sequelize.DOUBLE
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

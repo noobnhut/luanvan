@@ -5,6 +5,21 @@ const Notification = db.Notification;
 const notiSetting = db.NotificationSetting;
 const { Op } = require('sequelize');
 const axios = require('axios')
+const getSetting = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const exist = await User.findByPk(id);
+    if (exist) {
+      const result = await notiSetting.findAll({ where: { id_user: id } });
+      res.json(result)
+    } else {
+      res.json({ message: 'Khong ton tai nguoi dung' })
+    }
+
+  } catch (error) {
+    console.log(error)
+  }
+}
 const createNotiSetting = async (req, res) => {
   try {
     const { id_user, location_radius, type_post } = req.body;
@@ -13,19 +28,19 @@ const createNotiSetting = async (req, res) => {
       const existSetting = await notiSetting.findAll({ where: { id_user } });
       const checkSetting = await notiSetting.findOne({ where: { id_user, location_radius, type_post } })
       if (existSetting.length === 3) {
-        res.json({ message: 'Đã vượt quá giới hạn thêm' })
+        res.status(201).json({ message: 'Đã vượt quá giới hạn thêm' })
       }
       else if (checkSetting) {
-        res.json({ message: 'Cài đặt này đã tồn tại' })
+        res.status(201).json({ message: 'Cài đặt này đã tồn tại' })
       }
       else {
         if (existSetting.length == 0) {
           await notiSetting.create({ id_user, location_radius, type_post, status: true });
-          res.json({ message: 'Thêm thành công' })
+          res.status(200).json({ message: 'Thêm thành công' })
         }
         else if (existSetting.length > 1 || existSetting.length < 3) {
           await notiSetting.create({ id_user, location_radius, type_post, status: false });
-          res.json({ message: 'Thêm thành công ' })
+          res.status(200).json({ message: 'Thêm thành công ' })
         }
       }
     }
@@ -43,16 +58,16 @@ const deleteSetting = async (req, res) => {
     const exits = await notiSetting.findByPk(id);
     if (exits) {
       if (exits.status == 1) {
-        res.json({ message: 'Không thể xóa' })
+        res.status(201).json({ message: 'Cài đặt đang dùng, hãy chọn cái khác trước khi xóa' })
       }
       else {
         await exits.destroy({ where: { id } })
-        res.json({ message: 'Xóa thành công' })
+        res.status(200).json({ message: 'Xóa thành công' })
 
       }
     }
     else {
-      res.json({ message: 'Không tồn tại cài đặt này' })
+      res.status(201).json({ message: 'Không tồn tại cài đặt này' })
     }
   } catch (error) {
     console.log(error)
@@ -66,15 +81,15 @@ const updateSetting = async (req, res) => {
     const checkSetting = await notiSetting.findOne({ where: { id_user, location_radius, type_post } })
     if (exits) {
       if (checkSetting) {
-        res.json({ message: "Tồn tại thông tin cài đặt này" })
+        res.status(201).json({ message: "Tồn tại thông tin cài đặt này" })
       }
       else {
         await notiSetting.update({ location_radius, type_post }, { where: { id: id } });
-        res.json({ message: "Cập nhập thành công" })
+        res.status(200).json({ message: "Cập nhập thành công" })
       }
     }
     else {
-      res.json({ message: "Không tồn tại cài đặt này" })
+      res.status(201).json({ message: "Không tồn tại cài đặt này" })
 
     }
 
@@ -84,14 +99,55 @@ const updateSetting = async (req, res) => {
 }
 
 const updateSettingStatus = async (req, res) => {
-
+  try {
+    const id = req.params.id;
+    const { id_user } = req.body;
+    const existUser = await User.findByPk(id_user)
+    const exits = await notiSetting.findByPk(id);
+    const searchSetting = await notiSetting.findAll(
+      { where: { id_user: id_user, id: { [Op.not]: id }, } }
+    )
+    if (exits && existUser) {
+      exits.update({ status: 1 }, { where: { id: id } });
+      if (searchSetting) {
+        // thực hiện update status sang false
+        await Promise.all(
+          searchSetting.map((setting) => setting.update({ status: false }))
+        );
+      }
+      res.json({ message: 'Chọn thành công' })
+    }
+    else {
+      res.json({ message: 'Thất bại' })
+    }
+  } catch (error) {
+    console.log(error)
+  }
 }
 
-const userStatusNoti = async (req,res)=>
-{
-  const id =req.body.params;
-  const exits = await User.findByPk(id)
+const userStatusNoti = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const exits = await User.findByPk(id)
+    if (exits) {
+      if (exits.notification_status == 1) {
+       const update = await exits.update({ notification_status: false })
+        res.status(200).json(update)
+      }
+      else {
+        const update = await exits.update({ notification_status: true })
+        res.status(200).json(update)
+      }
+    }
+    else {
+      res.status(201).json({ message: 'Không tồn tại người dùng này' })
+    }
+    res.status(200).json(exits)
+  } catch (error) {
+    console.log(error)
+  }
 }
+
 const getRank = async (req, res) => {
 
   try {
@@ -150,5 +206,7 @@ module.exports = {
   createNotiSetting,
   deleteSetting,
   updateSetting,
-  updateSettingStatus
+  updateSettingStatus,
+  userStatusNoti,
+  getSetting
 }

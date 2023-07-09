@@ -65,59 +65,56 @@
 
               <swiper :pagination="true" :modules="modules" class="mySwiper" :autoplay="{ delay: 1000 }">
                 <swiper-slide v-for="img in imgs">
-                  <img class="max-w-sm w-full mx-auto" :src="img.url" alt="Bài đăng">
+                  <img class="max-w-sm w-full mx-auto h-32 md:h-64" :src="img.url" alt="Bài đăng">
                 </swiper-slide>
 
                 <swiper-slide v-for="img in imgs_new">
-                  <img class="max-w-sm w-full mx-auto" :src="img.url" alt="Bài đăng">
+                  <img class="max-w-sm w-full mx-auto h-32 md:h-64" :src="img.url" alt="Bài đăng">
                 </swiper-slide>
 
                 <swiper-slide v-for="video in videos">
-                  <video loop controls class="max-w-sm w-full mx-auto ">
+                  <video loop controls class="max-w-sm w-full mx-auto h-32 md:h-64 ">
                     <source :src="video.url" type="video/mp4" />
                   </video>
                 </swiper-slide>
 
 
                 <swiper-slide v-for="video in videos_new">
-                  <video loop controls class="max-w-sm w-full mx-auto ">
+                  <video loop controls class="max-w-sm w-full mx-auto h-32 md:h-64 ">
                     <source :src="video.url" type="video/mp4" />
                   </video>
                 </swiper-slide>
               </swiper>
             </div>
-            <!--delete ảnh và video-->
-            <button
-              class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer mr-4 "
-              @click="deleteimg()">
-              Xóa ảnh
-            </button>
-            <button
-              class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer"
-              @click="deletevideo()">
-              Xóa video
-            </button>
-
-            <!--thêm ảnh và video mới-->
-            <div class=" mt-2 px-2 py-2">
-
-              <label for="video-file">
-                <div
-                  class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer mr-4 ">
+            <div class="grid grid-cols-2 gap-4 mt-4 shrink-0">
+              <button @click="deleteimg()"
+                class=" text-xs border  bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none">
+                Xóa ảnh
+              </button>
+              
+              <button @click="deletevideo()"
+                class=" text-xs border  bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none">
+                Xóa video
+              </button>
+              
+              <label for="video-file" class="cursor-pointer ">
+                <div class="text-xs border bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none">
                   Thêm video
                 </div>
                 <input id="video-file" type="file" accept=".mp4" @change="onFileSelectedVideo" multiple hidden />
               </label>
-
+              
               <label for="img-file">
                 <div
-                  class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer mr-4 ">
+                  class="text-xs border  bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none ">
                   Thêm ảnh
                 </div>
                 <input id="img-file" type="file" @change="onFileSelected" multiple hidden
                   accept=".png, .jpeg, .gif, .jpg" />
               </label>
+
             </div>
+
           </div>
         </div>
 
@@ -296,34 +293,34 @@ export default {
           }
           try {
             const addimg = await this.$axios.post(
-                `post/addimg/${this.postId}`,
-                formImg,
-                {
-                  headers: {
-                    "Content-Type": "multipart/form-data",
-                  },
-                }
-              ); 
+              `post/addimg/${this.postId}`,
+              formImg,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
           } catch (error) {
             console.log(error)
           }
         }
         if (this.video) {
-            const formVideo = new FormData();
-            for (let i = 0; i < this.video.length; i++) {
-              const file = this.video[i];
-              formVideo.append("video", file);
-            }
-            const addvideo = await this.$axios.post(
-                `post/addvideo/${this.postId}`,
-                formVideo,
-                {
-                  headers: {
-                    "Content-Type": "multipart/form-data",
-                  },
-                }
-              );
+          const formVideo = new FormData();
+          for (let i = 0; i < this.video.length; i++) {
+            const file = this.video[i];
+            formVideo.append("video", file);
           }
+          const addvideo = await this.$axios.post(
+            `post/addvideo/${this.postId}`,
+            formVideo,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+        }
         const result = await this.$axios.put(`post/update/` + this.postId, {
           title: this.title,
           post_content: this.post_content,

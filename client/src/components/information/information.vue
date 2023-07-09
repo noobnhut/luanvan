@@ -54,6 +54,16 @@
                     class=" mt-4 py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer">Cập nhập thông tin</button>
             </div>
 
+            <div class="flex justify-center">
+                <button @click="onShowPassword" :class="{ hidden: showIn4 }"
+                    class=" mt-4 py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer">Cập nhập mật khẩu</button>
+            </div>
+
+            <div class="flex justify-center">
+                <button @click="onShowSetting" :class="{ hidden: showIn4 }"
+                    class=" mt-4 py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer">Cài đặt thông báo</button>
+            </div>
+
         </div>
     </div>
 
@@ -62,22 +72,23 @@
     <toast ref="toast"></toast>
     <updateimg v-if="isShowModel" @cancel="onShow"></updateimg>
     <updateInfo v-if="isShowInfo" @cancel="onShowInfo"></updateInfo>
+    <change v-if="isShowPassword" @cancel="onShowPassword"/>
+    <viewsetting v-if="isShowSetting" @cancel="onShowSetting" />
 </template>
 <script>
-
+import change from './change.vue'
 import updateimg from './updateimg.vue';
 import addressService from '../../plugins/addressService'
 import userService from '../../plugins/userService';
 import toast from '../toast/toast.vue';
 import updateInfo from '../information/updateinfor.vue'
-
+import viewsetting from '../notiSetting/viewsetting.vue';
 export default
     {
         data() {
             return {
                 isShowModel: false,
                 isShowInfo: false,
-
                 cityname: '',
                 citys: [],
                 districts: [],
@@ -85,7 +96,9 @@ export default
                 users: [],
                 user: '',
                 showIn4: false,
-                id: ''
+                id: '',
+                isShowSetting:false,
+                isShowPassword:false
             }
         },
         components:
@@ -93,6 +106,8 @@ export default
             toast,
             updateimg,
             updateInfo,
+            change,
+            viewsetting
             
         },
         mounted() {
@@ -116,7 +131,14 @@ export default
             onShowInfo() {
                 this.isShowInfo = !this.isShowInfo
             },
-           
+            onShowPassword()
+            {
+                this.isShowPassword = !this.isShowPassword
+            },
+            onShowSetting()
+            {
+                this.isShowSetting = !this.isShowSetting
+            },
             async getUsers() {
                 try {
                     const result = await this.$axios.get(

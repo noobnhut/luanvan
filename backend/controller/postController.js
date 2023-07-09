@@ -10,11 +10,45 @@ const Comment = db.Post_Comment;
 const sequelize = require('sequelize');
 const axios = require('axios')
 const dotenv = require('dotenv');
+const Op = sequelize.Op;
+const unidecode = require('unidecode');
 dotenv.config();
 const KEY_MAP = process.env.KEY_MAP;
+
+
+const resultPost = async (citycode, districtcode, communecode, useraddress) => {
+  try {
+    // Lấy thông tin về city, district, commune từ API provinces
+    const cityAPI = await axios.get(`https://provinces.open-api.vn/api/p/${citycode}`);
+    const apicityData = cityAPI.data.name;
+    const districtAPI = await axios.get(`https://provinces.open-api.vn/api/d/${districtcode}`);
+    const apidistrictData = districtAPI.data.name;
+    const communeAPI = await axios.get(`https://provinces.open-api.vn/api/w/${communecode}`);
+    const apicommuneData = communeAPI.data.name;
+    let address = '';
+    if (useraddress === '') {
+      address = `${useraddress},${apicommuneData},${apidistrictData},${apicityData}`;
+    } else {
+      address = `${apicommuneData},${apidistrictData},${apicityData}`;
+    }
+
+    const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+      params: {
+        address: address,
+        key: `${KEY_MAP}` 
+      }
+    });
+    const data = response.data.results;
+    return data[0].geometry.location;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const createPost = async (req, res) => {
   const { id_user, id_cat, type, post_content, title, citycode, districtcode, communecode } = req.body;
-
+  const useraddress = ''
+  const locationData = await resultPost(citycode, districtcode, communecode,useraddress);
   try {
     const existingUser = await User.findOne({ where: { id: id_user } });
     if (!existingUser) { return res.status(200).json('Không tồn tại khách hàng'); }
@@ -26,7 +60,8 @@ const createPost = async (req, res) => {
       return res.status(200).json('Thông tin nhập bị thiếu');
     }
     else {
-      const post = await Post.create({ id_user, id_cat, type, post_content, title, citycode, districtcode, communecode, status_gift: false, priority: 4 });
+      const post = await Post.create({ id_user, id_cat, type, post_content, title, citycode, districtcode, communecode, status_gift: false, priority: 4 ,longtitube:locationData.lng,
+        latitube:locationData.lat});
       if (post) {
         const id_post = post.id;
         return res.status(200).json(id_post)
@@ -209,6 +244,8 @@ const deletePost = async (req, res) => {
 const updatePost = async (req, res) => {
   const postId = req.params.id;
   const { id_cat, type, title, post_content, citycode, districtcode, communecode, id_user } = req.body;
+  const useraddress = ''
+  const locationData = await resultPost(citycode, districtcode, communecode,useraddress);
   try {
     const post = await Post.findByPk(postId);
     if (!post) {
@@ -229,6 +266,8 @@ const updatePost = async (req, res) => {
         citycode: citycode,
         districtcode: districtcode,
         communecode: communecode,
+        longtitube:locationData.lng,
+        latitube:locationData.lat
       });
       res.status(200).json({ message: `Cập nhập thành công`, post });
     }
@@ -267,50 +306,78 @@ const acceptPost = async (req, res) => {
   }
 }
 
-const resultPost = async (req, res) => {
+// công thức haversine tham khảo internet
+const calculateDistance = (lat1, lon1, lat2, lon2) =>{
+  const radius = 6371; // Bán kính Trái đất trong kilômét
+  
+  const dLat = toRadians(lat2 - lat1);
+  const dLon = toRadians(lon2 - lon1);
+  
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = radius * c;
+  
+  return distance;
+}
+
+const toRadians = (degrees)=> {
+  return degrees * (Math.PI / 180);
+}
+const searchPost = async (req, res) => {
   try {
-    // Lấy dữ liệu từ post
-    const posts = await Post.findAll();
+    const useraddress = '';
+    const { citycode, districtcode, communecode ,keyword,type,catid,radius} = req.body;   
+    // lấy ra danh sách bài đăng dựa vào
+    const keysearch=  unidecode(keyword.toLowerCase());
 
-    // Lấy thông tin về city, district, commune từ API provinces
-    const cityAPI = await axios.get('https://provinces.open-api.vn/api/');
-    const apicityData = cityAPI.data;
-    const districtAPI = await axios.get('https://provinces.open-api.vn/api/d/');
-    const apidistrictData = districtAPI.data;
-    const communeAPI = await axios.get('https://provinces.open-api.vn/api/w/');
-    const apicommuneData = communeAPI.data;
+    const postlocation = await Post.findAll({
+      where: {
+        [Op.or]: [
+          { title: { [Op.like]: `%${keysearch}%` } },
+          { post_content: { [Op.like]: `%${keysearch}%` } }
+        ],
+        id_cat:catid,
+        type:type,
+        citycode:citycode, 
+        districtcode:districtcode,
+        communecode :communecode
+      }
+    });
 
-    // Tạo một map để lưu trữ thông tin city, district, commune dựa trên code
-    const cityMap = new Map(apicityData.map(city => [city.code, city.name]));
-    const districtMap = new Map(apidistrictData.map(district => [district.code, district.name]));
-    const communeMap = new Map(apicommuneData.map(commune => [commune.code, commune.name]));
-
-    // Tạo mảng chứa idpost và tên của city, district, commune
-    const postAdress = posts.map(post => ({
-      idpost: post.id,
-      address: ` ${communeMap.get(post.communecode)},${districtMap.get(post.districtcode)},${cityMap.get(post.citycode)}`
-    }));
-
-    //API map để lấy được lat và lon
-    // const Raw = postAdress.map(async raw => {
-    //   const apiMap = await axios.get(`http://api.positionstack.com/v1/forward?access_key=${KEY_MAP}&query=${raw.address}`);
-    //   return apiMap.data;
-    // })
-    // const rawData = await Promise.all(Raw);
-    const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
-    params: {
-      address: "180 cao lo",
-      key: `${KEY_MAP}` // Thay YOUR_API_KEY bằng khóa API bạn đã nhận được
+    const postunlocation = await Post.findAll({
+      where: {
+        [Op.or]: [
+          { title: { [Op.like]: `%${keysearch}%` } },
+          { post_content: { [Op.like]: `%${keysearch}%` } }
+        ],
+        id_cat:catid,
+        type:type,
+      }
+    });
+     // lấy ra được tọa độ của input search
+    const searchLocation = await resultPost(citycode, districtcode, communecode, useraddress);
+    
+    const resultunlocation = []
+    for(const result of postunlocation)
+    {
+      const math = calculateDistance(result.latitube,result.longtitube,searchLocation.lat,searchLocation.lng)
+     
+      if(math<=radius)
+      {
+        resultunlocation.push(result)
+      }
     }
-  });
-    const data = response .data;
-    res.json(data.result );
-
+    
+    res.json( resultunlocation)
+   
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: 'An error occurred' });
   }
-}
+};
 
 module.exports =
 {
@@ -322,5 +389,5 @@ module.exports =
   getPostByType,
   getPostInteraction,
   acceptPost,
-  resultPost
+ searchPost
 }

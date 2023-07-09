@@ -34,16 +34,12 @@ export default {
       isShow: false,
       user: "",
       users: [],
-      showBanner: true,
     };
   },
 
   mounted() {
     // Xử lý sự kiện trạng thái
     this.user = userService.getUserToken();
-    if (this.user) {
-      this.showBanner = false;
-    }
     socketService.userConnect(this.user.id)
   },
   components: {

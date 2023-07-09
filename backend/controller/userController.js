@@ -186,6 +186,7 @@ const loginUser = async (req, res) => {
       citycode: user.citycode,
       districtcode: user.districtcode,
       communecode: user.communecode,
+      notification_status:user.notification_status,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
       token

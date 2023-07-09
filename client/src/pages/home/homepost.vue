@@ -1,7 +1,7 @@
 <template>
     <post type="Trao tặng" filter=""/>
     <post type="Tìm kiếm" filter=""/>
-    <post type="Trao đổi" filter=""/>
+    <post type="Trao đổi" filter=""/>
 
 
 </template>

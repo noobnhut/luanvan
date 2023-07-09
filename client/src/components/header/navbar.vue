@@ -1,13 +1,13 @@
 <template>
   <nav class="bg-white shadow-lg">
     <div class="container mx-auto  flex items-center justify-between px-4 md:px-6 lg:px-8 py-4">
-      <router-link to="/">
+      <a class="cursor-pointer" @click="gotoHome()">
         <h2 class="logo text-xl font-bold text-gray-900">404Social</h2>
-      </router-link>
+      </a>
       <div class="search-bar flex items-center bg-gray-100 md:w-92">
         <i class="uil uil-search text-gray-600 mx-2"></i>
         <input type="search" class="bg-transparent text-sm rounded-md px-4 py-3 pr-10 focus:outline-none w-full md:w-72"
-          placeholder="Tìm kiếm" v-model="searchQuery" v-on:keyup.enter="searchpost()" />
+          placeholder="Tìm kiếm" @click="openSearch()" readonly />
       </div>
       <div class="flex  items-center" >
         <button v-if="checkLogin"
@@ -58,12 +58,11 @@
       </div>
     </div>
   </nav>
-
-  
   <toast ref="toast"></toast>
   <post_content v-if="isShowModel" @cancel="onShow"></post_content>
-  <changepass v-if="showchange" @cancel="onShowChange"/>
+  <change v-if="showchange" @cancel="onShowChange"/>
   <notification @cancel="onShowNotification()" v-if="showNotification"/>
+  <search v-if="showsearch" @cancel="openSearch()"/>
 </template>
   
 <script>
@@ -71,8 +70,9 @@ import notification from '../notification.vue';
 import toast from '../toast/toast.vue';
 import post_content from '../post/post_content.vue';
 import userService from '../../plugins/userService';
-import changepass from '../information/changepass.vue';
+import change from '../information/change.vue';
 import socketService from '../../plugins/socketService';
+import search from '../search.vue';
 export default {
 
   name: "NavigationBar",
@@ -83,9 +83,9 @@ export default {
       user: '',
       hidden: true,
       showchange:false,
-      searchQuery:'',
       checkLogin:true,
-      showNotification:false
+      showNotification:false,
+      showsearch:false
     };
   },
 
@@ -93,7 +93,8 @@ export default {
   {
     toast,
     post_content,
-    changepass,
+    change,
+    search,
     notification
 
   },
@@ -107,6 +108,7 @@ export default {
     this.user = userService.getUserToken();
     if (!this.user) {
     this.checkLogin = false
+    localStorage.setItem('user', false);
     }
   },
   methods: {
@@ -138,18 +140,20 @@ export default {
     {
       this.showchange=!this.showchange
       this.hidden = !this.hidden
-
     },
-    searchpost(event)
-    {
-      console.log(this.searchQuery)
-     window.location.href = `http://localhost:5173/searchview?q=${this.searchQuery}`;
-    },
+    
     onShowNotification()
     {
       this.showNotification = !this.showNotification
+    },
+    gotoHome()
+    {
+      window.location.href = `${import.meta.env.VITE_API_BASE_URL_API}`;
+    },
+    openSearch()
+    {
+      this.showsearch = !this.showsearch
     }
-
   },
 };
 </script>
