@@ -389,5 +389,5 @@ module.exports =
   getPostByType,
   getPostInteraction,
   acceptPost,
- searchPost
+  searchPost
 }
