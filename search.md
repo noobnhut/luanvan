@@ -17,3 +17,22 @@ Sau đó, đẩy post.id vào mảng tương ứng với từ khóa trong invert
 Sau khi xử lý xong tất cả các bài viết, inverted index sẽ được xây dựng và chứa thông tin về các từ khóa và danh sách các bài viết chứa từ khóa đó.
 
 Cuối cùng, gọi hàm buildInvertedIndex để thực hiện quá trình xây dựng inverted index.
+
+
+ <div class="shadow-md mt-2">
+
+        <span class="font-bold text-xl px-8">Mọi người</span>
+        <div v-for="search in searchs">
+            <div class="max-w-xl w-full ml-6 overflow-hidden mt-6 "
+                v-for="user in users.filter(item => item.id == search.id_user && item.isUser == true)">
+                <!-- Header -->
+                <div class="flex items-center px-4 py-2">
+                    <img class="w-12 h-12 rounded-full mr-2" :src="user.avatar" alt="Avatar">
+                    <div class="flex-grow">
+                        <h3 @click="goIn4(user.username, user.id)" class="text-gray-900 font-medium cursor-pointer">{{
+                            user.username }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> 

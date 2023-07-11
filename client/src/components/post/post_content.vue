@@ -167,16 +167,16 @@ export default {
 
     async create() {
       let id_user = this.user.id;
-
+ const formImg = new FormData();
       if (this.avatar) {
-          const formImg = new FormData();
+         
           for (let i = 0; i < this.avatar.length; i++) {
             const file = this.avatar[i];
             formImg.append("avatar", file);
           }
-        }
+        }const formVideo = new FormData();
         if (this.video) {
-            const formVideo = new FormData();
+            
             for (let i = 0; i < this.video.length; i++) {
               const file = this.video[i];
               formVideo.append("video", file);

@@ -96,10 +96,12 @@
       </div>
     </div>
   </div>
+  <search v-if="isshowSearch"  @cancel="showsearch"/>
 </template>
 
 <script>
 import addressService from '../plugins/addressService';
+import search from '../pages/home/search.vue';
 export default {
   emits: ["cancel"],
   data() {
@@ -116,7 +118,8 @@ export default {
       cats: [],
       type: "",
       keyword: '',
-      radius: ''
+      radius: '',    
+      isshowSearch:false
     };
   },
   mounted() {
@@ -156,9 +159,15 @@ export default {
              catid: this.catid, radius: this.radius
           });
           console.log(result.data)
+          this.onclose()
+          this.isshowSearch = true
       } catch (error) {
         console.log(error)
       }
+    },
+    showsearch()
+    {
+      this.isshowSearch = !this.isshowSearch
     }
   },
 };

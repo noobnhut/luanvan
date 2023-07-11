@@ -64,13 +64,6 @@ const router = createRouter({
       component: () => import('../views/detailpost.vue')
     },
 
-    // giao diện kết quả tìm kiếm
-    {
-      path: '/searchview',
-      name: 'searchview',
-      component: () => import('../views/searchview.vue')
-    },
-
 
     //admin page
     {

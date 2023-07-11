@@ -1,7 +1,7 @@
 <template>
     <div class="shadow-md mt-2">
     <div v-for="followuser in followusers"> 
-        <div class="max-w-xl w-full ml-6 overflow-hidden mt-6 " v-for="user in users.filter(item => item.id == followuser.User.id && item.isUser == true)">
+        <div class="max-w-xl w-full ml-6 overflow-hidden mt-6 " v-for="user in users.filter(item => item.id == followuser.user.id && item.is_active == true)">
             <!-- Header -->
             <div class="flex items-center px-4 py-2">
                 <img class="w-12 h-12 rounded-full mr-2" :src="user.avatar" alt="Avatar">
