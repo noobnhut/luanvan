@@ -22,12 +22,21 @@
             @click="opendropdown" />
         </div>
 
-        <div class="profile-pic ml-2">
+        <div class="profile-pic ml-2 cursor-pointer" v-if="!checkLogin">
+          <router-link to="/login"
+            class="rounded-md px-4 py-2 object-cover bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 flex items-center justify-center">
+            <h3 class="font-semibold    text-xs   lg:text-base sm:block lg:block">Đăng nhập</h3>
+          </router-link>
+        </div>
+
+        <div class="profile-pic ml-2 " >
           <div
             class="rounded-full w-10 h-10 object-cover bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 flex items-center justify-center">
             <i class="uil-facebook-messenger text-3xl md:text-xl"></i>
-          </div>
         </div>
+
+        </div>
+        
         <div class="profile-pic ml-2" @click="onShowNotification">
           <div
             class="rounded-full w-10 h-10 object-cover bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 flex items-center justify-center">
