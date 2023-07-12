@@ -8,13 +8,15 @@ const {
     updateSettingStatus,
     updateSetting,
     getSetting,
-    userStatusNoti
+    userStatusNoti,
+    getNotificationbyid
 } =require("../controller/noticationController") ;
 const routerNotication = express.Router();
 
 routerNotication.get('/api/rank/get',getRank);
 routerNotication.get('/api/notiSetting/get/:id',getSetting);
-routerNotication.get('/api/notification/create',createNotification);
+routerNotication.post('/api/notification/create',createNotification);
+routerNotication.get('/api/notification/getbyid/:id',getNotificationbyid);
 routerNotication.post('/api/notiSetting/create', createNotiSetting);
 routerNotication.delete('/api/notiSetting/delete/:id', deleteSetting);
 routerNotication.put('/api/notiSetting/update',  updateSetting);

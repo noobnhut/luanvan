@@ -10,11 +10,7 @@
 
             <div class="py-4 px-4">
                 <div class=" w-full">
-                    <!--bắt đầu email
-                    + v-model: email đại diện cho email người dùng  -->
-                    <input type="text" class="w-full px-3 py-2 mb-2 text-gray-700 border rounded-lg focus:outline-none"
-                        disabled placeholder="Nhập địa chỉ mail " v-model="email" />
-
+                    
                     <!--bắt đầu mật khẩu cũ-->
                     <input type="password" class="w-full px-3 py-2 mb-2 text-gray-700 border rounded-lg focus:outline-none"
                         placeholder="Nhập mật khẩu cũ " v-model="password" @focus="checkpasswordError"/>

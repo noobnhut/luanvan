@@ -2,8 +2,7 @@
     <div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6 " v-for="(post, index) in posts"
         :key="index">
         <!-- Header -->
-        <editpost v-if="isShowModel" @cancel="onShow" :postId="postId" :citycode="post.citycode"
-            :districtcode="post.districtcode" :communecode="post.communecode" />
+        <editpost v-if="isShowModel" @cancel="onShow" :post="postsend" />
 
         <div class="flex items-center px-4 py-2 bg-white border-b">
             <img class="w-10 h-10 rounded-full mr-2" :src="post.user.avatar" alt="Avatar">
@@ -24,7 +23,7 @@
                             <i class="text-violet-500 uil-times-square md:text-xl"></i>
                             <a class="md:block px-4 py-2 hidden">Xóa bài đăng</a>
                         </li>
-                        <li class="py-2 px-1 flex items-center hover:bg-gray-100" @click="onShow(post.id)">
+                        <li class="py-2 px-1 flex items-center hover:bg-gray-100" @click="onShow(post)">
                             <i class="text-violet-500 uil-edit-alt md:text-xl"></i>
                             <a class="md:block px-4 py-2 hidden">Cập nhập bài đăng</a>
                         </li>
@@ -77,15 +76,12 @@
                 </swiper-slide>
             </swiper>
         </div>
-        
-        
-        
 
         <!-- Footer action  -->
         <div class="px-4 py-2 bg-white">
             <div class="flex items-center mb-2">
                 <!--like handle-->
-                <div class="action mr-3">
+                <div class="action mr-3" >
                     <!-- Sử dụng v-if để kiểm tra xem sản phẩm có trong danh sách thích hay không -->
                     <span v-if="likes.some(item => item.id_post === post.id && item.id_user === user.id)">
                         <!-- Sử dụng v-for để lặp lại các sản phẩm trong danh sách thích -->
@@ -133,7 +129,7 @@
 
             <!--post comment-->
             <div class="flex items-center mt-2">
-                <img class="w-6 h-6 rounded-full mr-2" :src="user.avatar" alt="Avatar">
+                <img class="w-6 h-6 rounded-full mr-2" :src="user.avatar" alt="Avatar" v-if="this.user.length > 0">
                 <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none text-sm" type="text"
                     v-model="comments" placeholder="Thêm bình luận..." :ref="'input_' + index"
                     v-on:keyup.enter="comment(post.id)"></textarea>
@@ -168,6 +164,7 @@
             </div>
         </div>
     </div>
+
     <!--modal xác nhận hàng tặng-->
     <div class=" fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 " v-show="isShowaccept">
         <div class="absolute w-full h-full bg-gray-900 opacity-50" @click="oncloseaccept"></div>
@@ -228,7 +225,8 @@ export default {
             follows: [], likes: [],
             hidden: false, isShowdelete: false, isShowModel: false, isShowcomment: false,
             user: '', id: '', result: '', comments: '', postId: ''
-            , dropdownStates: {}, isShowaccept: false, post: ''
+            , dropdownStates: {}, isShowaccept: false, post: '', postsend: '',
+            showlogin: true
         }
     },
 
@@ -240,9 +238,10 @@ export default {
 
     mounted() {
         this.user = userService.getUserToken();
-        if (this.user == null) {
+        if (this.user == false) {
             this.user = []
         }
+
         postService.renderPost().then((data) => {
 
             if (this.type === '' && this.filter === '') {
@@ -277,7 +276,7 @@ export default {
         goIn4(username, id) {
             window.location.href = `http://localhost:5173/information/${username}/${id}`;
         },
-
+        
         //delete post
         async deletePost() {
             if (this.id) {
@@ -288,16 +287,30 @@ export default {
 
         //handle like
         async addlike(postid) {
-            const id_user = this.user.id
+            if(this.user.length === 0)
+            {
+                this.$refs.toast.showToast("Vui lòng đăng nhập để sử dụng tính năng này");
+            }else
+            {
+                 const id_user = this.user.id
             await postService.addlike(id_user, postid)
             postService.getLike().then((data) => { this.likes = data });
+            }
+           
 
         },
         async unlike(like, postid) {
-            const id_user = like.id_user;
+            if(this.user.length === 0)
+            {
+                this.$refs.toast.showToast("Vui lòng đăng nhập để sử dụng tính năng này");
+            }else
+            {
+                const id_user = like.id_user;
             const id = like.id
             await postService.unlike(id_user, id, postid)
             postService.getLike().then((data) => { this.likes = data });
+            }
+            
         },
         resultLike(id) {
             return postService.resultLike(id, this.likes)
@@ -305,12 +318,19 @@ export default {
 
         //handle comments
         async comment(id) {
-            const id_user = this.user.id;
+            if(this.user.length === 0)
+            {
+                this.$refs.toast.showToast("Vui lòng đăng nhập để sử dụng tính năng này");
+            }else
+            {
+                const id_user = this.user.id;
             const result = await postService.addcomment(id, id_user, this.comments);
             if (result.status === 200) {
                 this.comments = ''
                 this.opencomment(id)
             }
+            }
+            
         },
 
         // handle share
@@ -366,20 +386,20 @@ export default {
             }
         },
         getclass3(post) {
-           
-                if ((post.user.id !== this.user.id || !this.user) && post.type === "Trao tặng") {
-                    return ''
-                }
-                else {
-                    return 'hidden'
-                }
-            
+
+            if ((post.user.id !== this.user.id || !this.user) && post.type === "Trao tặng") {
+                return ''
+            }
+            else {
+                return 'hidden'
+            }
+
 
         },
         acceptOpen(post) {
             this.isShowaccept = true
             this.post = post
-         
+
         },
         toggleDropdown(post) {
             if (this.isDropdownOpen(post.id)) {
@@ -404,8 +424,8 @@ export default {
         onclosedelete() {
             this.isShowdelete = !this.isShowdelete
         },
-        onShow(id) {
-            this.postId = id
+        onShow(post) {
+            this.postsend = post
             this.isShowModel = !this.isShowModel
         },
         focusComment(index) {

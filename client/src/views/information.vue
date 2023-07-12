@@ -20,8 +20,9 @@
         <div class=" p-4 lg:col-span-2 md:col-span-2 col-span-3 ">
             <inputform v-if="showin4" />
            
+            <div v-if="showlogin">
             <div class="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700 rounded-md shadow-md"
-                v-if="showNotUser">
+                v-if="showNotUser" >
                 <div class="flex flex-wrap px-2 py-2">
                     <span v-if="followusers.some(item => item.userfollowed == this.$route.params.id)">
                         <span v-for="followuser in followusers.filter(item => item.userfollowed == this.$route.params.id)">
@@ -45,7 +46,7 @@
                         class=" mt-4 py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer">Đánh giá người dùng </button>
                 </div>
             </div>
-
+</div>
             <div
                 class="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
                 <ul class="flex flex-wrap">
@@ -81,13 +82,14 @@
 
         </div>
         <div class=" p-4 hidden  lg:block md:col-span-1 lg:col-span-1">
-            <rightnav />
+            <rightnav /> 
+            <chat />
         </div>
     </div>
 
     <reportuser v-if="isShowReport" @cancel="onShowReport"/>
     <ratingForm v-if="isShowRating" @cancel="onShowRating"/>
-    <gototop />
+   
 </template>
   
 <script>
@@ -104,6 +106,7 @@ import followuser from '../components/information/followuser.vue';
 import reportuser from '../components/information/reportuser.vue';
 import ratingForm from '../components/rating/ratingForm.vue';
 import ratingView from '../components/rating/viewrating.vue'
+import chat from '../components/chat.vue';
 export default
     {
         data() {
@@ -122,7 +125,8 @@ export default
                 isShowUser:true,
                 viewText:'',
                 isShowRating:false,
-                isShowRatingView:false
+                isShowRatingView:false,
+                showlogin:true
             }
         },
         components:
@@ -137,7 +141,8 @@ export default
             followuser,
             reportuser,
             ratingForm,
-            ratingView
+            ratingView,
+            chat
         },
         mounted() {
             this.user = userService.getUserToken();
@@ -150,6 +155,10 @@ export default
                 this.showIn4 = true
                 this.showOnlyUser = false
                 this.showNotUser = true
+            }
+            if(this.user == false)
+            {
+                this.showlogin = false
             }
             this.getfollow();
             this.getUsers()

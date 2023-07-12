@@ -35,7 +35,7 @@ const resultPost = async (citycode, districtcode, communecode, useraddress) => {
     const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
       params: {
         address: address,
-        key: `${KEY_MAP}` 
+        key: `${KEY_MAP}`
       }
     });
     const data = response.data.results;
@@ -48,23 +48,23 @@ const resultPost = async (citycode, districtcode, communecode, useraddress) => {
 const createPost = async (req, res) => {
   const { id_user, id_cat, type, post_content, title, citycode, districtcode, communecode } = req.body;
   const useraddress = ''
-  const locationData = await resultPost(citycode, districtcode, communecode,useraddress);
+  const locationData = await resultPost(citycode, districtcode, communecode, useraddress);
   try {
     const existingUser = await User.findOne({ where: { id: id_user } });
-    if (!existingUser) { return res.status(200).json('Không tồn tại khách hàng'); }
-
     const existingCat = await Cat.findOne({ where: { id: id_cat } });
-    if (!existingCat) { return res.status(200).json('Không tồn tại loại sản phẩm'); }
-
+    if (!existingUser) { return res.status(202).json('Không tồn tại khách hàng'); }
     else if (id_cat == '' || type == '' || post_content == '' || title == '' || citycode == '' || districtcode == '' || communecode == '') {
-      return res.status(200).json('Thông tin nhập bị thiếu');
+      return res.status(202).json('Thông tin nhập bị thiếu');
     }
+    else if (!existingCat) { return res.status(202).json('Không tồn tại loại sản phẩm'); }
     else {
-      const post = await Post.create({ id_user, id_cat, type, post_content, title, citycode, districtcode, communecode, status_gift: false, priority: 4 ,longtitube:locationData.lng,
-        latitube:locationData.lat});
+      const post = await Post.create({
+        id_user, id_cat, type, post_content, title, citycode, districtcode, communecode, status_gift: false, priority: 4, longtitube: locationData.lng,
+        latitube: locationData.lat
+      });
       if (post) {
         const id_post = post.id;
-        return res.status(200).json(id_post)
+        return res.status(200).json({ id_post, message: "Thêm thành công" })
       }
     }
   } catch (error) {
@@ -245,7 +245,7 @@ const updatePost = async (req, res) => {
   const postId = req.params.id;
   const { id_cat, type, title, post_content, citycode, districtcode, communecode, id_user } = req.body;
   const useraddress = ''
-  const locationData = await resultPost(citycode, districtcode, communecode,useraddress);
+  const locationData = await resultPost(citycode, districtcode, communecode, useraddress);
   try {
     const post = await Post.findByPk(postId);
     if (!post) {
@@ -266,8 +266,8 @@ const updatePost = async (req, res) => {
         citycode: citycode,
         districtcode: districtcode,
         communecode: communecode,
-        longtitube:locationData.lng,
-        latitube:locationData.lat
+        longtitube: locationData.lng,
+        latitube: locationData.lat
       });
       res.status(200).json({ message: `Cập nhập thành công`, post });
     }
@@ -307,32 +307,33 @@ const acceptPost = async (req, res) => {
 }
 
 // công thức haversine tham khảo internet
-const calculateDistance = (lat1, lon1, lat2, lon2) =>{
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const radius = 6371; // Bán kính Trái đất trong kilômét
-  
+
   const dLat = toRadians(lat2 - lat1);
   const dLon = toRadians(lon2 - lon1);
-  
+
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
     Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  
+
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const distance = radius * c;
-  
+
   return distance;
 }
 
-const toRadians = (degrees)=> {
+const toRadians = (degrees) => {
   return degrees * (Math.PI / 180);
 }
+
 const searchPost = async (req, res) => {
   try {
     const useraddress = '';
-    const { citycode, districtcode, communecode ,keyword,type,catid,radius} = req.body;   
+    const { citycode, districtcode, communecode, keyword, type, catid, radius } = req.body;
     // lấy ra danh sách bài đăng dựa vào
-    const keysearch=  unidecode(keyword.toLowerCase());
+    const keysearch = unidecode(keyword.toLowerCase());
 
     const postlocation = await Post.findAll({
       where: {
@@ -340,40 +341,40 @@ const searchPost = async (req, res) => {
           { title: { [Op.like]: `%${keysearch}%` } },
           { post_content: { [Op.like]: `%${keysearch}%` } }
         ],
-        id_cat:catid,
-        type:type,
-        citycode:citycode, 
-        districtcode:districtcode,
-        communecode :communecode
+        id_cat: catid,
+        type: type,
+        citycode: citycode,
+        districtcode: districtcode,
+        communecode: communecode
       }
     });
 
-    const postunlocation = await Post.findAll({
-      where: {
-        [Op.or]: [
-          { title: { [Op.like]: `%${keysearch}%` } },
-          { post_content: { [Op.like]: `%${keysearch}%` } }
-        ],
-        id_cat:catid,
-        type:type,
-      }
-    });
-     // lấy ra được tọa độ của input search
-    const searchLocation = await resultPost(citycode, districtcode, communecode, useraddress);
-    
-    const resultunlocation = []
-    for(const result of postunlocation)
-    {
-      const math = calculateDistance(result.latitube,result.longtitube,searchLocation.lat,searchLocation.lng)
-     
-      if(math<=radius)
-      {
-        resultunlocation.push(result)
-      }
-    }
-    
-    res.json( resultunlocation)
-   
+    // const postunlocation = await Post.findAll({
+    //   where: {
+    //     [Op.or]: [
+    //       { title: { [Op.like]: `%${keysearch}%` } },
+    //       { post_content: { [Op.like]: `%${keysearch}%` } }
+    //     ],
+    //     id_cat:catid,
+    //     type:type,
+    //   }
+    // });
+    //  // lấy ra được tọa độ của input search
+    // const searchLocation = await resultPost(citycode, districtcode, communecode, useraddress);
+
+    // const resultunlocation = []
+    // for(const result of postunlocation)
+    // {
+    //   const math = calculateDistance(result.latitube,result.longtitube,searchLocation.lat,searchLocation.lng)
+
+    //   if(math<=radius)
+    //   {
+    //     resultunlocation.push(result)
+    //   }
+    // }
+
+    res.json(postlocation)
+
   } catch (error) {
     console.log(error);
   }

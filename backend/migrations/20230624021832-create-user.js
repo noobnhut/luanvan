@@ -48,6 +48,12 @@ module.exports = {
       priority: {
         type: Sequelize.ENUM('1','2','3','4'),
       },
+      longtitube: {
+        type: Sequelize.DOUBLE
+      },
+      latitube: {
+        type: Sequelize.DOUBLE
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

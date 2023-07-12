@@ -5,6 +5,10 @@ const Notification = db.Notification;
 const notiSetting = db.NotificationSetting;
 const { Op } = require('sequelize');
 const axios = require('axios')
+const KEY_MAP = process.env.KEY_MAP;
+
+
+
 const getSetting = async (req, res) => {
   try {
     const id = req.params.id;
@@ -131,7 +135,7 @@ const userStatusNoti = async (req, res) => {
     const exits = await User.findByPk(id)
     if (exits) {
       if (exits.notification_status == 1) {
-       const update = await exits.update({ notification_status: false })
+        const update = await exits.update({ notification_status: false })
         res.status(200).json(update)
       }
       else {
@@ -168,37 +172,97 @@ const getRank = async (req, res) => {
   }
 }
 
-const createNotification = async (req, res) => {
-  // nhận vào id_post lấy ra cấp bậc của bài đăng (priority)
-  // lọc user có cập bậc bằng với bài đăng
-  // tạo thông báo đến từng user
-  // io với socketio 
-  try {
-    const { id_post } = req.body;
-    const post = await Post.findByPk(id_post)
-    const users = await User.findAll(
-      { where: { priority: post.priority } }
-    );
-    // id_user
-    // id_post
-    // notification_content
-    const notificationPromises = users.map(async (user) => {
-      // Tạo thông báo cho từng người dùng
-      const notification = await Notification.create({
-        id_user: user.id,
-        id_post: id_post,
-        notification_content: `Bài đăng từ người ${user.username} tới bạn`,
-      });
-      res.io.to(users[user.id]).emit('notification', notification);
-    });
+// công thức haversine tham khảo internet
+const calculateDistance = (lat1, lon1, lat2, lon2) =>{
+  const radius = 6371; // Bán kính Trái đất trong kilômét
+  
+  const dLat = toRadians(lat2 - lat1);
+  const dLon = toRadians(lon2 - lon1);
+  
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = radius * c;
+  
+  return distance;
+}
 
-    const noficreate = await Promise.all(notificationPromises);
+const toRadians = (degrees)=> {
+  return degrees * (Math.PI / 180);
+}
+
+const createNotification = async (req, res) => {
+  try {
+  const { id_post } = req.body;
+  const post = await Post.findOne({
+  where: { id: id_post },
+  include: { model: User }
+  });
+  const users = await User.findAll({ where: { priority: post.priority, notification_status: true } });
+  const settings = await notiSetting.findAll({ where: { status: true, type_post: post.type } });
+  
+  const userSetting = [];
+  const userUnSetting = [];
+
+  for (const user of users) {
+    const setting = settings.find((item) => item.id_user === user.id);
+    if (setting) {
+      const distance = calculateDistance(post.latitube, post.longtitube,user.latitube, user.longtitube);
+      if (distance <= setting.location_radius) {
+        userSetting.push({
+          id_user: user.id,
+          username:user.username,
+          location_radius: setting.location_radius,
+          type_post: setting.type_post
+        });
+      }
+    } else {
+      userUnSetting.push({
+        id_user: user.id,
+        username:user.username,
+      });
+    }
+  }
+  const userNoti = [...userSetting, ...userUnSetting]
+  const exitsNoti = await Notification.findAll();
+  const notificationPromises = userNoti.map(async (user) => {
+    const existingNotification = exitsNoti.find((noti) => noti.id_user === user.id_user && noti.id_post === id_post);
+    if (!existingNotification && post.user.id !== user.id) {
+      const notification = await Notification.create({
+        id_user: user.id_user,
+        id_post: id_post,
+        notification_content: `Có một bài đăng mới từ ${post.user.username} với tiêu đề ${post.title}`
+      });
+      res.io.emit('notification', notification);
+    }
+  });
+  await Promise.all(notificationPromises);
+  res.json({ userSetting, userUnSetting });
+  } catch (error) {
+  console.log(error);
+  res.status(500).json({ message: 'Lỗi trong quá trình tạo thông báo' });
+  }
+  } 
+  
+const getNotificationbyid = async (req, res) => {
+  try {
+    const id = req.params.id
+    const user = await User.findByPk(id)
+    if (user) {
+      const result = await Notification.findAll({
+        where: { id_user: id }
+      })
+      res.status(200).json(result)
+    } else {
+      res.status(201).json({ message: 'Không tồn tại người dùng' })
+    }
   } catch (error) {
     console.log(error)
   }
-
 }
-
 
 module.exports = {
   getRank,
@@ -208,5 +272,6 @@ module.exports = {
   updateSetting,
   updateSettingStatus,
   userStatusNoti,
-  getSetting
+  getSetting,
+  getNotificationbyid
 }

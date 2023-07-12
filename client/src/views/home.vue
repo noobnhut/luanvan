@@ -40,7 +40,10 @@ export default {
   mounted() {
     // Xử lý sự kiện trạng thái
     this.user = userService.getUserToken();
-    socketService.userConnect(this.user.id)
+    if(this.user.id)
+    {
+      socketService.userConnect(this.user.id)
+    }
   },
   components: {
     navbar,

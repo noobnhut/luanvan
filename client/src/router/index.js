@@ -63,8 +63,12 @@ const router = createRouter({
       name: 'detailpost',
       component: () => import('../views/detailpost.vue')
     },
-
-
+    {
+      path: '/searchview',
+      name: 'searchview',
+      component: () => import('../views/search.vue'),
+      props: (route) => ({ data: JSON.parse(decodeURIComponent(route.query.data)) })
+    },
     //admin page
     {
       path: '/admin',

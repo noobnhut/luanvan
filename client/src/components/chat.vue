@@ -1,6 +1,6 @@
 <template>
     <!--view list chat-->
-    <div class="py-10 fixed bottom-0">
+    <div class="py-10 fixed bottom-0" v-if="checkLogin">
         <div class="relative rounded-lg border border-gray-100 bg-white shadow-lg">
             <div class="bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white py-2 px-4">
                 <h2 class="text-xl font-semibold text-gray-800">
@@ -35,7 +35,8 @@
 
 
     <!--chat-->
-    <div class="fixed md:right-20 right-0 bottom-0 z-30 w-80 h-96 flex flex-col border shadow-md bg-white" v-if="showChat">
+    <div >
+    <div class="fixed md:right-20 right-0 bottom-0 z-30 w-80 h-96 flex flex-col border shadow-md bg-white" v-if="showChat" >
         <div class="flex items-center justify-between border-b p-2">
             <!-- user info -->
             <div class="flex items-center" v-for="user in users.filter(item => item.id == this.user_receive)">
@@ -125,7 +126,7 @@
             </div>
         </div>
         <!--footer chat-->
-    </div>
+    </div></div>
 </template>
 
 
@@ -146,6 +147,7 @@ export default {
             usersocket: [],
             chats: [],
             messager: '',
+            checkLogin:true
 
 
         };
@@ -154,10 +156,15 @@ export default {
     mounted() {
 
         this.user = userService.getUserToken();
-        if (this.user) {
-            this.showBanner = false;
+        if(this.user == false)
+        {
+            this.checkLogin = false
         }
+        else
+        {
         socketService.userConnect(this.user.id)
+        }
+      
         userService.renderUser().then((data) => {
             this.users = data
         })

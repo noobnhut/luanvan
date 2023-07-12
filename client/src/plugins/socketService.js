@@ -26,6 +26,12 @@ class socketService
             callback(chat)
         });
     }
+    getNotification(callback)
+    {
+        this.socket.on('notification', (noti) => {
+            callback(noti)
+        });
+    }
    
 }
 export default new socketService();

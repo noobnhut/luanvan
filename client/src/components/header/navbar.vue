@@ -9,37 +9,17 @@
         <input type="search" class="bg-transparent text-sm rounded-md px-4 py-3 pr-10 focus:outline-none w-full md:w-72"
           placeholder="Tìm kiếm" @click="openSearch()" readonly />
       </div>
-      <div class="flex  items-center" >
+      <div class="flex  items-center">
         <button v-if="checkLogin"
           class="bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-bold py-2 px-4 rounded flex-shrink-0 mx-2 lg:flex items-center hidden "
-          @click="onShow"  >
+          @click="onShow">
           <i class=" uil-plus-square  lg:text-3xl md:text-xl"></i>
           <p class="px-2">Tạo bài đăng</p>
         </button>
 
-        <div class="profile-pic ml-2" v-if="checkLogin" >
+        <div class="profile-pic ml-2" v-if="checkLogin">
           <img :src="user.avatar" alt="pic 1" class="rounded-full w-10 h-10 object-cover cursor-pointer"
-            @click="opendropdown"/>
-          <div id="dropdownHover"  
-            class="z-10 absolute bg-white divide-y divide-gray-100 mt-1 ml-1 rounded-lg shadow w-50  dark:bg-gray-700"
-            :class="{ hidden: hidden }">
-            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200 cursor-pointer">
-              <li class="py-2 px-1 flex items-center  hover:bg-gray-100">
-                <i class=" text-violet-500 uil-chat-bubble-user md:text-xl"></i>
-                <a @click="goIn4" class="block  px-4 py-2  ">Thông tin khách
-                  hàng</a>
-              </li>
-              <li class="py-2 px-1  flex items-center hover:bg-gray-100">
-                <i class=" text-violet-500  uil-keyhole-square md:text-xl"></i>
-                <a class="block px-4 py-2  " @click="onShowChange">Thay đổi mật
-                  khẩu</a>
-              </li>
-              <li class="py-2 px-1  flex items-center hover:bg-gray-100" @click="outWeb">
-                <i class=" text-violet-500 uil-exit md:text-xl"></i>
-                <a class="block px-4 py-2  ">Đăng xuất</a>
-              </li>
-            </ul>
-          </div>
+            @click="opendropdown" />
         </div>
 
         <div class="profile-pic ml-2">
@@ -58,11 +38,47 @@
       </div>
     </div>
   </nav>
+  
+  <!--dropdown-->
+  <div class=" fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 overflow-auto " v-if="showdropdown">
+    <div class="absolute w-full h-full bg-gray-900 opacity-50"></div>
+
+    <div class=" bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto ">
+      <div class="flex flex-row py-3 px-4">
+        <h5 class="text-lg font-semibold flex-grow">Bảng chọn</h5>
+        <i class="uil-multiply flex-none cursor-pointer bg-gray-400 rounded-xl" @click="opendropdown"></i>
+      </div>
+      <div class="py-4 px-4">
+
+        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200 cursor-pointer">
+          <li class="py-2 px-1 flex items-center  hover:bg-gray-100">
+            <i class=" text-violet-500 uil-chat-bubble-user md:text-xl"></i>
+            <a @click="goIn4" class="block  px-4 py-2  ">Thông tin khách
+              hàng</a>
+          </li>
+          <li class="py-2 px-1  flex items-center hover:bg-gray-100">
+            <i class=" text-violet-500  uil-keyhole-square md:text-xl"></i>
+            <a class="block px-4 py-2  " @click="onShowChange">Thay đổi mật
+              khẩu</a>
+          </li>
+          <li class="py-2 px-1  flex items-center hover:bg-gray-100" @click="outWeb">
+            <i class=" text-violet-500 uil-exit md:text-xl"></i>
+            <a class="block px-4 py-2  ">Đăng xuất</a>
+          </li>
+        </ul>
+
+      </div>
+
+
+    </div>
+  </div>
+
+
   <toast ref="toast"></toast>
   <post_content v-if="isShowModel" @cancel="onShow"></post_content>
-  <change v-if="showchange" @cancel="onShowChange"/>
-  <notification @cancel="onShowNotification()" v-if="showNotification"/>
-  <search v-if="showsearch" @cancel="openSearch()"/>
+  <change v-if="showchange" @cancel="onShowChange" />
+  <notification @cancel="onShowNotification()" v-if="showNotification" />
+  <search v-if="showsearch" @cancel="openSearch()" />
 </template>
   
 <script>
@@ -81,11 +97,11 @@ export default {
       screenWidth: window.innerWidth,
       isShowModel: false,
       user: '',
-      hidden: true,
-      showchange:false,
-      checkLogin:true,
-      showNotification:false,
-      showsearch:false
+      showchange: false,
+      checkLogin: true,
+      showNotification: false,
+      showsearch: false,
+      showdropdown: false
     };
   },
 
@@ -107,8 +123,8 @@ export default {
   mounted() {
     this.user = userService.getUserToken();
     if (!this.user) {
-    this.checkLogin = false
-    localStorage.setItem('user', false);
+      this.checkLogin = false
+      localStorage.setItem('user', false);
     }
   },
   methods: {
@@ -119,9 +135,9 @@ export default {
       this.isShowModel = !this.isShowModel
     },
     opendropdown() {
-      this.hidden = !this.hidden
+      this.showdropdown = !this.showdropdown
     },
-    
+
     outWeb() {
       socketService.userDisconnect(this.user.id)
       localStorage.removeItem('token');
@@ -136,22 +152,18 @@ export default {
       window.location.href = `${import.meta.env.VITE_API_BASE_URL_API}information/${this.user.username}/${this.user.id}`;
 
     },
-    onShowChange()
-    {
-      this.showchange=!this.showchange
+    onShowChange() {
+      this.showchange = !this.showchange
       this.hidden = !this.hidden
     },
-    
-    onShowNotification()
-    {
+
+    onShowNotification() {
       this.showNotification = !this.showNotification
     },
-    gotoHome()
-    {
+    gotoHome() {
       window.location.href = `${import.meta.env.VITE_API_BASE_URL_API}`;
     },
-    openSearch()
-    {
+    openSearch() {
       this.showsearch = !this.showsearch
     }
   },

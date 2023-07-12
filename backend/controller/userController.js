@@ -8,7 +8,9 @@ const fs = require('fs');
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
+const KEY_MAP = process.env.KEY_MAP;
 const emailCheck = require('email-check');
+const API_KEY_CHECK_MAIL = process.env.API_KEY_CHECK_MAIL;
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './uploads/');
@@ -24,11 +26,39 @@ const upload = multer({
     fileSize: 100 * 1024 * 1024 // giới hạn dung lượng file 100MB
   },
 });
+const resultGeocoding = async (citycode, districtcode, communecode, useraddress) => {
+  try {
+    // Lấy thông tin về city, district, commune từ API provinces
+    const cityAPI = await axios.get(`https://provinces.open-api.vn/api/p/${citycode}`);
+    const apicityData = cityAPI.data.name;
+    const districtAPI = await axios.get(`https://provinces.open-api.vn/api/d/${districtcode}`);
+    const apidistrictData = districtAPI.data.name;
+    const communeAPI = await axios.get(`https://provinces.open-api.vn/api/w/${communecode}`);
+    const apicommuneData = communeAPI.data.name;
+    let address = '';
+    if (useraddress === '') {
+      address = `${useraddress},${apicommuneData},${apidistrictData},${apicityData}`;
+    } else {
+      address = `${apicommuneData},${apidistrictData},${apicityData}`;
+    }
 
+    const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+      params: {
+        address: address,
+        key: `${KEY_MAP}`
+      }
+    });
+    const data = response.data.results;
+    return data[0].geometry.location;
+  } catch (error) {
+    console.log(error);
+  }
+};
 const registerUser = async (req, res) => {
   try {
     upload.array('avatar', 10)(req, res, async function (err) {
-      const { username, email, password, address, phone, citycode, districtcode, communecode} = req.body;
+      const { username, email, password, address, phone, citycode, districtcode, communecode } = req.body;
+      const locationData = await resultGeocoding(citycode, districtcode, communecode, address);
       if (err instanceof multer.MulterError) {
         return res.status(400).json({ message: err.message });
       } else if (err) {
@@ -36,7 +66,7 @@ const registerUser = async (req, res) => {
       }
 
       // Nếu không có file ảnh được chọn
-      if (!req.files || req.files.length === 0 || !username || !email || !password || !address || !phone  || !citycode || !districtcode || !communecode ) {
+      if (!req.files || req.files.length === 0 || !username || !email || !password || !address || !phone || !citycode || !districtcode || !communecode) {
         return res.status(202).json({ message: 'Vui lòng điền đầy đủ thông tin' });
       }
 
@@ -46,17 +76,22 @@ const registerUser = async (req, res) => {
           email
         }
       });
-      // const existsMail = await emailCheck(email);
-      // if(existsMail)
-      // {
-      //   return res.status(200).json(
-      //    {message:'Tài khoản Gmail không tồn tại.'} 
-      //   );
-      // }
-
+      const encodedEmail = encodeURIComponent(email);
+      const url = `http://api.apilayer.com/email_verification/check?email=${encodedEmail}`;
+      try {
+        const response = await axios.get(url, { headers });
+        const emailVerificationResult = response.data;
+        await continueRegister(emailVerificationResult);
+  
+      } catch (error) {
+        return res.status(500).json({
+          message: 'Lỗi xác minh email'
+        });
+      }
+      
       if (existingUser) {
-        return res.status(200).json(
-          'Email đã tồn tại trong hệ thống'
+        return res.status(202).json(
+          { message: 'Email đã tồn tại trong hệ thống' }
         );
       }
       // Mã hóa mật khẩu
@@ -66,8 +101,10 @@ const registerUser = async (req, res) => {
         const imagePath = req.files[i].path;
         const imageUrl = `${req.protocol}://${req.get('host')}/${req.files[i].filename}`;
         const img = await User.create({
-          username: username, email: email, password: hashedPassword, address: address, phone: phone, notification_status: true, 
-          citycode: citycode, districtcode: districtcode, communecode: communecode, avatar: imageUrl,is_active:true,priority:1,ranking_score:0
+          username: username, email: email, password: hashedPassword, address: address, phone: phone, notification_status: true,
+          citycode: citycode, districtcode: districtcode, communecode: communecode, avatar: imageUrl, is_active: true, priority: 1, ranking_score: 0
+          , longtitube: locationData.lng,
+          latitube: locationData.lat
         });
         imgs.push(img);
       }
@@ -111,9 +148,10 @@ const updateImg = async (req, res) => {
 }
 
 const updateInfo = async (req, res) => {
-  const userId = req.params.id;
-  const { username, address, phone, citycode, districtcode, communecode } = req.body;
+
   try {
+    const userId = req.params.id;
+    const { username, address, phone, citycode, districtcode, communecode } = req.body;
     const user = await User.findByPk(userId);
     if (!user) {
       res.status(404).json({
@@ -121,6 +159,7 @@ const updateInfo = async (req, res) => {
       });
     }
     else {
+      const locationData = await resultGeocoding(citycode, districtcode, communecode, address);
       await user.update({
         username: username || user.username,
         address: address || user.address,
@@ -128,6 +167,8 @@ const updateInfo = async (req, res) => {
         citycode: citycode || user.citycode,
         districtcode: districtcode || user.districtcode,
         communecode: communecode || user.communecode,
+        longtitube: locationData.lng,
+        latitube: locationData.lat
       });
       res.status(200).json({ message: `Cập nhập thành công`, user });
     }
@@ -155,8 +196,7 @@ const loginUser = async (req, res) => {
         error: 'Tài khoản hoặc mật khẩu không đúng'
       });
     }
-    if(user.is_active === false)
-    {
+    if (user.is_active === false) {
       return res.status(201).json({
         message: 'Tài khoản đã bị khóa vì vi phạm quy tắc cộng đồng.'
       });
@@ -186,7 +226,7 @@ const loginUser = async (req, res) => {
       citycode: user.citycode,
       districtcode: user.districtcode,
       communecode: user.communecode,
-      notification_status:user.notification_status,
+      notification_status: user.notification_status,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
       token
@@ -196,7 +236,7 @@ const loginUser = async (req, res) => {
     res.status(500).json({
       error: 'Đăng nhập thất sssss'
     });
-   
+
   }
 };
 
@@ -256,13 +296,12 @@ const updatePass = async (req, res) => {
   }
 };
 
-const getIsUser = async(req,res)=>
-{
+const getIsUser = async (req, res) => {
   try {
     const sumAccount = await User.count();
     const activeCount = await User.count({ where: { is_active: true } });
     const blockCount = await User.count({ where: { is_active: false } });
-    return res.json({active:activeCount,block:blockCount,sumAccount})
+    return res.json({ active: activeCount, block: blockCount, sumAccount })
   } catch (error) {
     console.log(error)
   }
@@ -278,5 +317,5 @@ module.exports = {
   updatePass,
   getUser,
   getIsUser,
-  
+
 };

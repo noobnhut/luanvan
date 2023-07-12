@@ -36,3 +36,24 @@ Cuối cùng, gọi hàm buildInvertedIndex để thực hiện quá trình xây
             </div>
         </div>
     </div> 
+
+
+    // const { id_post } = req.body;
+    // const post = await Post.findOne({ 
+    //   where: { id: id_post },
+    //   include: { model: User } 
+    // });
+    // const users = await User.findAll({ where: { priority: post.priority } });
+    // const exitsNoti = await Notification.findAll();
+    // const notificationPromises = users.map(async (user) => {
+    //   const existingNotification = exitsNoti.find((noti) => noti.id_user === user.id && noti.id_post === id_post);
+    //   if (!existingNotification && post.user.id !== user.id) {
+    //     const notification = await Notification.create({
+    //       id_user: user.id,
+    //       id_post: id_post,
+    //       notification_content: `Có một bài đăng mới từ ${post.user.username} với tiêu đề ${post.title}`
+    //     });
+    //     res.io.emit('notification', notification);
+    //   }
+    // });
+    // await Promise.all(notificationPromises);

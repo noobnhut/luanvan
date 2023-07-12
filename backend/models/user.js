@@ -49,7 +49,9 @@ module.exports = (sequelize, DataTypes) => {
     ranking_score: DataTypes.INTEGER,
     is_active: DataTypes.BOOLEAN,
     notification_status: DataTypes.BOOLEAN,
-    priority: DataTypes.ENUM("1","2","3","4")
+    priority: DataTypes.ENUM("1","2","3","4"),
+    longtitube:DataTypes.DOUBLE,
+    latitube:DataTypes.DOUBLE
   }, {
     sequelize,
     modelName: 'user',

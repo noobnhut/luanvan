@@ -96,7 +96,7 @@
       </div>
     </div>
   </div>
-  <search v-if="isshowSearch"  @cancel="showsearch"/>
+  <search v-if="isshowSearch" @cancel="showsearch" />
 </template>
 
 <script>
@@ -118,8 +118,8 @@ export default {
       cats: [],
       type: "",
       keyword: '',
-      radius: '',    
-      isshowSearch:false
+      radius: '',
+      isshowSearch: false
     };
   },
   mounted() {
@@ -151,22 +151,28 @@ export default {
       }
     },
     async search() {
-      try {
-        const result = await this.$axios.post('post/search',
-          {
-            citycode: this.city_id, districtcode: this.districts_code, 
-            communecode: this.commune_id, keyword: this.keyword, type: this.type,
-             catid: this.catid, radius: this.radius
-          });
-          console.log(result.data)
-          this.onclose()
-          this.isshowSearch = true
-      } catch (error) {
-        console.log(error)
-      }
+      // try {
+      //   const result = await this.$axios.post('post/search',
+      //     {
+      //       citycode: this.city_id, districtcode: this.districts_code, 
+      //       communecode: this.commune_id, keyword: this.keyword, type: this.type,
+      //        catid: this.catid, radius: this.radius
+      //     });
+      //     console.log(result.data)
+      //     this.onclose()
+      //     this.isshowSearch = true
+      // } catch (error) {
+      //   console.log(error)
+      // }
+      const data = {
+        citycode: this.city_id, districtcode: this.districts_code,
+        communecode: this.commune_id, keyword: this.keyword, type: this.type,
+        catid: this.catid, radius: this.radius
+      };
+      const encodedData = encodeURIComponent(JSON.stringify(data));
+      this.$router.push({ name: 'searchview', query: { data: encodedData } });
     },
-    showsearch()
-    {
+    showsearch() {
       this.isshowSearch = !this.isshowSearch
     }
   },

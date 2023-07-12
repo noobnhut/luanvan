@@ -40,7 +40,7 @@
                                     v-on:keyup.enter="updateComment(comment.id)"></textarea>
                             </div>
 
-                            <div class="ml-2" :class="getclass(comment.User.id)" v-if="(showedit, idcomment != comment.id)">
+                            <div class="ml-2" :class="getclass(comment.user.id)" v-if="(showedit, idcomment != comment.id)">
                                 <i class="fa-solid fa-ellipsis cursor-pointer" @click="toggleDropdown(comment)"></i>
                                 <div id="dropdownHover"
                                     class="z-10 absolute bg-white divide-y divide-gray-100 mt-1 mr-1 rounded-lg shadow w-50 dark:bg-gray-700"
@@ -63,7 +63,7 @@
                 </div>
                 <div class="modal-footer py-3 px-4 ">
                     <div class="flex items-center mt-2">
-                        <img class="w-6 h-6 rounded-full mr-2" :src="user.avatar" alt="Avatar" />
+                        <img class="w-6 h-6 rounded-full mr-2" :src="user.avatar" alt="Avatar" v-if="this.user.length > 0"/>
                         <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none text-sm"
                             ttype="text" ref="comment" placeholder="Thêm bình luận..."
                             v-on:keyup.enter="comment"></textarea>
@@ -74,12 +74,14 @@
         </div>
 
     </div>
+    <toast ref="toast"></toast>
 </template>
 
 <script>
 import dayjs from "dayjs";
 import userService from "../../plugins/userService";
 import postService from "../../plugins/postService";
+import toast from "../toast/toast.vue";
 export default {
     emits: ["cancel"],
     props: ["postId"],
@@ -96,9 +98,12 @@ export default {
             title: ''
         };
     },
-    components: {},
+    components: {toast},
     mounted() {
         this.user = userService.getUserToken();
+        if (this.user == false) {
+            this.user = []
+        }
         postService.renderPost().then((data) => { this.posts = data });
         postService.getcomment().then((data) => { this.comments = data }); 
     },
@@ -114,12 +119,19 @@ export default {
 
         //handle comment
         async comment(event) {
-            const id_user = this.user.id;
+            if(this.user.length === 0)
+            {
+                this.$refs.toast.showToast("Vui lòng đăng nhập để sử dụng tính năng này");
+            }else
+            {
+                 const id_user = this.user.id;
             const result = await postService.addcomment(this.postId, id_user, event.target.value);
             if (result.status === 200) {
                 event.target.value = ''
 
             }
+            }
+           
         },
         async deletecomment(id) {
             const id_comment = id

@@ -11,6 +11,27 @@
         <div class="grid grid-cols-2 ">
           <!--left update-->
           <div class="py-2 px-2">
+            <div class="relative mb-2">
+              <select id="select" name="select" v-model="type"
+                class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none">
+                <option disabled selected>Chọn loại bài đăng</option>
+                <option value="Tìm kiếm">Tìm kiếm</option>
+                <option value="Trao tặng">Trao tặng</option>
+                <option value="Trao đổi">Trao đổi</option>
+    
+              </select>
+            </div>
+    
+            <div class="relative mt-5">
+              <label>Loại sản phẩm</label>
+              <select v-model="catid"
+                class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
+                <option disabled selected>Loại sản phẩm</option>
+                <option v-for="cat in cats" :key="cat.id" :value="cat.id">
+                  {{ cat.cat_name }}
+                </option>
+              </select>
+            </div>
             <div class="mt-1">
               <label class="block text-base ml-2 font-medium text-gray-900 dark:text-white">Tiêu đề :</label>
               <input type="text" placeholder="Tiêu đề"
@@ -91,19 +112,20 @@
                 class=" text-xs border  bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none">
                 Xóa ảnh
               </button>
-              
+
               <button @click="deletevideo()"
                 class=" text-xs border  bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none">
                 Xóa video
               </button>
-              
+
               <label for="video-file" class="cursor-pointer ">
-                <div class="text-xs border bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none">
+                <div
+                  class="text-xs border bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none">
                   Thêm video
                 </div>
                 <input id="video-file" type="file" accept=".mp4" @change="onFileSelectedVideo" multiple hidden />
               </label>
-              
+
               <label for="img-file">
                 <div
                   class="text-xs border  bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none ">
@@ -155,7 +177,7 @@ import "swiper/swiper-bundle.min.css";
 import { Pagination } from "swiper";
 export default {
   emits: ["cancel"],
-  props: ["postId", "citycode", "districtcode", "communecode"], // Khai báo prop postId
+  props: ["post",], // Khai báo prop postId
   data() {
     return {
       user: "",
@@ -175,7 +197,8 @@ export default {
       imgs_new: [],
       videos_new: [],
       avatar: null,
-      video: null
+      video: null,
+      id:''
 
     };
   },
@@ -194,16 +217,29 @@ export default {
     addressService.getCountry().then((data) => {
       this.citys = data;
     });
-    addressService.getDistricts(this.citycode).then((data) => {
+    this.id = this.post.id
+    this.title = this.post.title
+    this.post_content = this.post.post_content;
+    this.city_id = this.post.citycode
+    this.districts_code = this.post.districtcode
+    this.commune_id = this.post.communecode;
+    addressService.getDistricts(this.city_id).then((data) => {
       this.districts = data;
     });
-    addressService.getCommune(this.districtcode).then((data) => {
+    addressService.getCommune(this.districts_code).then((data) => {
       this.communes = data;
     });
-    this.city_id = this.citycode;
-    this.districts_code = this.districtcode;
-    this.commune_id = this.communecode;
-    this.renderPost();
+    this.imgs = this.post.Imgs;
+    if (this.imgs.length !== 0) {
+      this.is_clearimg = true
+    }
+
+    this.videos = this.post.Videos;
+    if (this.videos.length !== 0) {
+      this.is_clearvideo = true
+    }
+    (this.catid = this.post.Category.id),
+      (this.type = this.post.type);
     this.getCat();
   },
   methods: {
@@ -220,27 +256,6 @@ export default {
       try {
         const result = await this.$axios.get(`getcat`);
         this.cats = result.data;
-      } catch (e) {
-        console.log(e);
-      }
-    },
-    async renderPost() {
-      try {
-        const result = await this.$axios.get(`post/render`);
-        this.posts = result.data.filter((post) => post.id === this.postId);
-        this.title = this.posts[0].title;
-        this.post_content = this.posts[0].post_content;
-        this.imgs = this.posts[0].Imgs;
-        if (this.imgs.length !== 0) {
-          this.is_clearimg = true
-        }
-
-        this.videos = this.posts[0].Videos;
-        if (this.videos.length !== 0) {
-          this.is_clearvideo = true
-        }
-        (this.catid = this.posts[0].Category.id),
-          (this.type = this.posts[0].type);
       } catch (e) {
         console.log(e);
       }
@@ -293,7 +308,7 @@ export default {
           }
           try {
             const addimg = await this.$axios.post(
-              `post/addimg/${this.postId}`,
+              `post/addimg/${this.id}`,
               formImg,
               {
                 headers: {
@@ -312,7 +327,7 @@ export default {
             formVideo.append("video", file);
           }
           const addvideo = await this.$axios.post(
-            `post/addvideo/${this.postId}`,
+            `post/addvideo/${this.id}`,
             formVideo,
             {
               headers: {
@@ -321,7 +336,9 @@ export default {
             }
           );
         }
-        const result = await this.$axios.put(`post/update/` + this.postId, {
+       if(this.avatar==null)
+       {
+        const result = await this.$axios.put(`post/update/` + this.id, {
           title: this.title,
           post_content: this.post_content,
           type: this.type,
@@ -338,6 +355,7 @@ export default {
             location.reload();
           }, 1000);
         }
+       }
 
       } catch (error) { }
     },

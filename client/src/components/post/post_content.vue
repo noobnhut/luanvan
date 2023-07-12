@@ -134,7 +134,17 @@ export default {
     AddressService.getCountry().then((data) => {
       this.citys = data;
     });
+
     this.user = userService.getUserToken();
+    this.city_id = this.user.citycode
+    this.districts_code = this.user.districtcode
+    this.commune_id = this.user.communecode;
+    AddressService.getDistricts(this.city_id).then((data) => {
+      this.districts = data;
+    });
+    AddressService.getCommune(this.districts_code).then((data) => {
+      this.communes = data;
+    });
     this.getCat();
   },
   methods: {
@@ -167,64 +177,82 @@ export default {
 
     async create() {
       let id_user = this.user.id;
- const formImg = new FormData();
+      const formImg = new FormData();
       if (this.avatar) {
-         
-          for (let i = 0; i < this.avatar.length; i++) {
-            const file = this.avatar[i];
-            formImg.append("avatar", file);
-          }
-        }const formVideo = new FormData();
-        if (this.video) {
-            
-            for (let i = 0; i < this.video.length; i++) {
-              const file = this.video[i];
-              formVideo.append("video", file);
-            }
-          }
 
-          const formData = new FormData();
-          formData.append("id_user", id_user);
-          formData.append("id_cat", this.catid);
-          formData.append("citycode", this.city_id);
-          formData.append("districtcode", this.districts_code);
-          formData.append("communecode", this.commune_id);
-          formData.append("title", this.title);
-          formData.append("post_content", this.post_content);
-          formData.append("type", this.type);
+        for (let i = 0; i < this.avatar.length; i++) {
+          const file = this.avatar[i];
+          formImg.append("avatar", file);
+        }
+      } const formVideo = new FormData();
+      if (this.video) {
+
+        for (let i = 0; i < this.video.length; i++) {
+          const file = this.video[i];
+          formVideo.append("video", file);
+        }
+      }
+
+      const formData = new FormData();
+      formData.append("id_user", id_user);
+      formData.append("id_cat", this.catid);
+      formData.append("citycode", this.city_id);
+      formData.append("districtcode", this.districts_code);
+      formData.append("communecode", this.commune_id);
+      formData.append("title", this.title);
+      formData.append("post_content", this.post_content);
+      formData.append("type", this.type);
+      if(this.avatar.length > 0)
+      {
           try {
-            const response = await this.$axios.post("post/create", formData, {});
-            const id_post = response.data;
-            if (response.status == 200 && id_post > 0) {
-              const addimg = await this.$axios.post(
-                `post/addimg/${id_post}`,
-                formImg,
-                {
-                  headers: {
-                    "Content-Type": "multipart/form-data",
-                  },
-                }
-              );
-
-              const addvideo = await this.$axios.post(
-                `post/addvideo/${id_post}`,
-                formVideo,
-                {
-                  headers: {
-                    "Content-Type": "multipart/form-data",
-                  },
-                }
-              );
-
-              if (addvideo.status == 201) {
-                this.onclose();
-                location.reload();
-              }
+        const response = await this.$axios.post("post/create", formData, {});
+        const id_post = response.data.id_post;
+        if(response.status == 202)
+        {
+          this.$refs.toast.showToast(response.data);
+        }
+        if (response.status == 200 && id_post > 0) {
+          const createPost = await this.$axios.post(`notification/create`,
+          {
+            id_post:id_post
+          }  
+          )
+          const addimg = await this.$axios.post(
+            `post/addimg/${id_post}`,
+            formImg,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
             }
-          } catch (error) {
-            console.error(error);
+          );
+
+          const addvideo = await this.$axios.post(
+            `post/addvideo/${id_post}`,
+            formVideo,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+
+          if (addvideo.status == 201) {
+            this.onclose();
+            location.reload();
           }
-        },
-      },
-    };
+        }
+      } catch (error) {
+        console.error(error);
+      }
+      }
+      else
+      {
+        this.$refs.toast.showToast('Vui lòng thêm ít nhất 1 ảnh và nhập đủ thông tin');
+
+      }
+    
+    },
+  },
+};
 </script>
