@@ -177,7 +177,7 @@
 
         <div class=" bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto ">
             <div class="flex flex-row py-3 px-4">
-                <h5 class="text-lg font-semibold flex-grow">Xóa danh mục</h5>
+                <h5 class="text-lg font-semibold flex-grow">Xóa cài đặt</h5>
                 <i class="uil-multiply flex-none cursor-pointer bg-gray-400 rounded-xl" @click="onclosedelete"></i>
             </div>
             <div class="px-4">

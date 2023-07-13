@@ -13,21 +13,37 @@
                 <p class="text-gray-500 text-sm">{{ getTimeFromCreatedAt(post.createdAt) }}</p>
             </div>
 
-            <div class="ml-auto" :class="getclass(post.user.id)">
-                <i class="uil-align-justify cursor-pointer" @click="toggleDropdown(post)"></i>
-                <div :id="'dropdownHover_' + post.id"
-                    class="z-10 absolute bg-white divide-y divide-gray-100 rounded-lg mr-2" v-show="isDropdownOpen(post.id)"
-                    @click="closeDropdown(post.id)">
-                    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200 cursor-pointer">
-                        <li class="py-2 px-1 flex items-center hover:bg-gray-100" @click="openShowdelete(post.id)">
-                            <i class="text-violet-500 uil-times-square md:text-xl"></i>
-                            <a class="md:block px-4 py-2 hidden">Xóa bài đăng</a>
-                        </li>
-                        <li class="py-2 px-1 flex items-center hover:bg-gray-100" @click="onShow(post)">
-                            <i class="text-violet-500 uil-edit-alt md:text-xl"></i>
-                            <a class="md:block px-4 py-2 hidden">Cập nhập bài đăng</a>
-                        </li>
-                    </ul>
+            <div class="ml-auto" v-show="getclass(post.user.id)">
+                <i class="uil-align-justify cursor-pointer" @click="onclosemenu()"></i>
+            </div>
+
+            <!--menu -->
+            <div class=" fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 " v-if="isShowmenu" >
+                <div class="absolute w-full h-full bg-gray-900 opacity-50" @click="onclosemenu"></div>
+        
+                <div class=" bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto ">
+                    <div class="flex flex-row py-3 px-4">
+                        <h5 class="text-lg font-semibold flex-grow">Menu chọn lựa</h5>
+                        <i class="uil-multiply flex-none cursor-pointer bg-gray-400 rounded-xl" @click="onclosemenu"></i>
+                    </div>
+                    <div class="px-4">
+                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200 cursor-pointer">
+                            <li class="py-2 px-1 flex items-center hover:bg-gray-100" @click="openShowdelete(post.id);onclosemenu()">
+                                <i class="text-violet-500 uil-times-square md:text-xl"></i>
+                                <a class="md:block px-4 py-2 hidden">Xóa bài đăng</a>
+                            </li>
+                            <li class="py-2 px-1 flex items-center hover:bg-gray-100" @click="onShow(post);onclosemenu()">
+                                <i class="text-violet-500 uil-edit-alt md:text-xl"></i>
+                                <a class="md:block px-4 py-2 hidden">Cập nhập bài đăng</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="py-3 px-4">
+
+                        <button
+                            class="  py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer"
+                            @click="onclosemenu()">Đóng</button>
+                    </div>
                 </div>
             </div>
 
@@ -81,7 +97,7 @@
         <div class="px-4 py-2 bg-white">
             <div class="flex items-center mb-2">
                 <!--like handle-->
-                <div class="action mr-3" >
+                <div class="action mr-3">
                     <!-- Sử dụng v-if để kiểm tra xem sản phẩm có trong danh sách thích hay không -->
                     <span v-if="likes.some(item => item.id_post === post.id && item.id_user === user.id)">
                         <!-- Sử dụng v-for để lặp lại các sản phẩm trong danh sách thích -->
@@ -191,6 +207,7 @@
             </div>
         </div>
     </div>
+
     <toast ref="toast"></toast>
 </template>
 
@@ -226,7 +243,7 @@ export default {
             hidden: false, isShowdelete: false, isShowModel: false, isShowcomment: false,
             user: '', id: '', result: '', comments: '', postId: ''
             , dropdownStates: {}, isShowaccept: false, post: '', postsend: '',
-            showlogin: true
+            showlogin: true,isShowmenu:false
         }
     },
 
@@ -244,7 +261,7 @@ export default {
 
         postService.renderPost().then((data) => {
 
-            if (this.type === '' && this.filter === '') {
+            if (this.type === '' && this.filter === '' ) {
                 this.posts = data.filter(item => item.user.id == this.$route.params.id);
             }
             if (this.filter !== '' && this.type === '') {
@@ -253,7 +270,6 @@ export default {
             if (this.type !== '' && this.filter === '') {
                 this.posts = data.filter(item => item.type == this.type)
             }
-
         });
 
         postService.getLike().then((data) => { this.likes = data });
@@ -276,41 +292,51 @@ export default {
         goIn4(username, id) {
             window.location.href = `http://localhost:5173/information/${username}/${id}`;
         },
-        
+
         //delete post
         async deletePost() {
             if (this.id) {
                 const id = this.id
-                await postService.deletePost(id)
+                const result = await postService.deletePost(id)
+                if(result.status === 200)
+                {
+                    this.$refs.toast.showToast(result.data.message);
+                    this.isShowdelete = false
+                    location.reload()
+                }
             }
         },
 
         //handle like
         async addlike(postid) {
-            if(this.user.length === 0)
-            {
+            if (this.user.length === 0) {
                 this.$refs.toast.showToast("Vui lòng đăng nhập để sử dụng tính năng này");
-            }else
-            {
-                 const id_user = this.user.id
-            await postService.addlike(id_user, postid)
-            postService.getLike().then((data) => { this.likes = data });
-            }
-           
+            } else {
+                const id_user = this.user.id
+                const result = await postService.addlike(id_user, postid);
 
+                if (result.status == 200) {
+                    this.$refs.toast.showToast(result.data.message);
+
+                }
+                postService.getLike().then((data) => { this.likes = data });
+
+            }
         },
         async unlike(like, postid) {
-            if(this.user.length === 0)
-            {
+            if (this.user.length === 0) {
                 this.$refs.toast.showToast("Vui lòng đăng nhập để sử dụng tính năng này");
-            }else
-            {
+            } else {
                 const id_user = like.id_user;
-            const id = like.id
-            await postService.unlike(id_user, id, postid)
-            postService.getLike().then((data) => { this.likes = data });
+                const id = like.id
+                const result = await postService.unlike(id_user, id, postid)
+                if (result.status == 200) {
+                    this.$refs.toast.showToast(result.data.message);
+
+                }
+                postService.getLike().then((data) => { this.likes = data });
             }
-            
+
         },
         resultLike(id) {
             return postService.resultLike(id, this.likes)
@@ -318,19 +344,22 @@ export default {
 
         //handle comments
         async comment(id) {
-            if(this.user.length === 0)
-            {
+            if (this.user.length === 0) {
                 this.$refs.toast.showToast("Vui lòng đăng nhập để sử dụng tính năng này");
-            }else
-            {
-                const id_user = this.user.id;
-            const result = await postService.addcomment(id, id_user, this.comments);
-            if (result.status === 200) {
-                this.comments = ''
-                this.opencomment(id)
+            } else {
+                if (this.comments.trim() === '') {
+                    this.$refs.toast.showToast('Vui lòng nhập thông tin bình luận');
+                    return;
+                } else {
+                    const id_user = this.user.id;
+                    const result = await postService.addcomment(id, id_user, this.comments);
+                    if (result.status === 200) {
+                        this.comments = ''
+                        this.$refs.toast.showToast(result.data.message);
+                        this.opencomment(id)
+                    }
+                }
             }
-            }
-            
         },
 
         // handle share
@@ -368,13 +397,12 @@ export default {
 
 
         },
-        // đóng mở các component con 
         getclass(id) {
             if (id !== this.user.id || !this.user) {
-                return 'hidden'
+                return ''
             }
             else {
-                return ''
+                return 'hidden'
             }
         },
         getclass2(id) {
@@ -401,22 +429,6 @@ export default {
             this.post = post
 
         },
-        toggleDropdown(post) {
-            if (this.isDropdownOpen(post.id)) {
-                this.closeDropdown(post.id);
-            } else {
-                this.openDropdown(post.id);
-            }
-        },
-        openDropdown(postId) {
-            this.dropdownStates[postId] = true
-        },
-        closeDropdown(postId) {
-            this.dropdownStates[postId] = false
-        },
-        isDropdownOpen(postId) {
-            return this.dropdownStates[postId] || false;
-        },
         openShowdelete(id) {
             this.id = id
             this.isShowdelete = !this.isShowdelete
@@ -437,6 +449,11 @@ export default {
         },
         oncloseaccept() {
             this.isShowaccept = !this.isShowaccept
+        },
+
+        onclosemenu()
+        {
+            this.isShowmenu = !this.isShowmenu
         }
     }
 };

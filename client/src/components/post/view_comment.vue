@@ -63,7 +63,8 @@
                 </div>
                 <div class="modal-footer py-3 px-4 ">
                     <div class="flex items-center mt-2">
-                        <img class="w-6 h-6 rounded-full mr-2" :src="user.avatar" alt="Avatar" v-if="this.user.length > 0"/>
+                        <img class="w-6 h-6 rounded-full mr-2" :src="user.avatar" alt="Avatar"
+                            v-if="this.user.length > 0" />
                         <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none text-sm"
                             ttype="text" ref="comment" placeholder="Thêm bình luận..."
                             v-on:keyup.enter="comment"></textarea>
@@ -98,16 +99,16 @@ export default {
             title: ''
         };
     },
-    components: {toast},
+    components: { toast },
     mounted() {
         this.user = userService.getUserToken();
         if (this.user == false) {
             this.user = []
         }
         postService.renderPost().then((data) => { this.posts = data });
-        postService.getcomment().then((data) => { this.comments = data }); 
+        postService.getcomment().then((data) => { this.comments = data });
     },
-    
+
 
     methods: {
         onclose() {
@@ -119,40 +120,52 @@ export default {
 
         //handle comment
         async comment(event) {
-            if(this.user.length === 0)
-            {
+            if (this.user.length === 0) {
                 this.$refs.toast.showToast("Vui lòng đăng nhập để sử dụng tính năng này");
-            }else
-            {
-                 const id_user = this.user.id;
-            const result = await postService.addcomment(this.postId, id_user, event.target.value);
-            if (result.status === 200) {
-                event.target.value = ''
+            } if (event.target.value.trim() === ''
+            ) {
+                this.$refs.toast.showToast('Vui lòng nhập bình luận');
+            }
 
+            else {
+                const id_user = this.user.id;
+                const result = await postService.addcomment(this.postId, id_user, event.target.value);
+                if (result.status === 200) {
+                    event.target.value = ''
+                    this.$refs.toast.showToast(result.data.message);
+                }
             }
-            }
-           
+
         },
         async deletecomment(id) {
             const id_comment = id
             const result = await postService.deletecommentByid(id_comment);
             if (result.status == 200) {
-                 postService.getcomment().then((data) => { this.comments = data });
+                postService.getcomment().then((data) => { this.comments = data });
             }
 
         },
         async updateComment(id) {
             const id_comment = id
-            const result = await postService.updateComment(id_comment, this.comment_content);
+            if(this.comment_content.trim() ==='')
+            {
+                this.$refs.toast.showToast('Vui lòng nhập bình luận');
+                return;
+            }
+            else
+            {
+               const result = await postService.updateComment(id_comment, this.comment_content);
             if (result.status == 200) {
                 this.showedit = !this.showedit
                 this.idcomment = ''
                 postService.getcomment().then((data) => { this.comments = data });
+            } 
             }
+            
         },
 
         getclass(id) {
-            if (this.user.id === id) {
+            if (this.user.id == id) {
                 return "";
             } else {
                 return "hidden";

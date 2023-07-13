@@ -47,6 +47,7 @@ class postService {
     async deletePost(id) {
         try {
             const result = await axios.delete(`${this.url}post/delete/` + id);
+            return result
         } catch (e) {
             console.log(e);
         }
@@ -69,7 +70,7 @@ class postService {
                     id_post: postid,
                     id: id
                 });
-            return result.data
+            return result
         } catch (error) {
             console.log(error)
         }
@@ -82,7 +83,7 @@ class postService {
                     id_post: postid,
                     status: 'true'
                 });
-            return result.data
+            return result
         } catch (error) {
             console.log(error)
         }

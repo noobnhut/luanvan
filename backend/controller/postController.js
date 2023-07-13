@@ -14,6 +14,8 @@ const Op = sequelize.Op;
 const unidecode = require('unidecode');
 dotenv.config();
 const KEY_MAP = process.env.KEY_MAP;
+const Notification = db.Notification;
+const notiSetting = db.NotificationSetting;
 
 
 const resultPost = async (citycode, districtcode, communecode, useraddress) => {
@@ -32,14 +34,10 @@ const resultPost = async (citycode, districtcode, communecode, useraddress) => {
       address = `${apicommuneData},${apidistrictData},${apicityData}`;
     }
 
-    const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
-      params: {
-        address: address,
-        key: `${KEY_MAP}`
-      }
+    const response = await axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${address}.json?access_token=${KEY_MAP}`, {
     });
-    const data = response.data.results;
-    return data[0].geometry.location;
+    const data = response.data.features[0].geometry
+    return data;
   } catch (error) {
     console.log(error);
   }
@@ -59,11 +57,12 @@ const createPost = async (req, res) => {
     else if (!existingCat) { return res.status(202).json('Không tồn tại loại sản phẩm'); }
     else {
       const post = await Post.create({
-        id_user, id_cat, type, post_content, title, citycode, districtcode, communecode, status_gift: false, priority: 4, longtitube: locationData.lng,
-        latitube: locationData.lat
+        id_user, id_cat, type, post_content, title, citycode, districtcode, communecode, status_gift: false, priority: 4, longtitube: locationData.coordinates[0],
+        latitube: locationData.coordinates[1]
       });
       if (post) {
         const id_post = post.id;
+        createNotification(id_post);
         return res.status(200).json({ id_post, message: "Thêm thành công" })
       }
     }
@@ -204,27 +203,32 @@ const deletePost = async (req, res) => {
   try {
     await Img.destroy({
       where: {
-        id: req.params.id
+        id_post: req.params.id
       }
     })
     await Video.destroy({
       where: {
-        id: req.params.id
+        id_post: req.params.id
       }
     })
     await Like.destroy({
       where: {
-        id: req.params.id
+        id_post: req.params.id
       }
     })
     await Save.destroy({
       where: {
-        id: req.params.id
+        id_post: req.params.id
       }
     })
     await Comment.destroy({
       where: {
-        id: req.params.id
+        id_post: req.params.id
+      }
+    })
+    await Notification.destroy({
+      where:{
+        id_post:req.params.id
       }
     })
     await Post.destroy({
@@ -266,8 +270,8 @@ const updatePost = async (req, res) => {
         citycode: citycode,
         districtcode: districtcode,
         communecode: communecode,
-        longtitube: locationData.lng,
-        latitube: locationData.lat
+        longtitube: locationData.coordinates[0],
+        latitube: locationData.coordinates[1]
       });
       res.status(200).json({ message: `Cập nhập thành công`, post });
     }
@@ -349,29 +353,29 @@ const searchPost = async (req, res) => {
       }
     });
 
-    // const postunlocation = await Post.findAll({
-    //   where: {
-    //     [Op.or]: [
-    //       { title: { [Op.like]: `%${keysearch}%` } },
-    //       { post_content: { [Op.like]: `%${keysearch}%` } }
-    //     ],
-    //     id_cat:catid,
-    //     type:type,
-    //   }
-    // });
-    //  // lấy ra được tọa độ của input search
-    // const searchLocation = await resultPost(citycode, districtcode, communecode, useraddress);
+    const postunlocation = await Post.findAll({
+      where: {
+        [Op.or]: [
+          { title: { [Op.like]: `%${keysearch}%` } },
+          { post_content: { [Op.like]: `%${keysearch}%` } }
+        ],
+        id_cat:catid,
+        type:type,
+      }
+    });
+     // lấy ra được tọa độ của input search
+    const searchLocation = await resultPost(citycode, districtcode, communecode, useraddress);
 
-    // const resultunlocation = []
-    // for(const result of postunlocation)
-    // {
-    //   const math = calculateDistance(result.latitube,result.longtitube,searchLocation.lat,searchLocation.lng)
+    const resultunlocation = []
+    for(const result of postunlocation)
+    {
+      const math = calculateDistance(result.latitube,result.longtitube,searchLocation.lat,searchLocation.lng)
 
-    //   if(math<=radius)
-    //   {
-    //     resultunlocation.push(result)
-    //   }
-    // }
+      if(math<=radius)
+      {
+        resultunlocation.push(result)
+      }
+    }
 
     res.json(postlocation)
 
@@ -379,6 +383,81 @@ const searchPost = async (req, res) => {
     console.log(error);
   }
 };
+
+const createNotification = async (id) => {
+  try {
+  const post = await Post.findOne({
+  where: { id: id },
+  include: { model: User }
+  });
+  if(post.priority > 1)
+{
+  const users = await User.findAll({ where: { priority: post.priority, notification_status: true } });
+  const settings = await notiSetting.findAll({ where: { status: true, type_post: post.type } });
+  
+  const userSetting = [];
+  const userUnSetting = [];
+
+  for (const user of users) {
+    const setting = settings.find((item) => item.id_user === user.id);
+    if (setting) {
+      const distance = calculateDistance(post.latitube, post.longtitube,user.latitube, user.longtitube);
+      if (distance <= setting.location_radius) {
+        userSetting.push({
+          id_user: user.id,
+          username:user.username,
+          location_radius: setting.location_radius,
+          type_post: setting.type_post
+        });
+      }
+    } else {
+      userUnSetting.push({
+        id_user: user.id,
+        username:user.username,
+      });
+    }
+  }
+  const userNoti = [...userSetting, ...userUnSetting]
+  const exitsNoti = await Notification.findAll();
+  const notificationPromises = userNoti.map(async (user) => {
+    const existingNotification = exitsNoti.find((noti) => noti.id_user === user.id_user && noti.id_post === id_post);
+    if (!existingNotification && post.user.id !== user.id) {
+      const notification = await Notification.create({
+        id_user: user.id_user,
+        id_post: id_post,
+        notification_content: `Có một bài đăng mới từ ${post.user.username} với tiêu đề ${post.title}`
+      });
+      res.io.emit('notification', notification);
+    }
+  });
+  await Promise.all(notificationPromises);
+}
+  } catch (error) {
+  console.log(error);
+  
+  }
+} 
+// thực hiện update post và gửi sau 10 phut
+setInterval(async () => {
+  try {
+    // Lấy tất cả các bài đăng có độ ưu tiên lớn hơn 1
+    const postsToUpdate = await Post.findAll({
+      where: { priority: { [Op.gt]: 1 } },
+    });
+    // Cập nhật độ ưu tiên của các bài đăng này
+    const updatePromises = postsToUpdate.map(async (post) => {
+      const timeSinceCreation = Date.now() - post.createdAt.getTime();
+      const minutesSinceCreation = timeSinceCreation / (1000 * 60);
+      const newPriority = Math.max(1, post.priority - Math.floor(minutesSinceCreation / 240));
+      const postupdate = await post.update({ priority: newPriority });
+      createNotification(postupdate);
+    });
+    await Promise.all(updatePromises);
+  } catch (error) {
+    console.log(error);
+  }
+}, 240 * 60 * 1000);
+
 
 module.exports =
 {
@@ -390,5 +469,6 @@ module.exports =
   getPostByType,
   getPostInteraction,
   acceptPost,
-  searchPost
+  searchPost,
+  
 }

@@ -5,6 +5,7 @@ const db = require('../models');
 const multer = require('multer');
 const User = db.user;
 const fs = require('fs');
+const axios = require('axios')
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
@@ -42,18 +43,15 @@ const resultGeocoding = async (citycode, districtcode, communecode, useraddress)
       address = `${apicommuneData},${apidistrictData},${apicityData}`;
     }
 
-    const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
-      params: {
-        address: address,
-        key: `${KEY_MAP}`
-      }
+    const response = await axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${address}.json?access_token=${KEY_MAP}`, {
     });
-    const data = response.data.results;
-    return data[0].geometry.location;
+    const data = response.data.features[0].geometry
+    return data;
   } catch (error) {
     console.log(error);
   }
 };
+
 const registerUser = async (req, res) => {
   try {
     upload.array('avatar', 10)(req, res, async function (err) {
@@ -84,7 +82,7 @@ const registerUser = async (req, res) => {
         await continueRegister(emailVerificationResult);
   
       } catch (error) {
-        return res.status(500).json({
+        return res.status(202).json({
           message: 'Lỗi xác minh email'
         });
       }
@@ -103,8 +101,8 @@ const registerUser = async (req, res) => {
         const img = await User.create({
           username: username, email: email, password: hashedPassword, address: address, phone: phone, notification_status: true,
           citycode: citycode, districtcode: districtcode, communecode: communecode, avatar: imageUrl, is_active: true, priority: 1, ranking_score: 0
-          , longtitube: locationData.lng,
-          latitube: locationData.lat
+          ,longtitube: locationData.coordinates[0],
+          latitube: locationData.coordinates[1]
         });
         imgs.push(img);
       }
@@ -167,8 +165,8 @@ const updateInfo = async (req, res) => {
         citycode: citycode || user.citycode,
         districtcode: districtcode || user.districtcode,
         communecode: communecode || user.communecode,
-        longtitube: locationData.lng,
-        latitube: locationData.lat
+        longtitube: locationData.coordinates[0],
+        latitube: locationData.coordinates[1]
       });
       res.status(200).json({ message: `Cập nhập thành công`, user });
     }

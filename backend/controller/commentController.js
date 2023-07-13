@@ -47,11 +47,11 @@ const createdComment = async (req, res) => {
         if (!existingPost) { return res.status(200).json('Không tồn tại bài đăng'); }
 
         else if (comment_content === '' || id_post === '' || id_user === '') {
-            return res.status(200).json('Thông tin nhập bị thiếu');
+            return res.status(200).json({message:'Vui lòng nhập nội dung'});
         }
         else {
             const comment = await Comment.create({ id_user, id_post, comment_content,rep_id });
-            return res.status(200).json(comment)
+            return res.status(200).json({message:'Bình luận thành công'})
           
         }
     } catch (error) {
