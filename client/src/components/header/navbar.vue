@@ -29,7 +29,7 @@
           </router-link>
         </div>
 
-        <div class="profile-pic ml-2 " >
+        <div class="profile-pic ml-2 " v-if="checkLogin">
           <div
             class="rounded-full w-10 h-10 object-cover bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 flex items-center justify-center">
             <i class="uil-facebook-messenger text-3xl md:text-xl"></i>
@@ -37,7 +37,7 @@
 
         </div>
         
-        <div class="profile-pic ml-2" @click="onShowNotification">
+        <div class="profile-pic ml-2" @click="onShowNotification" v-if="checkLogin">
           <div
             class="rounded-full w-10 h-10 object-cover bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 flex items-center justify-center">
             <i class="uil-github text-3xl md:text-xl"></i>

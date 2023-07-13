@@ -49,7 +49,7 @@ const addVideo = async (req, res) => {
 
         const video = await Video.create({
           id_post:req.params.id,
-          video: req.files[i].filename,
+          video_name: req.files[i].filename,
           url: videoUrl,
         });
 
@@ -73,7 +73,7 @@ const deleteVideo = async (req, res) => {
       return res.status(404).json({ error: 'Không tìm thấy' });
     }
 
-    const imagePath = `./uploads/${video.avatar}`;
+    const imagePath = `./uploads/${video.video_name}`;
     deleteFile(imagePath);
 
     await Video.destroy();
@@ -95,7 +95,7 @@ const deleteVideobyPost = async (req, res) => {
     }
 
     for (const video of videos) {
-      const videoPath = `./uploads/${video.video}`;
+      const videoPath = `./uploads/${video.video_name}`;
       deleteFile(videoPath);
       await video.destroy();
     }

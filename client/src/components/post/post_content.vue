@@ -202,56 +202,52 @@ export default {
       formData.append("title", this.title);
       formData.append("post_content", this.post_content);
       formData.append("type", this.type);
-      if(this.avatar.length > 0)
-      {
-          try {
-        const response = await this.$axios.post("post/create", formData, {});
-        const id_post = response.data.id_post;
-        if(response.status == 202)
-        {
-          this.$refs.toast.showToast(response.data);
-        }
-        if (response.status == 200 && id_post > 0) {
-          const createPost = await this.$axios.post(`notification/create`,
-          {
-            id_post:id_post
-          }  
-          )
-          const addimg = await this.$axios.post(
-            `post/addimg/${id_post}`,
-            formImg,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          );
-
-          const addvideo = await this.$axios.post(
-            `post/addvideo/${id_post}`,
-            formVideo,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          );
-
-          if (addvideo.status == 201) {
-            this.onclose();
-            location.reload();
+      if (this.avatar.length > 0) {
+        try {
+          const response = await this.$axios.post("post/create", formData, {});
+          const id_post = response.data.id_post;
+          if (response.status == 202) {
+            this.$refs.toast.showToast(response.data);
           }
+          if (response.status == 200 && id_post > 0) {
+            const addimg = await this.$axios.post(
+              `post/addimg/${id_post}`,
+              formImg,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+
+            const addvideo = await this.$axios.post(
+              `post/addvideo/${id_post}`,
+              formVideo,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+
+            if (addimg.status == 200) {
+
+              this.$refs.toast.showToast("Đăng bài thành công");
+              setTimeout(() => {
+                this.onclose();
+              }, 1000)
+
+            }
+          }
+        } catch (error) {
+          console.error(error);
         }
-      } catch (error) {
-        console.error(error);
       }
-      }
-      else
-      {
+      else {
         this.$refs.toast.showToast('Vui lòng thêm ít nhất 1 ảnh và nhập đủ thông tin');
 
       }
-    
+
     },
   },
 };

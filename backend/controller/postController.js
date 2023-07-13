@@ -16,6 +16,17 @@ dotenv.config();
 const KEY_MAP = process.env.KEY_MAP;
 const Notification = db.Notification;
 const notiSetting = db.NotificationSetting;
+const fs = require('fs');
+
+const deleteFile = (filePath) => {
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    console.log(`File ${filePath} has been deleted`);
+  });
+}
 
 
 const resultPost = async (citycode, districtcode, communecode, useraddress) => {
@@ -62,8 +73,8 @@ const createPost = async (req, res) => {
       });
       if (post) {
         const id_post = post.id;
-        createNotification(id_post);
-        return res.status(200).json({ id_post, message: "Thêm thành công" })
+        res.status(200).json({ id_post, message: "Thêm thành công" })
+        createNotification(id_post,res);
       }
     }
   } catch (error) {
@@ -201,16 +212,28 @@ const deletePost = async (req, res) => {
     });
   }
   try {
-    await Img.destroy({
-      where: {
-        id_post: req.params.id
+    const id = req.params.id;
+    const imgs = await Img.findAll({where:{id_post:id}});
+
+    if (imgs.length > 0) {
+      for (const img of imgs) {
+      const imagePath = `./uploads/${img.image_name}`;
+      deleteFile(imagePath);
+      await img.destroy();
+    }
+    }
+    const videos = await Video.findAll({where:{id_post:id}});
+
+    if (videos.length > 0) {
+      for (const video of videos) {
+        const videoPath = `./uploads/${video.video_name}`;
+        deleteFile(videoPath);
+        await video.destroy();
       }
-    })
-    await Video.destroy({
-      where: {
-        id_post: req.params.id
-      }
-    })
+    }
+
+    
+   
     await Like.destroy({
       where: {
         id_post: req.params.id
@@ -384,7 +407,7 @@ const searchPost = async (req, res) => {
   }
 };
 
-const createNotification = async (id) => {
+const createNotification = async (id,res) => {
   try {
   const post = await Post.findOne({
   where: { id: id },
@@ -420,11 +443,11 @@ const createNotification = async (id) => {
   const userNoti = [...userSetting, ...userUnSetting]
   const exitsNoti = await Notification.findAll();
   const notificationPromises = userNoti.map(async (user) => {
-    const existingNotification = exitsNoti.find((noti) => noti.id_user === user.id_user && noti.id_post === id_post);
+    const existingNotification = exitsNoti.find((noti) => noti.id_user === user.id_user && noti.id_post === id);
     if (!existingNotification && post.user.id !== user.id) {
       const notification = await Notification.create({
         id_user: user.id_user,
-        id_post: id_post,
+        id_post: id,
         notification_content: `Có một bài đăng mới từ ${post.user.username} với tiêu đề ${post.title}`
       });
       res.io.emit('notification', notification);

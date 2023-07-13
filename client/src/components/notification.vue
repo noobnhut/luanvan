@@ -103,7 +103,6 @@ export default {
 
             }
         });
-        socketService.
         this.getNotification()
     },
     methods: {

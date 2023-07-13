@@ -56,7 +56,7 @@ const addImg = async (req, res) => {
 
         const img = await Img.create({
           id_post:req.params.id,
-          image: req.files[i].filename,
+          image_name: req.files[i].filename,
           url: imageUrl,
         });
 
@@ -80,7 +80,7 @@ const deleteImg = async (req, res) => {
       return res.status(404).json({ error: 'Không tìm thấy' });
     }
 
-    const imagePath = `./uploads/${img.avatar}`;
+    const imagePath = `./uploads/${img.image_name}`;
     deleteFile(imagePath);
 
     await img.destroy();
@@ -102,7 +102,7 @@ const deleteImgByPost = async (req, res) => {
     }
 
     for (const img of imgs) {
-      const imagePath = `./uploads/${img.image}`;
+      const imagePath = `./uploads/${img.image_name}`;
       deleteFile(imagePath);
       await img.destroy();
     }

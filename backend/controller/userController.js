@@ -71,17 +71,18 @@ const resultGeocoding = async (
 const registerUser = async (req, res) => {
   try {
 
-    const { username, email, password, address, phone, citycode, districtcode, communecode, } = req.body;
-    const locationData = await resultGeocoding(citycode, districtcode, communecode, address);
-    const existingUser = await User.findOne({ where: { email, }, });
-    const encodedEmail = encodeURIComponent(email);
-    const url = `http://api.apilayer.com/email_verification/check?email=${encodedEmail}`;
+   
     upload.array("avatar", 10)(req, res, async function (err) {
       if (err instanceof multer.MulterError) {
         return res.status(400).json({ message: err.message });
       } else if (err) {
         return res.status(400).json({ message: err.message });
       }
+      const { username, email, password, address, phone, citycode, districtcode, communecode, } = req.body;
+      const locationData = await resultGeocoding(citycode, districtcode, communecode, address);
+      const existingUser = await User.findOne({ where: { email, }, });
+      const encodedEmail = encodeURIComponent(email);
+      const url = `http://api.apilayer.com/email_verification/check?email=${encodedEmail}`;
       const imgs = [];
       const response = await axios.get(url, { headers });
       const emailVerificationResult = response.data;
@@ -121,7 +122,7 @@ const registerUser = async (req, res) => {
 
       }
       else {
-        return res.status(201).json({ message: "Địa chỉ mail không tồn tại" });
+        return res.status(202).json({ message: "Địa chỉ mail không tồn tại" });
       }
 
     });
