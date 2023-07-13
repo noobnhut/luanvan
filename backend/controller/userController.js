@@ -10,7 +10,6 @@ dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 const KEY_MAP = process.env.KEY_MAP;
-const emailCheck = require("email-check");
 const API_KEY_CHECK_MAIL = process.env.API_KEY_CHECK_MAIL;
 const axios = require("axios");
 const headers = {
@@ -71,56 +70,19 @@ const resultGeocoding = async (
 
 const registerUser = async (req, res) => {
   try {
+
+    const { username, email, password, address, phone, citycode, districtcode, communecode, } = req.body;
+    const locationData = await resultGeocoding(citycode, districtcode, communecode, address);
+    const existingUser = await User.findOne({ where: { email, }, });
+    const encodedEmail = encodeURIComponent(email);
+    const url = `http://api.apilayer.com/email_verification/check?email=${encodedEmail}`;
     upload.array("avatar", 10)(req, res, async function (err) {
-      const {
-        username,
-        email,
-        password,
-        address,
-        phone,
-        citycode,
-        districtcode,
-        communecode,
-      } = req.body;
-      const locationData = await resultGeocoding(
-        citycode,
-        districtcode,
-        communecode,
-        address
-      );
       if (err instanceof multer.MulterError) {
         return res.status(400).json({ message: err.message });
       } else if (err) {
         return res.status(400).json({ message: err.message });
       }
-
-      // Nếu không có file ảnh được chọn
-      if (
-        !req.files ||
-        req.files.length === 0 ||
-        !username ||
-        !email ||
-        !password ||
-        !address ||
-        !phone ||
-        !citycode ||
-        !districtcode ||
-        !communecode
-      ) {
-        return res
-          .status(202)
-          .json({ message: "Vui lòng điền đầy đủ thông tin" });
-      }
-
       const imgs = [];
-      const existingUser = await User.findOne({
-        where: {
-          email,
-        },
-      });
-      const encodedEmail = encodeURIComponent(email);
-      const url = `http://api.apilayer.com/email_verification/check?email=${encodedEmail}`;
-
       const response = await axios.get(url, { headers });
       const emailVerificationResult = response.data;
       if (emailVerificationResult.smtp_check === true) {
@@ -134,9 +96,8 @@ const registerUser = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
         for (let i = 0; i < req.files.length; i++) {
           const imagePath = req.files[i].path;
-          const imageUrl = `${req.protocol}://${req.get("host")}/${
-            req.files[i].filename
-          }`;
+          const imageUrl = `${req.protocol}://${req.get("host")}/${req.files[i].filename
+            }`;
           const img = await User.create({
             username: username,
             email: email,
@@ -156,9 +117,13 @@ const registerUser = async (req, res) => {
           });
           imgs.push(img);
         }
+        return res.status(201).json({ message: "Đăng kí thành công", imgs });
+
+      }
+      else {
+        return res.status(201).json({ message: "Địa chỉ mail không tồn tại" });
       }
 
-      return res.status(201).json({ message: "Đăng kí thành công", imgs });
     });
   } catch (error) {
     console.error(error);
@@ -180,9 +145,8 @@ const updateImg = async (req, res) => {
       // Kiểm tra nếu có file ảnh mới được chọn
       if (req.file) {
         const imagePath = req.file.path;
-        const imageUrl = `${req.protocol}://${req.get("host")}/${
-          req.file.filename
-        }`;
+        const imageUrl = `${req.protocol}://${req.get("host")}/${req.file.filename
+          }`;
         // Xóa ảnh cũ trên server
         const subUrl = img.avatar.substring(21);
         fs.unlinkSync(`./uploads/${subUrl}`);
