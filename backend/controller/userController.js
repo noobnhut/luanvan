@@ -71,7 +71,7 @@ const resultGeocoding = async (
 const registerUser = async (req, res) => {
   try {
 
-   
+
     upload.array("avatar", 10)(req, res, async function (err) {
       if (err instanceof multer.MulterError) {
         return res.status(400).json({ message: err.message });
@@ -92,33 +92,36 @@ const registerUser = async (req, res) => {
             .status(202)
             .json({ message: "Email đã tồn tại trong hệ thống" });
         }
-        // Mã hóa mật khẩu
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-        for (let i = 0; i < req.files.length; i++) {
-          const imagePath = req.files[i].path;
-          const imageUrl = `${req.protocol}://${req.get("host")}/${req.files[i].filename
-            }`;
-          const img = await User.create({
-            username: username,
-            email: email,
-            password: hashedPassword,
-            address: address,
-            phone: phone,
-            notification_status: true,
-            citycode: citycode,
-            districtcode: districtcode,
-            communecode: communecode,
-            avatar: imageUrl,
-            is_active: true,
-            priority: 1,
-            ranking_score: 0,
-            longtitube: locationData.coordinates[0],
-            latitube: locationData.coordinates[1],
-          });
-          imgs.push(img);
+        else {
+          const salt = await bcrypt.genSalt(10);
+          const hashedPassword = await bcrypt.hash(password, salt);
+          for (let i = 0; i < req.files.length; i++) {
+            const imagePath = req.files[i].path;
+            const imageUrl = `${req.protocol}://${req.get("host")}/${req.files[i].filename
+              }`;
+            const img = await User.create({
+              username: username,
+              email: email,
+              password: hashedPassword,
+              address: address,
+              phone: phone,
+              notification_status: true,
+              citycode: citycode,
+              districtcode: districtcode,
+              communecode: communecode,
+              avatar: imageUrl,
+              is_active: true,
+              priority: 1,
+              ranking_score: 0,
+              longtitube: locationData.coordinates[0],
+              latitube: locationData.coordinates[1],
+            });
+            
+            imgs.push(img);
+          }
         }
-        return res.status(201).json({ message: "Đăng kí thành công", imgs });
+
+        return res.status(201).json({ message: "Đăng kí thành công" });
 
       }
       else {
