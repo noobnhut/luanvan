@@ -235,6 +235,7 @@ export default {
               this.$refs.toast.showToast("Đăng bài thành công");
               setTimeout(() => {
                 this.onclose();
+                location.reload()
               }, 1000)
 
             }

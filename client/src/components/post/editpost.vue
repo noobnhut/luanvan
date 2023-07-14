@@ -264,7 +264,6 @@ export default {
 
       if (this.imgs.length > 0) {
         this.imgs = []
-        //this.imgs.push({url:"https://png.pngtree.com/thumb_back/fh260/background/20201226/pngtree-large-patch-of-color-abstract-background-image_515696.jpg"})
       }
       else {
         this.$refs.toast.showToast("Không có ảnh để xóa");
@@ -336,9 +335,13 @@ export default {
             }
           );
         }
-       if(this.avatar==null)
-       {
-        const result = await this.$axios.put(`post/update/` + this.id, {
+        if(this.videos == [])
+        {
+          this.$refs.toast.showToast("Vui long thêm ít nhất 1 ảnh");
+        }
+        else
+        {
+          const result = await this.$axios.put(`post/update/` + this.id, {
           title: this.title,
           post_content: this.post_content,
           type: this.type,
@@ -355,8 +358,8 @@ export default {
             location.reload();
           }, 1000);
         }
-       }
-
+        }
+        
       } catch (error) { }
     },
 
