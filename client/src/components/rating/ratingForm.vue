@@ -15,11 +15,14 @@
                 :star-color="'text-yellow-500'" 
                 :empty-star-color="'text-gray-300'"
                 v-model:rating="rating"/> 
+                <p class="text-red-500 text-sm ml-1" v-if="!rating && ratingFocused">Không được để trống.</p>
                  
             </div>
             <div class="py-4 px-4">
                 <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
                 placeholder="Nhập nội dung ..." v-model="content"></textarea>
+                <p class="text-red-500 text-sm ml-1" v-if="!content && contentFocused">Không được để trống.</p>
+
             </div>
             <div class="modal-footer py-3 px-4 ">
                 <button
@@ -45,7 +48,9 @@ export default {
         return {
             rating:0,
            content:'',
-           user:''
+           user:'',
+           ratingFocused:false,
+           contentFocused:false
         }
     },
     components:{StarRating,toast},
@@ -61,6 +66,10 @@ export default {
         },
         async ratingUser()
         {
+            this.ratingFocused=true;
+            this.contentFocused=true;  
+           if(this.rating && this.content)
+           {
             try {
                 const result = await this.$axios.post('rating/add',
                 {
@@ -73,11 +82,15 @@ export default {
                 this.$refs.toast.showToast(result.data.message);
                if(result.status === 200)
                {
+                this.ratingFocused=false;
+            this.contentFocused=false;  
                 this.onclose()
                }
             } catch (error) {
                 console.log(error)
             }
+           } 
+                  
         }
     }
 }

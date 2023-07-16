@@ -9,7 +9,7 @@
             </div>
             <div class=" py-4 px-2 overflow-y-auto ">
                 <div v-for="search in searchs">
-                    <post :filter="search.id" type="" />
+                    <post :filter="search.id" type=""  />
                 </div>
 
             </div>

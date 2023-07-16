@@ -60,4 +60,151 @@ Cuối cùng, gọi hàm buildInvertedIndex để thực hiện quá trình xây
 
 
 
-    
+     <div class="grid grid-cols-2 ">
+          <!--left update-->
+          <div class="py-2 px-2">
+            <div class="relative mb-2">
+              <select id="select" name="select" v-model="type"
+                class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none">
+                <option disabled selected>Chọn loại bài đăng</option>
+                <option value="Tìm kiếm">Tìm kiếm</option>
+                <option value="Trao tặng">Trao tặng</option>
+                <option value="Trao đổi">Trao đổi</option>
+                <p class="text-red-500 text-sm ml-1" v-if="!type && typeFocused">Không được để trống.</p>
+
+              </select>
+            </div>
+
+            <div class="relative mt-5">
+              <label>Loại sản phẩm</label>
+              <select v-model="catid"
+                class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
+                <option disabled selected>Loại sản phẩm</option>
+                <option v-for="cat in cats" :key="cat.id" :value="cat.id">
+                  {{ cat.cat_name }}
+                </option>
+              </select>
+              <p class="text-red-500 text-sm ml-1" v-if="!catid && catFocused">Không được để trống.</p>
+
+            </div>
+            <div class="mt-1">
+              <label class="block text-base ml-2 font-medium text-gray-900 dark:text-white">Tiêu đề :</label>
+              <input type="text" placeholder="Tiêu đề"
+                class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
+                v-model="title" />
+              <p class="text-red-500 text-sm ml-1" v-if="!title && titleFocused">Không được để trống.</p>
+
+            </div>
+
+            <div class="mt-2">
+              <label class="block text-base ml-2 font-medium text-gray-900 dark:text-white">Nội dung bài đăng :</label>
+              <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
+                placeholder="Nhập nội dung ..." v-model="post_content"></textarea>
+              <p class="text-red-500 text-sm ml-1" v-if="!post_content && contentFocused">Không được để trống.</p>
+
+            </div>
+
+            <div class=" mb-2 block">
+              <div class="relative md:mr-2 mt-5">
+                <label class="ml-2">Thành phố :</label>
+                <select v-model="city_id" required @change="onCitySelected()"
+                  class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
+                  <option disabled>Thành phố</option>
+                  <option v-for="city in citys" :key="city.code" :value="city.code">
+                    {{ city.name }}
+                  </option>
+                </select>
+                <p class="text-red-500 text-sm ml-1" v-if="!city_id && cityFocused">Không được để trống.</p>
+
+              </div>
+              <div class="relative md:mr-2 mt-5">
+                <label class="ml-2">Quận huyện :</label>
+                <select v-model="districts_code" @change="onDistrictSelected()"
+                  class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
+                  <option disabled selected>Quận/Huyện</option>
+                  <option v-for="district in districts" :key="district.code" :value="district.code">
+                    {{ district.name }}
+                  </option>
+                </select>
+                <p class="text-red-500 text-sm ml-1" v-if="!districts_code && districtFocused">Không được để trống.</p>
+
+              </div>
+              <div class="relative mt-5">
+                <label class="ml-2">Xã phường :</label>
+                <select v-model="commune_id"
+                  class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
+                  <option disabled selected>Xã/Phường</option>
+                  <option v-for="commune in communes" :key="commune.code" :value="commune.code">
+                    {{ commune.name }}
+                  </option>
+                </select>
+                <p class="text-red-500 text-sm ml-1" v-if="!commune_id && communeFocused">Không được để trống.</p>
+
+              </div>
+            </div>
+          </div>
+          <!--right update-->
+          <div class="py-2">
+
+            <!-- Image -->
+            <div class="flex items-center mt-4 py-2 px-4">
+
+              <swiper :pagination="true" :modules="modules" class="mySwiper" :autoplay="{ delay: 1000 }">
+                <swiper-slide v-for="img in imgs">
+                  <img class="max-w-sm w-full mx-auto h-32 md:h-64" :src="img.url" alt="Bài đăng">
+                </swiper-slide>
+
+                <swiper-slide v-for="img in imgs_new">
+                
+                  <img class="max-w-sm w-full mx-auto h-32 md:h-64" :src="img.url" alt="Bài đăng">
+                </swiper-slide>
+
+                <swiper-slide v-for="video in videos">
+                  <video loop controls class="max-w-sm w-full mx-auto h-32 md:h-64 ">
+                    <source :src="video.url" type="video/mp4" />
+                  </video>
+                </swiper-slide>
+
+
+                <swiper-slide v-for="video in videos_new">
+                  <video loop controls class="max-w-sm w-full mx-auto h-32 md:h-64 ">
+                    <source :src="video.url" type="video/mp4" />
+                  </video>
+                </swiper-slide>
+              </swiper>
+              
+             
+            </div>
+            <div class="grid grid-cols-2 gap-4 mt-4 shrink-0">
+              <button @click="deleteimg()"
+                class=" text-xs border  bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none">
+                Xóa ảnh
+              </button>
+
+              <button @click="deletevideo()"
+                class=" text-xs border  bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none">
+                Xóa video
+              </button>
+
+              <label for="video-file" class="cursor-pointer ">
+                <div
+                  class="text-xs border bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none">
+                  Thêm video
+                </div>
+                <input id="video-file" type="file" accept=".mp4" @change="onFileSelectedVideo" multiple hidden />
+              </label>
+
+              <label for="img-file">
+                <div
+                  class="text-xs border  bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none ">
+                  Thêm ảnh
+                </div>
+                <input id="img-file" type="file" @change="onFileSelected" multiple hidden
+                  accept=".png, .jpeg, .gif, .jpg" />
+              </label>
+
+            </div>
+          
+
+          </div>
+        </div>

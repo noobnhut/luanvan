@@ -35,98 +35,131 @@
 
 
     <!--chat-->
-    <div >
-    <div class="fixed md:right-20 right-0 bottom-0 z-30 w-80 h-96 flex flex-col border shadow-md bg-white" v-if="showChat" >
-        <div class="flex items-center justify-between border-b p-2">
-            <!-- user info -->
-            <div class="flex items-center" v-for="user in users.filter(item => item.id == this.user_receive)">
-                <img class="rounded-full w-10 h-10" :src="user.avatar" />
-                <div class="pl-2">
-                    <div class="font-semibold">
-                        <a class="hover:underline">{{ user.username }}</a>
-                    </div>
-                    <div v-for="us in usersocket.filter(item => item.id == this.user_receive)">
-                        <div class="text-xs text-gray-600">{{ us.online ? "Hoạt động" : "Không hoạt động" }}</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- end user info -->
-
-            <!-- chat box action -->
-            <div>
-                <button @click="openChat" class="inline-flex hover:bg-indigo-50 rounded-full p-2" type="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-            <!-- end chat box action -->
-        </div>
-
-        <!--noi dung cuoc tro chuyen-->
-        <div class="flex flex-col h-full mb-4  overflow-x-auto overflow-y-auto" ref="chatContainer">
-            <div class="flex flex-col h-full">
-                <div class="grid grid-cols-12 gap-y-2" v-for="chat in chats.filter(item => item.deleted !== user.id)">
-
-                    <!--nguoi gui-->
-                    <div class="col-start-1 col-end-8 p-3 rounded-lg" v-if="chat.sender_id !== user.id">
-                        <div class="flex flex-row items-center">
-                            <div class="flex items-center justify-center"
-                                v-for="user in users.filter(items => items.id == this.user_receive)">
-                                <img :src=user.avatar alt="" class="h-10 w-10 rounded-full">
-                            </div>
-                            <div class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl">
-                                <div>{{ chat.messager }}</div>
-                                <div class="pl-4 flex items-center justify-center"><small class="text-gray-500 ">{{
-                                    formatTime(chat.createdAt) }}</small></div>
-                            </div>
+    <div>
+        <div class="fixed md:right-20 right-0 bottom-0 z-30 w-80 h-96 flex flex-col border shadow-md bg-white"
+            v-if="showChat">
+            <div class="flex items-center justify-between border-b p-2">
+                <!-- user info -->
+                <div class="flex items-center" v-for="user in users.filter(item => item.id == this.user_receive)">
+                    <img class="rounded-full w-10 h-10" :src="user.avatar" />
+                    <div class="pl-2">
+                        <div class="font-semibold">
+                            <a class="hover:underline">{{ user.username }}</a>
                         </div>
-                    </div>
-
-                    <!--người nhận-->
-                    <div class="col-start-6 col-end-13 p-3 rounded-lg" v-else>
-                        <div class="flex items-center justify-start flex-row-reverse">
-                            <div class="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl">
-                                <div>{{ chat.messager }}</div>
-                                <div class="pl-4 flex items-center justify-center"><small class="text-gray-500 ">{{
-                                    formatTime(chat.createdAt) }}</small></div>
-                            </div>
+                        <div v-for="us in usersocket.filter(item => item.id == this.user_receive)">
+                            <div class="text-xs text-gray-600">{{ us.online ? "Hoạt động" : "Không hoạt động" }}</div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-        </div>
-        <!--noi dung cuoc tro chuyen-->
+                <!-- end user info -->
 
-        <!--footer chat-->
-        <div class="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4 mb-2">
-            <!--input thêm tin nhắn-->
-            <div class="flex-grow ml-4">
-                <div class="relative w-full">
-                    <textarea type="text" v-model="messager" v-on:keyup.enter="sendmess()"
-                        class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10 text-xs"></textarea>
-                </div>
-            </div>
-            <!--button send tin nhắn-->
-            <div class="ml-4 ">
-                <button @click="sendmess()"
-                    class="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0">
-                    <span>Gửi</span>
-                    <span class="ml-2">
-                        <svg class="w-4 h-4 transform rotate-45 -mt-px" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <!-- chat box action -->
+                <div>
+                    <button @click="openChat" class="inline-flex hover:bg-indigo-50 rounded-full p-2" type="button">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                d="M6 18L18 6M6 6l12 12" />
                         </svg>
-                    </span>
-                </button>
+                    </button>
+                </div>
+                <!-- end chat box action -->
+            </div>
+
+            <!--noi dung cuoc tro chuyen-->
+            <div class="flex flex-col h-full mb-4  overflow-x-auto overflow-y-auto" ref="chatContainer">
+                <div class="flex flex-col h-full">
+                    <div class="grid grid-cols-12 gap-y-2" v-for="chat in chats.filter(item => item.deleted !== user.id)">
+
+                        <!--nguoi gui-->
+                        <div class="col-start-1 col-end-8 p-3 rounded-lg" v-if="chat.sender_id !== user.id">
+                            <div class="flex flex-row items-center">
+                                <div class="flex items-center justify-center"
+                                    v-for="user in users.filter(items => items.id == this.user_receive)">
+                                    <img :src=user.avatar alt="" class="h-10 w-10 rounded-full">
+                                </div>
+                                <div class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl">
+                                    <div>{{ chat.messager }}</div>
+                                    <div class="pl-4 flex items-center justify-center"><small class="text-gray-500 ">{{
+                                        formatTime(chat.createdAt) }}</small>
+                                    </div>
+                                </div>
+                                <div class="text-rose-200 cursor-pointer ml-2" @click="onclosedelete(); sendata(chat)"
+                                    v-if="chat.sender_id === user.id">X</div>
+                            </div>
+                        </div>
+
+                        <!--người nhận-->
+                        <div class="col-start-6 col-end-13 p-3 rounded-lg" v-else>
+                            <div class="flex items-center justify-start flex-row-reverse">
+                                <div class="text-rose-200 cursor-pointer" @click="onclosedelete(); sendata(chat)"
+                                    v-if="chat.sender_id === user.id">X</div>
+                                <div class="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl">
+                                    <div>{{ chat.messager }}</div>
+                                    <div class="pl-4 flex items-center justify-center"><small class="text-gray-500 ">{{
+                                        formatTime(chat.createdAt) }}</small></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!--noi dung cuoc tro chuyen-->
+
+            <!--footer chat-->
+            <div class="flex flex-row items-center h-16 rounded-xl bg-white w-full px-4 mb-2">
+                <!--input thêm tin nhắn-->
+                <div class="flex-grow ml-4">
+                    <div class="relative w-full">
+                        <textarea type="text" v-model="messager" v-on:keyup.enter="sendmess()"
+                            class="flex w-full border rounded-xl focus:outline-none focus:border-indigo-300 pl-4 h-10 text-xs"></textarea>
+                    </div>
+                </div>
+                <!--button send tin nhắn-->
+                <div class="ml-4 ">
+                    <button @click="sendmess()"
+                        class="flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 rounded-xl text-white px-4 py-1 flex-shrink-0">
+                        <span>Gửi</span>
+                        <span class="ml-2">
+                            <svg class="w-4 h-4 transform rotate-45 -mt-px" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <!--footer chat-->
+        </div>
+    </div>
+
+    <!--delete-->
+    <div class=" fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 " v-show="isShowdelete">
+        <div class="absolute w-full h-full bg-gray-900 opacity-50" @click="onclosedelete"></div>
+
+        <div class=" bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto ">
+            <div class="flex flex-row py-3 px-4">
+                <h5 class="text-lg font-semibold flex-grow">Xóa tin nhắn</h5>
+                <i class="uil-multiply flex-none cursor-pointer bg-gray-400 rounded-xl" @click="onclosedelete"></i>
+            </div>
+            <div class="px-4">
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 ">Bạn có muốn xóa ? </label>
+                </div>
+            </div>
+            <div class="py-3 px-4">
+                <button
+                    class="  py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer mr-4"
+                    @click="deleteMessage()">Xóa</button>
+                <button
+                    class="  py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer"
+                    @click="onclosedelete()">Đóng</button>
             </div>
         </div>
-        <!--footer chat-->
-    </div></div>
+    </div>
 </template>
 
 
@@ -135,6 +168,8 @@
 import userService from "../plugins/userService";
 import socketService from "../plugins/socketService";
 import dayjs from 'dayjs';
+
+
 export default {
     data() {
         return {
@@ -147,24 +182,23 @@ export default {
             usersocket: [],
             chats: [],
             messager: '',
-            checkLogin:true
-
+            checkLogin: true,
+            isShowdelete: false,
+            chat: ''
 
         };
     },
 
     mounted() {
-
+ 
         this.user = userService.getUserToken();
-        if(this.user == false)
-        {
+        if (this.user == false) {
             this.checkLogin = false
         }
-        else
-        {
-        socketService.userConnect(this.user.id)
+        else {
+            socketService.userConnect(this.user.id)
         }
-      
+
         userService.renderUser().then((data) => {
             this.users = data
         })
@@ -189,6 +223,17 @@ export default {
                 })
             }
         })
+        socketService.getdelete((data) => {
+            if ((data.sender_id == this.user_receive && data.receiver_id == this.user.id) || (data.sender_id == this.user.id && data.receiver_id == this.user_receive)) {
+                
+                for (let i = 0; i < this.chats.length; i++) {
+                            if (this.chats[i].id == data.id) {
+                                this.chats.splice(i, 1);
+                                break;
+                            }
+                        }
+            }
+                    });
     },
     components: {
     },
@@ -222,6 +267,7 @@ export default {
                     });
 
                 this.chats = result.data;
+
                 this.$nextTick(() => {
                     const chatContainer = this.$refs.chatContainer
                     chatContainer.scrollTop = chatContainer.scrollHeight
@@ -262,6 +308,25 @@ export default {
                 console.log(error)
             }
         },
+
+        onclosedelete() {
+            this.isShowdelete = !this.isShowdelete
+        },
+        sendata(c) {
+            this.chat = c
+        },
+        async deleteMessage() {
+            try {
+                const result = await this.$axios.delete('message/deleteMessage/' + this.chat.id)
+
+                if (result.status == 200) {
+                    this.onclosedelete()
+                }
+
+            } catch (error) {
+                console.log(error)
+            }
+        }
     },
 };
 </script>

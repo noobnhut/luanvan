@@ -22,7 +22,7 @@
           <div class="mt-5">
             <input type="text" placeholder="Email"
               class="px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none w-full"
-              v-model="email" @focus="checkemailError" />
+              v-model="email"  />
             <p class="text-red-500 text-sm ml-1" v-if="!email && emailFocused">Email bị trống.</p>
             <p class="text-red-500 text-sm ml-1" v-else-if="!validEmail(email) && emailFocused">Email sai định dạng.</p>
           </div>
@@ -36,7 +36,7 @@
           <div class="mt-5">
             <input type="password" placeholder="Mật khẩu"
               class="px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none w-full"
-              v-model="password" @focus="checkpasswordError" />
+              v-model="password"  />
           </div>
           <p class="text-red-500 text-sm ml-1" v-if="!password && passwordFocused">Mật khẩu bị trống.</p>
           <p class="text-red-500 text-sm ml-1" v-else-if="password.length <= 7 && passwordFocused">Mật khẩu có tối thiểu 8
@@ -94,14 +94,19 @@ export default {
 
   methods: {
     // xử lý các focus bật tắt validate
-    checkemailError() { this.emailFocused = true; },
-    checkpasswordError() { this.passwordFocused = true; },
-
+    
     // hàm đăng kí
     async login() {
-      this.emailFocused = true,
-        this.passwordFocused = true,
-        authService.login(this.email, this.password, this.$refs, this.user);
+
+        this.emailFocused = true
+        this.passwordFocused = true
+        // kiểm tra thành công thực hiện đăng nhập
+        if(this.validEmail(this.email) && this.validPassword(this.password))
+        {
+          authService.login(this.email, this.password, this.$refs, this.user);
+          this.emailFocused = false
+        this.passwordFocused = false
+        }
     },
 
     // các re ràng buộc

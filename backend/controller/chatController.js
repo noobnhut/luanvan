@@ -36,8 +36,9 @@ const createChat = async (req, res) => {
     } catch (error) {
       console.log(error);
     }
-  };
-  const deleteHistory = async (req, res) => {
+};
+
+const deleteHistory = async (req, res) => {
     try {
       const { send, receiver } = req.body;
       const exitst = await Messenger.findAll({
@@ -66,9 +67,26 @@ const createChat = async (req, res) => {
     } catch (error) {
       console.log(error);
     }
-  };
+};
+
+const deleteMessage = async (req,res)=>
+{
+  try {
+    const id = req.params.id;
+    const exitst = await Messenger.findByPk(id);
+    if(exitst)
+    {
+      await exitst.destroy()
+      res.status(200).json({message:'Xóa thành công'})
+      res.io.emit('deleteMessage',exitst)
+    }     
+  } catch (error) {
+    console.log(error)
+  }
+}
   module.exports = {
     getmess,
     createChat,
-    deleteHistory
+    deleteHistory,
+    deleteMessage
   };

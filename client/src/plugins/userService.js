@@ -65,7 +65,7 @@ class userService {
     }
   }
 
-  async updateInfo(address, phone, districts_code, city_id, commune_id, username, id) {
+  async updateInfo(address, phone, districts_code, city_id, commune_id, username, id,refs) {
     try {
       const response = await axios.put(`${this.url}user/updateInfo/${id}`, {
         address: address,
@@ -77,7 +77,10 @@ class userService {
       });
       if (response.status == 200) {
         localStorage.setItem('user', JSON.stringify(response.data.user))
-        location.reload()
+        refs.toast.showToast(response.data.message)
+                setTimeout(() => {
+                    location.reload()
+                }, 2000)
       }
     } catch (error) {
       console.error(error);

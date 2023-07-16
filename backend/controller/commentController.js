@@ -136,11 +136,36 @@ const deleteCommentByPost = async (req, res) => {
       return res.status(500).json({ error: 'Xóa thất bại' });
     }
 }
+const replyComment = async (req,res)=>
+{
+    const { id_user, id_post, comment_content ,id } = req.body;
+
+    try {
+        const existingUser = await User.findOne({ where: { id: id_user } });
+        if (!existingUser) { return res.status(202).json('Không tồn tại khách hàng'); }
+
+        const existingPost = await Post.findOne({ where: { id: id_post } });
+        if (!existingPost) { return res.status(202).json('Không tồn tại bài đăng'); }
+
+        else if (comment_content === '' || id_post === '' || id_user === '') {
+            return res.status(202).json({message:'Vui lòng nhập nội dung'});
+        }
+        else {
+            const comment = await Comment.create({ id_user, id_post, comment_content,rep_id:id });
+            return res.status(200).json({message:'Bình luận thành công'})
+          
+        }
+    } catch (error) {
+      console.log(error)
+        return res.status(404).json('Thêm thất bại !')
+    }
+}
 module.exports =
 {
     createdComment,
     deleteComment,
     getAllComment,
     editComment,
-    deleteCommentByPost
+    deleteCommentByPost,
+    replyComment
 }  

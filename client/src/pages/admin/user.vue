@@ -155,7 +155,7 @@ export default {
         sumPost(userId) {
             let sum = 0;
             for (let i = 0; i < this.posts.length; i++) {
-                if (this.posts[i].User.id == userId) {
+                if (this.posts[i].user.id == userId) {
                     sum++;
                 }
             }

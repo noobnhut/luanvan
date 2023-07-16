@@ -18,10 +18,11 @@
                 <option value="Tìm kiếm">Tìm kiếm</option>
                 <option value="Trao tặng">Trao tặng</option>
                 <option value="Trao đổi">Trao đổi</option>
-    
+                <p class="text-red-500 text-sm ml-1" v-if="!type && typeFocused">Không được để trống.</p>
+
               </select>
             </div>
-    
+
             <div class="relative mt-5">
               <label>Loại sản phẩm</label>
               <select v-model="catid"
@@ -31,18 +32,24 @@
                   {{ cat.cat_name }}
                 </option>
               </select>
+              <p class="text-red-500 text-sm ml-1" v-if="!catid && catFocused">Không được để trống.</p>
+
             </div>
             <div class="mt-1">
               <label class="block text-base ml-2 font-medium text-gray-900 dark:text-white">Tiêu đề :</label>
               <input type="text" placeholder="Tiêu đề"
                 class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
                 v-model="title" />
+              <p class="text-red-500 text-sm ml-1" v-if="!title && titleFocused">Không được để trống.</p>
+
             </div>
 
             <div class="mt-2">
               <label class="block text-base ml-2 font-medium text-gray-900 dark:text-white">Nội dung bài đăng :</label>
               <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
                 placeholder="Nhập nội dung ..." v-model="post_content"></textarea>
+              <p class="text-red-500 text-sm ml-1" v-if="!post_content && contentFocused">Không được để trống.</p>
+
             </div>
 
             <div class=" mb-2 block">
@@ -55,6 +62,8 @@
                     {{ city.name }}
                   </option>
                 </select>
+                <p class="text-red-500 text-sm ml-1" v-if="!city_id && cityFocused">Không được để trống.</p>
+
               </div>
               <div class="relative md:mr-2 mt-5">
                 <label class="ml-2">Quận huyện :</label>
@@ -65,6 +74,8 @@
                     {{ district.name }}
                   </option>
                 </select>
+                <p class="text-red-500 text-sm ml-1" v-if="!districts_code && districtFocused">Không được để trống.</p>
+
               </div>
               <div class="relative mt-5">
                 <label class="ml-2">Xã phường :</label>
@@ -75,6 +86,8 @@
                     {{ commune.name }}
                   </option>
                 </select>
+                <p class="text-red-500 text-sm ml-1" v-if="!commune_id && communeFocused">Không được để trống.</p>
+
               </div>
             </div>
           </div>
@@ -106,6 +119,7 @@
                   </video>
                 </swiper-slide>
               </swiper>
+              
             </div>
             <div class="grid grid-cols-2 gap-4 mt-4 shrink-0">
               <button @click="deleteimg()"
@@ -136,10 +150,10 @@
               </label>
 
             </div>
+          
 
           </div>
         </div>
-
       </div>
 
 
@@ -198,8 +212,9 @@ export default {
       videos_new: [],
       avatar: null,
       video: null,
-      id:''
-
+      id: '',
+      cityFocused: false, districtFocused: false, communeFocused: false, catFocused: false,
+      typeFocused: false, titleFocused: false, contentFocused: false, avatarFocusted: false,
     };
   },
   components: {
@@ -287,6 +302,7 @@ export default {
         this.imgs_new.push({ id: i, url: imageUrl });
       }
       this.avatar = files;
+      console.log(this.imgs_new)
     },
     onFileSelectedVideo(event) {
       const files = event.target.files;
@@ -335,31 +351,30 @@ export default {
             }
           );
         }
-        if(this.videos == [])
-        {
-          this.$refs.toast.showToast("Vui long thêm ít nhất 1 ảnh");
-        }
-        else
-        {
+        this.cityFocused = true; this.districtFocused = true; this.communeFocused = true; this.catFocused = true;
+        this.typeFocused = true; this.titleFocused = true; this.contentFocused = true; this.avatarFocusted = true;
+
+        if (this.commune_id && this.districts_code && this.city_id  && this.title && this.type && this.post_content && this.catid) {
           const result = await this.$axios.put(`post/update/` + this.id, {
-          title: this.title,
-          post_content: this.post_content,
-          type: this.type,
-          id_cat: this.id_cat,
-          citycode: this.city_id,
-          districtcode: this.districts_code,
-          communecode: this.commune_id,
-          id_user: this.user.id,
-        });
-        console.log(result);
-        if (result.status == 200) {
-          this.$refs.toast.showToast("Cập nhập thành công");
-          setTimeout(() => {
-            location.reload();
-          }, 1000);
+            title: this.title,
+            post_content: this.post_content,
+            type: this.type,
+            id_cat: this.id_cat,
+            citycode: this.city_id,
+            districtcode: this.districts_code,
+            communecode: this.commune_id,
+            id_user: this.user.id,
+          });
+          console.log(result);
+          if (result.status == 200) {
+            this.$refs.toast.showToast("Cập nhập thành công");
+            setTimeout(() => {
+              location.reload();
+            }, 1000);
+
+          }
         }
-        }
-        
+
       } catch (error) { }
     },
 

@@ -24,6 +24,8 @@
             <option value="Trao đổi">Trao đổi</option>
 
           </select>
+          <p class="text-red-500 text-sm ml-1" v-if="!type && typeFocused">Không được để trống.</p>
+
         </div>
 
         <div class="relative mt-5">
@@ -35,6 +37,8 @@
               {{ cat.cat_name }}
             </option>
           </select>
+          <p class="text-red-500 text-sm ml-1" v-if="!catid && catFocused">Không được để trống.</p>
+
         </div>
         <div class="md:flex mb-2 block">
           <div class="relative md:mr-2 mt-5">
@@ -46,6 +50,7 @@
                 {{ city.name }}
               </option>
             </select>
+            <p class="text-red-500 text-sm ml-1" v-if="!city_id && cityFocused">Không được để trống.</p>
           </div>
           <div class="relative md:mr-2 mt-5">
             <label>Quận huyện:</label>
@@ -56,6 +61,8 @@
                 {{ district.name }}
               </option>
             </select>
+            <p class="text-red-500 text-sm ml-1" v-if="!districts_code && districtFocused">Không được để trống.</p>
+            
           </div>
           <div class="relative mt-5">
             <label>Xã phường:</label>
@@ -66,14 +73,17 @@
                 {{ commune.name }}
               </option>
             </select>
+            <p class="text-red-500 text-sm ml-1" v-if="!commune_id && communeFocused">Không được để trống.</p>
+            
           </div>
         </div>
         <input type="text" class="w-full px-3 py-2 mb-2 text-gray-700 border rounded-lg focus:outline-none"
           placeholder="Nhập tiêu đề " v-model="title" />
-
+          <p class="text-red-500 text-sm ml-1" v-if="!title && titleFocused">Không được để trống.</p>
 
         <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
           placeholder="Nhập nội dung ..." v-model="post_content"></textarea>
+          <p class="text-red-500 text-sm ml-1" v-if="!post_content && contentFocused">Không được để trống.</p>
 
         <div class="flex">
           <label for="video-file">
@@ -85,6 +95,9 @@
             <input id="img-file" type="file" @change="onFileSelected" multiple hidden accept=".png, .jpeg, .gif, .jpg" />
           </label>
         </div>
+       
+        <p class="text-red-500 text-sm ml-1" v-if="!avatar && avatarFocusted">Vui lòng thêm ít nhất một ảnh.</p>
+
       </div>
 
       <div class="modal-footer py-3 px-4">
@@ -120,11 +133,13 @@ export default {
       communes: [],
       user: "",
       catid: "",
-      avatar: [],
+      avatar: null,
       video: "",
       post_content: "",
       title: "",
       type: "",
+      cityFocused: false, districtFocused: false, communeFocused: false,catFocused:false,
+      typeFocused:false, titleFocused:false, contentFocused:false,avatarFocusted: false,
     };
   },
   components: {
@@ -178,15 +193,14 @@ export default {
     async create() {
       let id_user = this.user.id;
       const formImg = new FormData();
-      if (this.avatar) {
 
+      if (this.avatar) {
         for (let i = 0; i < this.avatar.length; i++) {
           const file = this.avatar[i];
           formImg.append("avatar", file);
         }
       } const formVideo = new FormData();
       if (this.video) {
-
         for (let i = 0; i < this.video.length; i++) {
           const file = this.video[i];
           formVideo.append("video", file);
@@ -202,7 +216,12 @@ export default {
       formData.append("title", this.title);
       formData.append("post_content", this.post_content);
       formData.append("type", this.type);
-      if (this.avatar.length > 0) {
+
+
+      this.cityFocused=true; this.districtFocused=true; this.communeFocused=true;this.catFocused=true;
+      this.typeFocused=true; this.titleFocused=true; this.contentFocused=true;this.avatarFocusted=true;
+
+      if (this.commune_id && this.districts_code && this.city_id && this.avatar && this.title && this.type && this.post_content && this.catid) {
         try {
           const response = await this.$axios.post("post/create", formData, {});
           const id_post = response.data.id_post;
@@ -233,6 +252,8 @@ export default {
             if (addimg.status == 200) {
 
               this.$refs.toast.showToast("Đăng bài thành công");
+              this.cityFocused=false; this.districtFocused=false; this.communeFocused=false;this.catFocused=false;
+      this.typeFocused=false; this.titleFocused=false; this.contentFocused=false;this.avatarFocusted=false;
               setTimeout(() => {
                 this.onclose();
                 location.reload()
@@ -243,10 +264,6 @@ export default {
         } catch (error) {
           console.error(error);
         }
-      }
-      else {
-        this.$refs.toast.showToast('Vui lòng thêm ít nhất 1 ảnh và nhập đủ thông tin');
-
       }
 
     },

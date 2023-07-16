@@ -26,6 +26,12 @@ class socketService
             callback(chat)
         });
     }
+    getdelete(callback)
+    {
+        this.socket.on('deleteMessage', (chat) => {
+            callback(chat)
+        });
+    }
     getNotification(callback)
     {
         this.socket.on('notification', (noti) => {

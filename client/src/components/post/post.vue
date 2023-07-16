@@ -1,8 +1,7 @@
 <template>
     <div class="max-w-xl w-full mx-auto rounded-md shadow-md overflow-hidden mt-6 " v-for="(post, index) in posts"
         :key="index">
-        <!-- Header -->
-        <editpost v-if="isShowModel" @cancel="onShow" :post="postsend" />
+       
 
         <div class="flex items-center px-4 py-2 bg-white border-b">
             <img class="w-10 h-10 rounded-full mr-2" :src="post.user.avatar" alt="Avatar">
@@ -47,7 +46,7 @@
                 </div>
             </div>
 
-            <div class="ml-auto" :class="getclass3(post)">
+            <div class="ml-auto" :class="getclass3(post)" v-if="showlogin"> 
                 <button
                     class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer"
                     @click="acceptOpen(post)">
@@ -209,6 +208,8 @@
     </div>
 
     <toast ref="toast"></toast>
+     <!-- Header -->
+     <editpost v-if="isShowModel" @cancel="onShow" :post="postsend" />
 </template>
 
 <script>
@@ -262,13 +263,14 @@ export default {
         postService.renderPost().then((data) => {
 
             if (this.type === '' && this.filter === '' ) {
-                this.posts = data.filter(item => item.user.id == this.$route.params.id);
+                this.posts = data.filter(item => item.user.id == this.$route.params.id );
             }
+           
             if (this.filter !== '' && this.type === '') {
-                this.posts = data.filter(item => item.id == this.filter)
+                this.posts = data.filter(item => item.id == this.filter && this.user.priority >= item.priority)
             }
             if (this.type !== '' && this.filter === '') {
-                this.posts = data.filter(item => item.type == this.type)
+                this.posts = data.filter(item => item.type == this.type && this.user.priority >= item.priority)
             }
         });
 
@@ -415,7 +417,7 @@ export default {
         },
         getclass3(post) {
 
-            if ((post.user.id !== this.user.id || !this.user) && post.type === "Trao tặng") {
+            if (post.user.id !== this.user.id && post.type === 'Trao tặng' && !this.user) {
                 return ''
             }
             else {

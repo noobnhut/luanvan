@@ -25,6 +25,8 @@
                   {{ cat.cat_name }}
                 </option>
               </select>
+              <p class="text-red-500 text-sm ml-1" v-if="!catid && catFocused">Không được để trống.</p>
+
             </div>
 
             <div class="relative md:mr-2 mt-5">
@@ -37,12 +39,17 @@
                 <option value="Trao đổi">Trao đổi</option>
 
               </select>
+              <p class="text-red-500 text-sm ml-1" v-if="!type && typeFocused">Không được để trống.</p>
+
             </div>
             <div class="relative mt-5">
               <label>Số bán kính</label>
               <input type="text"
                 class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm"
                 placeholder="Nhập số bán kính " v-model="radius" />
+                <p class="text-red-500 text-sm ml-1" v-if="!radius && radiusFocused">Không được để trống.</p>
+                <p class="text-red-500 text-sm ml-1" v-else-if="!validNumber(radius) && radiusFocused">Chỉ
+                    nhập số và số bán kính từ 0.</p>
             </div>
           </div>
           <div class="md:flex mb-2 block">
@@ -55,6 +62,8 @@
                   {{ city.name }}
                 </option>
               </select>
+              <p class="text-red-500 text-sm ml-1" v-if="!city_id && cityFocused">Không được để trống.</p>
+
             </div>
             <div class="relative md:mr-2 mt-5">
               <label>Quận huyện:</label>
@@ -65,6 +74,8 @@
                   {{ district.name }}
                 </option>
               </select>
+              <p class="text-red-500 text-sm ml-1" v-if="!districts_code && districtFocused">Không được để trống.</p>
+
             </div>
             <div class="relative mt-5">
               <label>Xã phường:</label>
@@ -75,6 +86,8 @@
                   {{ commune.name }}
                 </option>
               </select>
+              <p class="text-red-500 text-sm ml-1" v-if="!commune_id && communeFocused">Không được để trống.</p>
+
             </div>
           </div>
 
@@ -119,7 +132,9 @@ export default {
       type: "",
       keyword: '',
       radius: '',
-      isshowSearch: false
+      isshowSearch: false,
+      cityFocused: false, districtFocused: false, communeFocused: false,catFocused:false,
+      radiusFocused:false,typeFocused:false
     };
   },
   mounted() {
@@ -151,30 +166,29 @@ export default {
       }
     },
     async search() {
-      // try {
-      //   const result = await this.$axios.post('post/search',
-      //     {
-      //       citycode: this.city_id, districtcode: this.districts_code, 
-      //       communecode: this.commune_id, keyword: this.keyword, type: this.type,
-      //        catid: this.catid, radius: this.radius
-      //     });
-      //     console.log(result.data)
-      //     this.onclose()
-      //     this.isshowSearch = true
-      // } catch (error) {
-      //   console.log(error)
-      // }
+      this.cityFocused=true;  this.districtFocused=true;  this.communeFocused=true; this.catFocused =true;
+      this.radiusFocused=true;this.typeFocused = true
       const data = {
         citycode: this.city_id, districtcode: this.districts_code,
         communecode: this.commune_id, keyword: this.keyword, type: this.type,
         catid: this.catid, radius: this.radius
       };
-      const encodedData = encodeURIComponent(JSON.stringify(data));
-      this.$router.push({ name: 'searchview', query: { data: encodedData } });
+      if(this.city_id && this.districts_code && this.commune_id && this.catid && this.radius && this.validNumber(this.radius) && this.type)
+      {
+        const encodedData = encodeURIComponent(JSON.stringify(data));
+        this.$router.push({ name: 'searchview', query: { data: encodedData } });
+        this.cityFocused=false;  this.districtFocused=false;  this.communeFocused=false; this.catFocused =false;
+        this.radiusFocused=false;this.typeFocused = false
+      }
     },
     showsearch() {
       this.isshowSearch = !this.isshowSearch
-    }
+    },
+    validNumber(number) {
+            // Kiểm tra số không âm và không chứa chữ cái
+            const re = /^[0-9]+$/;
+            return re.test(number);
+        },
   },
 };
 </script>

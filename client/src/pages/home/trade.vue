@@ -1,5 +1,5 @@
 <template>
-    <post type="Trao đổi" filter=""/>
+    <post type="Trao đổi" filter="" />
 </template>
 
 <script>

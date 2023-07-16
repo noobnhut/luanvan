@@ -1,6 +1,5 @@
 <template>
     <navbar />
-    
     <div class="flex h-[calc(100vh-80px)] items-center justify-center p-5 bg-white w-full" v-if="!isShowUser">
         <div class="text-center">
           <div class="inline-flex rounded-full bg-yellow-100 p-4">
@@ -75,7 +74,11 @@
                     </li>
                 </ul>
             </div>
-            <post type="" filter="" v-if="isUser" />
+            
+           
+           
+            <post type="" filter="" v-if="isUser"/>
+
             <postfollow v-if="isFollow" />
             <followuser v-if="isFollowUser" />
             <ratingView v-if="isShowRatingView"/>
@@ -126,7 +129,9 @@ export default
                 viewText:'',
                 isShowRating:false,
                 isShowRatingView:false,
-                showlogin:true
+                showlogin:true,
+                users:[],
+               
             }
         },
         components:
@@ -162,6 +167,7 @@ export default
             }
             this.getfollow();
             this.getUsers()
+           
         },
         methods:
         {

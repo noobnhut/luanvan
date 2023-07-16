@@ -29,7 +29,7 @@ const createNotiSetting = async (req, res) => {
     const existUser = await User.findByPk(id_user);
     if (existUser) {
       const existSetting = await notiSetting.findAll({ where: { id_user } });
-      const checkSetting = await notiSetting.findOne({ where: { id_user, location_radius, type_post } })
+      const checkSetting = await notiSetting.findOne({ where: { id_user, type_post } })
       if (existSetting.length === 3) {
         res.status(201).json({ message: 'Đã vượt quá giới hạn thêm' })
       }

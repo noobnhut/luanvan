@@ -54,6 +54,7 @@
 
 <script>
 
+import { setTransitionHooks } from 'vue';
 import userService from '../../plugins/userService';
 import toast from '../toast/toast.vue';
 export default {
@@ -83,7 +84,10 @@ export default {
         async updatepass() {
             this.newpasswordFocused=true
             const id = this.user.id
-            userService.updatepass(this.email, this.password, this.newpassword, this.$refs, id);
+            if(this.password && this.newpassword &&this.validnewPassword(this.password)&&this.validnewPassword2(this.newpasswords))
+            {
+                userService.updatepass(this.email, this.password, this.newpassword, this.$refs, id);
+            }
         },
         validnewPassword(newpassword) {
             const re = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;

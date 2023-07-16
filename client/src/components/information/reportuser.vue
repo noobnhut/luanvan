@@ -11,7 +11,9 @@
             <div class="py-4 px-4">
                 <div class=" w-full">
                     <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
-                        placeholder="Nhập nội dung ..." v-model="report_content"></textarea>
+                        placeholder="Nhập nội dung ..." v-model="report_content" required></textarea>
+                    <p class="text-red-500 text-sm ml-1" v-if="!report_content && contentFocused">Không được để trống.</p>
+
                 </div>
             </div>
 
@@ -37,7 +39,8 @@ export default {
     data() {
         return {
             user: '',
-            report_content: ''
+            report_content: '',
+            contentFocused:false
         };
     },
     components: { toast },
@@ -50,7 +53,10 @@ export default {
             this.$emit('cancel')
         },
         async report() {
-            try {
+            this.contentFocused=true
+            if(this.report_content)
+            {
+                try {
                 const result = await this.$axios.post(
                     `report/add`,
                     {
@@ -59,10 +65,14 @@ export default {
                         report_content: this.report_content
                     }
                 )
+            this.contentFocused=false
+
                 this.$refs.toast.showToast(result.data.message);
             } catch (error) {
                 console.log(error)
             }
+            }
+            
         }
     },
 }

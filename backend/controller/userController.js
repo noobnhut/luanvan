@@ -157,7 +157,7 @@ const updateImg = async (req, res) => {
         img.avatar = imageUrl;
         await img.save();
       }
-      return res.status(200).json({ success: true, img });
+      return res.status(200).json({ message: 'Cập nhập thành công', img });
     });
   } catch (error) {
     console.error(error);
@@ -252,6 +252,7 @@ const loginUser = async (req, res) => {
       notification_status: user.notification_status,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
+      priority: user.priority,
       token,
     });
   } catch (error) {

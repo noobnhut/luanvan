@@ -59,7 +59,8 @@
                             <td class="border-t">
                                 <span class="px-6 py-4 flex items-center">
                                     <span
-                                        class="px-2 rounded-full text-sm uppercase tracking-wide font-semibold bg-green-200 text-green-800 cursor-pointer mr-2" @click="openupdate();sendNoti(noti)">Cập
+                                        class="px-2 rounded-full text-sm uppercase tracking-wide font-semibold bg-green-200 text-green-800 cursor-pointer mr-2"
+                                        @click="openupdate(); sendNoti(noti)">Cập
                                         nhập</span>
                                     <span
                                         class="px-2 rounded-full text-sm uppercase tracking-wide font-semibold bg-red-200 text-red-800 cursor-pointer"
@@ -104,6 +105,7 @@
                         <option value="Trao đổi">Trao đổi</option>
 
                     </select>
+                    <p class="text-red-500 text-sm ml-1" v-if="!type_post && typeFocused">Không được để trống.</p>
                 </div>
             </div>
 
@@ -113,6 +115,10 @@
                     <input type="text"
                         class="bg-gray-50 border text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:outline-none "
                         v-model="location_radius" required>
+                    <p class="text-red-500 text-sm ml-1" v-if="!location_radius && radiusFocused">Không được để trống.</p>
+                    <p class="text-red-500 text-sm ml-1" v-else-if="!validNumber(location_radius) && radiusFocused">Chỉ
+                        nhập số và số bán kính từ 0.</p>
+
                 </div>
             </div>
 
@@ -137,6 +143,7 @@
                 <i class="uil-multiply flex-none cursor-pointer bg-gray-400 rounded-xl" @click=" openupdate()"></i>
             </div>
 
+
             <div class="px-4">
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-900 ">Loại danh mục</label>
@@ -145,9 +152,10 @@
                         <option disabled selected>Chọn loại bài đăng</option>
                         <option value="Tìm kiếm">Tìm kiếm</option>
                         <option value="Trao tặng">Trao tặng</option>
-                        <option value='Trao đổi'>Trao đổi</option>
+                        <option value="Trao đổi">Trao đổi</option>
 
                     </select>
+                    <p class="text-red-500 text-sm ml-1" v-if="!type_post && typeFocused">Không được để trống.</p>
                 </div>
             </div>
 
@@ -157,6 +165,10 @@
                     <input type="text"
                         class="bg-gray-50 border text-gray-900 text-sm rounded-lg block w-full p-2.5 focus:outline-none "
                         v-model="location_radius" required>
+                    <p class="text-red-500 text-sm ml-1" v-if="!location_radius && radiusFocused">Không được để trống.</p>
+                    <p class="text-red-500 text-sm ml-1" v-else-if="!validNumber(location_radius) && radiusFocused">Chỉ
+                        nhập số và số bán kính từ 0.</p>
+
                 </div>
             </div>
 
@@ -265,14 +277,16 @@ export default {
             notis: [],
             status: '',
             type_post: '',
-            location_radius: '',
+            location_radius: 0,
             isShowAdd: false,
             isShowdelete: false,
             send: '',
             isShowChoice: false,
             isShowStatus: false,
-            isShowUpdate:false,
-            id:''
+            isShowUpdate: false,
+            id: '',
+            typeFocused: false,
+            radiusFocused: false
         };
     },
     components: {
@@ -310,26 +324,33 @@ export default {
             }
         },
         async addSetting() {
-            try {
-                const result = await this.$axios.post(`notiSetting/create`,
-                    {
-                        id_user: this.user.id,
-                        location_radius: this.location_radius,
-                        type_post: this.type_post
-                    })
-                if (result.status == 200) {
-                    this.$refs.toast.showToast(result.data.message);
-                    this.isShowAdd = false
-                    this.getNoti()
+            this.typeFocused = true
+            this.radiusFocused = true
+            if (this.type_post && this.location_radius && this.validNumber(this.location_radius)) {
+                try {
+                    const result = await this.$axios.post(`notiSetting/create`,
+                        {
+                            id_user: this.user.id,
+                            location_radius: this.location_radius,
+                            type_post: this.type_post
+                        })
+                    if (result.status == 200) {
+                        this.$refs.toast.showToast(result.data.message);
+                        this.isShowAdd = false
+                        this.typeFocused = false
+                        this.radiusFocused = false
+                        this.getNoti()
+                    }
+                    else {
+                        this.$refs.toast.showToast(result.data.message);
+                    }
+                } catch (error) {
+                    console.log(
+                        error
+                    )
                 }
-                else {
-                    this.$refs.toast.showToast(result.data.message);
-                }
-            } catch (error) {
-                console.log(
-                    error
-                )
             }
+
         },
         async deleteSetting() {
             try {
@@ -338,7 +359,6 @@ export default {
                     this.$refs.toast.showToast(result.data.message);
                     this.isShowdelete = false
                     this.getNoti()
-
                 }
                 else {
                     this.$refs.toast.showToast(result.data.message);
@@ -351,16 +371,16 @@ export default {
             this.send = noti
             this.type_post = noti.type_post;
             this.status = noti.status;
-            this.location_radius =noti.location_radius
+            this.location_radius = noti.location_radius
             this.id = noti.id
         },
         async changeStatus() {
             try {
-                const id =this.user.id
-                const result = await this.$axios.put(`user/updatenoti/` + id );
+                const id = this.user.id
+                const result = await this.$axios.put(`user/updatenoti/` + id);
                 if (result.status == 200) {
-                    localStorage.setItem('user', JSON.stringify(result.data)) 
-        
+                    localStorage.setItem('user', JSON.stringify(result.data))
+
                     this.$refs.toast.showToast('Chuyển trạng thái thành công');
                     this.isShowStatus = false
                 }
@@ -371,29 +391,37 @@ export default {
 
             }
         },
-        async updateSetting()
-        {
-            try {
-                const result = await this.$axios.put(`notiSetting/update/`,
-                {
-                    id_user:this.user.id, location_radius:this.location_radius, type_post:this.type_post, id:this.id
-                })
-                if (result.status == 200) {
-                    this.$refs.toast.showToast(result.data.message);
-                    this.isShowUpdate = false
-                    this.getNoti()
+        async updateSetting() {
+            this.typeFocused = true
+            this.radiusFocused = true
+            if (this.type_post && this.location_radius && this.validNumber(this.location_radius)) {
+                try {
+                    const result = await this.$axios.put(`notiSetting/update/`,
+                        {
+                            id_user: this.user.id, location_radius: this.location_radius, type_post: this.type_post, id: this.id
+                        })
+                    if (result.status == 200) {
+                        this.$refs.toast.showToast(result.data.message);
+                        this.isShowUpdate = false
+                        this.typeFocused = false
+                        this.radiusFocused = false
+                        this.getNoti()
+                    }
+                    else {
+                        this.$refs.toast.showToast(result.data.message);
+                    }
+                } catch (error) {
+                    console.log(error)
                 }
-                else {
-                    this.$refs.toast.showToast(result.data.message);
-                }
-            } catch (error) {
-                console.log(error)
             }
+
         },
         openStatus() {
             this.isShowStatus = !this.isShowStatus
         },
         openadd() {
+            this.location_radius = ''
+            this.type_post = ''
             this.isShowAdd = !this.isShowAdd
         },
         onclosedelete() {
@@ -402,10 +430,14 @@ export default {
         openChoice() {
             this.isShowChoice = !this.isShowChoice
         },
-        openupdate()
-        {
+        openupdate() {
             this.isShowUpdate = !this.isShowUpdate
-        }
+        },
+        validNumber(number) {
+            // Kiểm tra số không âm và không chứa chữ cái
+            const re = /^[0-9]+$/;
+            return re.test(number);
+        },
 
 
 

@@ -15,11 +15,11 @@
           <div class="mt-5">
             <input type="text" placeholder="Họ và tên"
               class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
-              v-model="username" @focus="checkUsernameError" />
+              v-model="username" />
           </div>
           <p class="text-red-500 text-sm ml-1" v-if="!username && usernameFocused">Tên người dùng bị trống.</p>
           <p class="text-red-500 text-sm ml-1"
-            v-else-if="(username.length < 3 || username.length > 20) && usernameFocused">Tên người dùng phải từ 3 đến 20
+            v-else-if="!validFullName(username) && usernameFocused">Tên người dùng phải từ 3 đến 20
             ký tự.</p>
 
           <!--kết thúc username-->
@@ -32,7 +32,7 @@
           <div class="mt-5">
             <input type="text" placeholder="Số điện thoại"
               class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
-              v-model="phone" @focus="checkphoneError()" />
+              v-model="phone" />
           </div>
           <p class="text-red-500 text-sm ml-1" v-if="!phone && phoneFocused">Số điện thoại bị trống.</p>
           <p class="text-red-500 text-sm ml-1" v-else-if="!validPhone(phone) && phoneFocused">Số điện thoại sai định dạng.
@@ -49,7 +49,7 @@
           <div class="mt-5">
             <input type="text" placeholder="Email"
               class="px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none w-full"
-              v-model="email" @focus="checkemailError" />
+              v-model="email" />
             <p class="text-red-500 text-sm ml-1" v-if="!email && emailFocused">Email bị trống.</p>
             <p class="text-red-500 text-sm ml-1" v-else-if="!validEmail(email) && emailFocused">Email sai định dạng.</p>
           </div>
@@ -64,7 +64,7 @@
           <div class="mt-5">
             <input type="password" placeholder="Mật khẩu"
               class="px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none w-full"
-              v-model="password" @focus="checkpasswordError" />
+              v-model="password" />
           </div>
           <p class="text-red-500 text-sm ml-1" v-if="!password && passwordFocused">Mật khẩu bị trống.</p>
           <p class="text-red-500 text-sm ml-1" v-else-if="password.length <= 7 && passwordFocused">Mật khẩu có tối thiểu 8
@@ -85,7 +85,7 @@
             -->
             <div class="relative md:mr-2 mt-5">
               <label>Thành phố:</label>
-              <select v-model="city_id" required @change="onCitySelected()" @focus="checkcityError"
+              <select v-model="city_id" required @change="onCitySelected()"
                 class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
                 <option disabled>Thành phố</option>
                 <option v-for="city in citys" :key="city.code" :value="city.code">
@@ -103,7 +103,7 @@
             -->
             <div class="relative md:mr-2 mt-5">
               <label>Quận huyện:</label>
-              <select v-model="districts_code" @change="onDistrictSelected()" @focus="checkDistrictsError"
+              <select v-model="districts_code" @change="onDistrictSelected()"
                 class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
                 <option disabled selected>Quận/Huyện</option>
                 <option v-for="district in districts" :key="district.code" :value="district.code">
@@ -153,22 +153,23 @@
           <!--bắt đầu img-->
           <div class="flex items-center justify-center w-full">
             <label for="dropzone-file" v-if="showimg"
-                class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                    <svg aria-hidden="true" class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
-                        </path>
-                    </svg>
-                    <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Nhấn để tải
-                            ảnh hoặc video lên</span> </p>
-                    <!-- <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p> -->
-                </div>
-                <input id="dropzone-file" type="file" class="hidden"  accept=".png, .jpeg, .gif, .jpg"  @change="onFileSelected"/>
+              class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+              <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                <svg aria-hidden="true" class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                  </path>
+                </svg>
+                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Nhấn để tải
+                    ảnh hoặc video lên</span> </p>
+                <!-- <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p> -->
+              </div>
+              <input id="dropzone-file" type="file" class="hidden" accept=".png, .jpeg, .gif, .jpg"
+                @change="onFileSelected" />
             </label>
             <img class="max-w-sm w-full mx-auto h-32 md:h-64 mt-1" :src="imageUrl" alt="" v-if="!showimg">
-        </div>
+          </div>
           <p class="text-red-500 text-sm ml-1" v-if="!avatar && avatarFocusted">Vui lòng chọn ảnh.</p>
           <div class="mt-5">
             <!--kết thúc img-->
@@ -214,8 +215,8 @@ export default {
 
       /* các biển kiểm tra bật tắt focus để validate form*/
       usernameFocused: false, emailFocused: false, passwordFocused: false, cityFocused: false, districtFocused: false, communeFocused: false,
-      addressFocusted: false, phoneFocused: false, avatarFocusted: false,showimg:true,
-            imageUrl:''
+      addressFocusted: false, phoneFocused: false, avatarFocusted: false, showimg: true,
+      imageUrl: ''
     };
   },
 
@@ -229,45 +230,45 @@ export default {
   },
   methods: {
     // xử lý các focus bật tắt validate
-    checkUsernameError() { this.usernameFocused = true; },
-    checkemailError() { this.emailFocused = true; },
-    checkpasswordError() { this.passwordFocused = true; },
-    checkphoneError() { this.phoneFocused = true; },
-    checkcityError() { this.cityFocused = true; },
-    checkDistrictsError() { this.districtFocused = true; },
-    checkCommuneError() { this.communeFocused = true; },
-    checkaddressError() { this.addressFocused = true; },
+   
 
     //hàm lấy hình
-    onFileSelected(event) {  
+    onFileSelected(event) {
       this.avatar = event.target.files[0]
-        this.imageUrl = URL.createObjectURL(this.avatar);
-        this.showimg = false },
+      this.imageUrl = URL.createObjectURL(this.avatar);
+      this.showimg = false
+    },
 
     // lấy data quận huyện
     async onCitySelected() {
-      this.districts= []
+      this.districts = []
       this.communes = []
-      this.districts_code= ''
-      this.commune_id= ''
+      this.districts_code = ''
+      this.commune_id = ''
       this.districts = await AddressService.getDistricts(this.city_id);
     },
     // lấy data xã thị trấn
     async onDistrictSelected() {
       this.communes = []
-      this.commune_id= ''
+      this.commune_id = ''
       this.communes = await AddressService.getCommune(this.districts_code);
     },
     //hàm đăng kí
     async register() {
       // bật hết các focus validate
       this.avatarFocusted = true, this.usernameFocused = true, this.emailFocused = true,
-      this.passwordFocused = true, this.cityFocused = true, this.districtFocused = true,
-      this.communeFocused = true, this.addressFocusted = true, this.phoneFocused = true
+        this.passwordFocused = true, this.cityFocused = true, this.districtFocused = true,
+        this.communeFocused = true, this.addressFocusted = true, this.phoneFocused = true
 
       //gọi lại hàm đăng kí từ authService
-      authService.register(this.avatar, this.username, this.password, this.email,
-        this.address, this.phone, this.city_id, this.districts_code, this.commune_id, this.$refs, this.$router)
+      if (this.validEmail(this.email) && this.validPassword(this.password) && this.validPhone(this.phone) &&  this.validPassword2(this.password) && this.validFullName(this.username)
+      && this.address && this.commune_id && this.districts_code && this.city_id && this.avatar && this.username) {
+        authService.register(this.avatar, this.username, this.password, this.email,
+          this.address, this.phone, this.city_id, this.districts_code, this.commune_id, this.$refs, this.$router)
+          this.avatarFocusted = false, this.usernameFocused = false, this.emailFocused = false,
+        this.passwordFocused = false, this.cityFocused = false, this.districtFocused = false,
+        this.communeFocused = false, this.addressFocusted = false, this.phoneFocused = false
+      }
     },
 
     // các re ràng buộc
@@ -283,7 +284,12 @@ export default {
       const re = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
       return re.test(password);
     },
-    validPassword2(password) {
+    validFullName(fullName) {
+    // Định nghĩa tiêu chí cho họ và tên người dùng hợp lệ
+    const re = /^[a-zA-Z\s]{3,}$/;
+    return re.test(fullName);
+  },
+  validPassword2(password) {
       const re = /[A-Z]/;
       return re.test(password);
     },

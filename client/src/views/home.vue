@@ -33,7 +33,7 @@ export default {
     return {
       isShow: false,
       user: "",
-      users: [],
+      users: [],imgs_new:[]
     };
   },
 
@@ -57,6 +57,7 @@ export default {
     openChat() {
       this.showChat = !this.showChat;
     },
+   
   },
 };
 </script>

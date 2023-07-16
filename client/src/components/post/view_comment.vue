@@ -31,7 +31,7 @@
                                 <p class="text-xs">{{ getTimeFromCreatedAt(comment.createdAt) }}</p>
                                 <p>{{ comment.comment_content }}</p>
                             </div>
-
+                            
                             <div class="px-2 py-2 w-full text-gray-700 text-sm"
                                 v-if="(!showedit, idcomment === comment.id)">
                                 <textarea
@@ -58,6 +58,8 @@
                                     </ul>
                                 </div>
                             </div>
+
+                           
                         </div>
                     </div>
                 </div>

@@ -17,11 +17,11 @@
                 <div class="mt-1">
                     <input type="text" placeholder="Họ và tên"
                         class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none "
-                        v-model="username" @focus="checkUsernameError" />
+                        v-model="username" />
                 </div>
                 <p class="text-red-500 text-sm ml-1" v-if="!username && usernameFocused">Tên người dùng bị trống.</p>
                 <p class="text-red-500 text-sm ml-1"
-                    v-else-if="(username.length < 3 || username.length > 20) && usernameFocused">Tên người dùng phải từ 3
+                    v-else-if="!validFullName(username) && usernameFocused">Tên người dùng phải từ 3
                     đến 20
                     ký tự.</p>
 
@@ -35,7 +35,7 @@
                 <div class="mt-5">
                     <input type="text" placeholder="Số điện thoại"
                         class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
-                        v-model="phone" @focus="checkphoneError()" />
+                        v-model="phone" />
                 </div>
                 <p class="text-red-500 text-sm ml-1" v-if="!phone && phoneFocused">Số điện thoại bị trống.</p>
                 <p class="text-red-500 text-sm ml-1" v-else-if="!validPhone(phone) && phoneFocused">Số điện thoại sai định
@@ -61,7 +61,7 @@
             -->
                     <div class="relative md:mr-2 mt-5">
                         <label>Thành phố:</label>
-                        <select v-model="city_id" required @change="onCitySelected()" @focus="checkcityError"
+                        <select v-model="city_id" required @change="onCitySelected()"
                             class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
                             <option disabled>Thành phố</option>
                             <option v-for="city in citys" :key="city.code" :value="city.code">
@@ -79,7 +79,7 @@
             -->
                     <div class="relative md:mr-2 mt-5">
                         <label>Quận huyện:</label>
-                        <select v-model="districts_code" @change="onDistrictSelected()" @focus="checkDistrictsError"
+                        <select v-model="districts_code" @change="onDistrictSelected()"
                             class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
                             <option disabled selected>Quận/Huyện</option>
                             <option v-for="district in districts" :key="district.code" :value="district.code">
@@ -99,7 +99,7 @@
             -->
                     <div class="relative mt-5">
                         <label>Xã phường:</label>
-                        <select v-model="commune_id" @focus="checkCommuneError"
+                        <select v-model="commune_id"
                             class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
                             <option disabled selected>Xã/Phường</option>
                             <option v-for="commune in communes" :key="commune.code" :value="commune.code">
@@ -118,7 +118,7 @@
                 <div class="mt-5">
                     <input type="text" placeholder="Địa chỉ cụ thể:"
                         class="px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none w-full"
-                        v-model="address" @focus="checkaddressError()" />
+                        v-model="address" />
                 </div>
                 <p class="text-red-500 text-sm ml-1" v-if="!address && addressFocusted">Địa chỉ cụ thể bị trống.</p>
                 <p class="text-red-500 text-sm ml-1" v-if="address.length >= 10 && addressFocusted">Địa chỉ tối đa 10 kí tự.
@@ -137,13 +137,17 @@
             </div>
         </div>
     </div>
+    <toast ref="toast"></toast>
 </template>
 
 <script>
 
 import userService from '../../plugins/userService';
 import addressService from '../../plugins/addressService';
+import toast from '../toast/toast.vue'
+
 export default {
+    emits: ["cancel"],
     data() {
         return {
             user: '',
@@ -155,6 +159,7 @@ export default {
             addressFocusted: false, phoneFocused: false,
         };
     },
+    components: { toast },
     mounted() {
 
         this.user = userService.getUserToken();
@@ -202,12 +207,20 @@ export default {
             this.commune_id = ''
             this.communes = await addressService.getCommune(this.districts_code);
         },
-
+        validFullName(fullName) {
+            // Định nghĩa tiêu chí cho họ và tên người dùng hợp lệ
+            const re = /^[a-zA-Z\s]{3,}$/;
+            return re.test(fullName);
+        },
         async updateInfo() {
-            const id =this.user.id
+            const id = this.user.id
             this.usernameFocused = true, this.cityFocused = true, this.districtFocused = true,
-            this.communeFocused = true, this.addressFocusted = true, this.phoneFocused = true
-            userService.updateInfo(this.address,this.phone,this.districts_code,this.city_id,this.commune_id,this.username,id)
+                this.communeFocused = true, this.addressFocusted = true, this.phoneFocused = true
+            if (this.validPhone(this.phone)
+                && this.address && this.commune_id && this.districts_code && this.city_id && this.username && this.validFullName(this.username)) {
+                userService.updateInfo(this.address, this.phone, this.districts_code, this.city_id, this.commune_id, this.username, id, this.$refs)
+
+            }
         }
     },
 }
