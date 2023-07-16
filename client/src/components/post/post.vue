@@ -235,7 +235,7 @@ export default {
         toast,
         editpost
     },
-    props: ['type', 'filter'],
+    props: ['filter'],
 
     data() {
         return {
@@ -262,15 +262,11 @@ export default {
 
         postService.renderPost().then((data) => {
 
-            if (this.type === '' && this.filter === '' ) {
+            if ( this.filter === '' ) {
                 this.posts = data.filter(item => item.user.id == this.$route.params.id );
             }
-           
-            if (this.filter !== '' && this.type === '') {
-                this.posts = data.filter(item => item.id == this.filter && this.user.priority >= item.priority)
-            }
-            if (this.type !== '' && this.filter === '') {
-                this.posts = data.filter(item => item.type == this.type && this.user.priority >= item.priority)
+            if (this.filter !== '') {
+                this.posts = data.filter(item => item.id == this.filter )
             }
         });
 

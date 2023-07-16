@@ -15,7 +15,7 @@
         </div>
     </div>
     <div v-for="followuser in followusers">
-        <div v-for="post in posts.filter(item => item.user.id === followuser.userfollowed)">
+        <div v-for="post in posts.filter(item => item.user.id === followuser.userfollowed && item.priority <= user.priority)">
             <post :filter="post.id" type="" />
         </div>
 

@@ -75,10 +75,20 @@
                 </ul>
             </div>
             
-           
-           
-            <post type="" filter="" v-if="isUser"/>
+            <div v-if="user.id == this.$route.params.id">
+                <post  filter="" v-if="isUser"/>
+            </div>
 
+            <div v-if="user.id != this.$route.params.id && user != false">
+                <div v-for="post in posts.filter(item=>item.user.id == this.$route.params.id )">
+                <post  :filter="post.id" v-if="isUser"/></div>
+            </div>
+
+            <div v-if=" user === false">
+                <div v-for="post in posts.filter(item=>item.user.id == this.$route.params.id && item.priority == 1 )">
+                <post  :filter="post.id" v-if="isUser"/>
+            </div>
+            </div>
             <postfollow v-if="isFollow" />
             <followuser v-if="isFollowUser" />
             <ratingView v-if="isShowRatingView"/>
@@ -110,6 +120,7 @@ import reportuser from '../components/information/reportuser.vue';
 import ratingForm from '../components/rating/ratingForm.vue';
 import ratingView from '../components/rating/viewrating.vue'
 import chat from '../components/chat.vue';
+import postService from '../plugins/postService';
 export default
     {
         data() {
@@ -131,6 +142,7 @@ export default
                 isShowRatingView:false,
                 showlogin:true,
                 users:[],
+                posts:[],id:''
                
             }
         },
@@ -166,8 +178,10 @@ export default
                 this.showlogin = false
             }
             this.getfollow();
-            this.getUsers()
-           
+            this.getUsers();
+          
+            postService.renderPost().then((data) => { this.posts = data });
+            console.log(this.user)
         },
         methods:
         {
@@ -235,6 +249,7 @@ export default
                         `user/getbyid/` + this.$route.params.id
                     );
                     this.users = result.data;
+                    this.id =this.users.id
                     if(this.users.isUser == false)
                     {
                         this.isShowUser = false

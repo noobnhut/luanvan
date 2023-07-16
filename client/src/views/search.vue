@@ -5,8 +5,16 @@
       <leftnav />
     </div>
     <div class="p-4 lg:col-span-2 md:col-span-2 col-span-3">
-      <div v-for="i in searchs">
-        <post :filter="i.id" type="" />
+      <div v-if="user === false">
+        <div v-for="i in searchs.filter(item => item.priority == 1)">
+          <post type="" :filter="i.id" />
+        </div>
+      </div>
+
+      <div v-if="user != false">
+        <div v-for="i in searchs.filter(item => item.priority <= user.priority)">
+          <post type="" :filter="i.id" />
+        </div>
       </div>
     </div>
     <div class="p-4 hidden md:block lg:block md:col-span-1 lg:col-span-1">
@@ -22,20 +30,22 @@ import navbar from '../components/header/navbar.vue'
 import leftnav from '../components/header/leftnav.vue'
 import rightnav from "../components/header/rightnav.vue";
 import chatVue from "../components/chat.vue";
-
+import userService from '../plugins/userService';
 export default {
   props: ['data'],
   data() {
     return {
       searchs: [],
-      obj: ''
+      obj: '',
+      user: ''
     }
   },
-  components: { post, navbar ,leftnav,rightnav,chatVue},
+  components: { post, navbar, leftnav, rightnav, chatVue },
   mounted() {
     var data = this.$route.query.data;
     this.obj = JSON.parse(decodeURIComponent(data));
     this.search()
+    this.user = userService.getUserToken();
   },
   methods: {
     async search() {

@@ -1,6 +1,6 @@
 <template>
     <div v-for="follow in follows.filter(item=>item.id_user==this.$route.params.id)">   
-        <post :filter="follow.id_post" type="" filter="" />
+        <post :filter="follow.id_post" />
 </div>
 </template>
 
