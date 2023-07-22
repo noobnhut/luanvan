@@ -17,6 +17,11 @@ const KEY_MAP = process.env.KEY_MAP;
 const Notification = db.Notification;
 const notiSetting = db.NotificationSetting;
 const fs = require('fs');
+const cron = require('node-cron');
+
+const level3 = []
+const level2 = []
+const level1 = []
 
 const deleteFile = (filePath) => {
   fs.unlink(filePath, (err) => {
@@ -27,7 +32,6 @@ const deleteFile = (filePath) => {
     console.log(`File ${filePath} has been deleted`);
   });
 }
-
 
 const resultPost = async (citycode, districtcode, communecode, useraddress) => {
   try {
@@ -72,13 +76,73 @@ const createPost = async (req, res) => {
         latitube: locationData.coordinates[1]
       });
       if (post) {
+        let newpost = { id: post.id, priority: post.id, time: post.createdAt }
+        level3.push(newpost)
+        handleLV3()
         const id_post = post.id;
-        res.status(200).json({ id_post, message: "Thêm thành công" })
-        createNotification(id_post,res);
+        res.status(200).json({ id_post, message: "Thêm thành công" });
       }
     }
   } catch (error) {
-    return res.status(404).json({ error })
+    return res.status(404).json(error)
+  }
+}
+const handleLV3 = () => {
+  for (let i = 0; i < level3.length; i++) {
+    const post = level3[i];
+    const time = post.time
+    // Thêm 10 phút vào thời gian hiện tại
+    time.setMinutes(time.getMinutes() + 1);
+    // Chuyển đổi thời gian sang định dạng cron
+    const cronTime = `${time.getMinutes()} ${time.getHours()} ${time.getDate()} ${time.getMonth() + 1} *`;
+    const cronJob = cron.schedule(cronTime, async () => {
+      // thực hiện update tại đây
+      const postupdate = await Post.findByPk(post.id)
+      const lv3 = await postupdate.update({ priority: 3 })
+      let newpost = { id: lv3.id, priority: lv3.priority, time: lv3.updatedAt }
+      level2.push(newpost)
+      level3.splice(i, 1);
+      handleLV2()
+    });
+
+    cronJob.start();
+  }
+}
+const handleLV2 = () => {
+  for (let i = 0; i < level2.length; i++) {
+    const post = level2[i];
+    const time = post.time
+    // Thêm 10 phút vào thời gian hiện tại
+    time.setMinutes(time.getMinutes() + 1);
+    // Chuyển đổi thời gian sang định dạng cron
+    const cronTime = `${time.getMinutes()} ${time.getHours()} ${time.getDate()} ${time.getMonth() + 1} *`;
+
+    const cronJob = cron.schedule(cronTime, async () => {
+      const postupdate = await Post.findByPk(post.id)
+      const lv2 = await postupdate.update({ priority: 2 })
+      let newpost = { id: lv2.id, priority: lv2.priority, time: lv2.updatedAt }
+      level1.push(newpost)
+      level2.splice(i, 1);
+      handleLV1()
+    });
+
+    cronJob.start();
+  }
+}
+const handleLV1 = () => {
+  for (let i = 0; i < level1.length; i++) {
+    const post = level1[i];
+    const time = post.time
+    // Thêm 10 phút vào thời gian hiện tại
+    time.setMinutes(time.getMinutes() + 1);
+    // Chuyển đổi thời gian sang định dạng cron
+    const cronTime = `${time.getMinutes()} ${time.getHours()} ${time.getDate()} ${time.getMonth() + 1} *`;
+    const cronJob = cron.schedule(cronTime, async () => {
+      const postupdate = await Post.findByPk(post.id)
+      await postupdate.update({ priority: 1}) 
+      level1.splice(i, 1); 
+    });
+    cronJob.start();
   }
 }
 
@@ -118,7 +182,8 @@ const renderPost = async (req, res) => {
               raw: true,
               nest: true,
             }
-          ]
+          ],
+        order: [["id", "DESC"]],
       }
 
     )
@@ -213,16 +278,16 @@ const deletePost = async (req, res) => {
   }
   try {
     const id = req.params.id;
-    const imgs = await Img.findAll({where:{id_post:id}});
+    const imgs = await Img.findAll({ where: { id_post: id } });
 
     if (imgs.length > 0) {
       for (const img of imgs) {
-      const imagePath = `./uploads/${img.image_name}`;
-      deleteFile(imagePath);
-      await img.destroy();
+        const imagePath = `./uploads/${img.image_name}`;
+        deleteFile(imagePath);
+        await img.destroy();
+      }
     }
-    }
-    const videos = await Video.findAll({where:{id_post:id}});
+    const videos = await Video.findAll({ where: { id_post: id } });
 
     if (videos.length > 0) {
       for (const video of videos) {
@@ -232,8 +297,8 @@ const deletePost = async (req, res) => {
       }
     }
 
-    
-   
+
+
     await Like.destroy({
       where: {
         id_post: req.params.id
@@ -250,8 +315,8 @@ const deletePost = async (req, res) => {
       }
     })
     await Notification.destroy({
-      where:{
-        id_post:req.params.id
+      where: {
+        id_post: req.params.id
       }
     })
     await Post.destroy({
@@ -333,7 +398,6 @@ const acceptPost = async (req, res) => {
   }
 }
 
-// công thức haversine tham khảo internet
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const radius = 6371; // Bán kính Trái đất trong kilômét
 
@@ -382,20 +446,18 @@ const searchPost = async (req, res) => {
           { title: { [Op.like]: `%${keysearch}%` } },
           { post_content: { [Op.like]: `%${keysearch}%` } }
         ],
-        id_cat:catid,
-        type:type,
+        id_cat: catid,
+        type: type,
       }
     });
-     // lấy ra được tọa độ của input search
+    // lấy ra được tọa độ của input search
     const searchLocation = await resultPost(citycode, districtcode, communecode, useraddress);
 
     const resultunlocation = []
-    for(const result of postunlocation)
-    {
-      const math = calculateDistance(result.latitube,result.longtitube,searchLocation.lat,searchLocation.lng)
+    for (const result of postunlocation) {
+      const math = calculateDistance(result.latitube, result.longtitube, searchLocation.lat, searchLocation.lng)
 
-      if(math<=radius)
-      {
+      if (math <= radius) {
         resultunlocation.push(result)
       }
     }
@@ -407,79 +469,59 @@ const searchPost = async (req, res) => {
   }
 };
 
-const createNotification = async (id,res) => {
+const createNotification = async (id, res) => {
   try {
-  const post = await Post.findOne({
-  where: { id: id },
-  include: { model: User }
-  });
-  if(post.priority > 1)
-{
-  const users = await User.findAll({ where: { priority: post.priority, notification_status: true } });
-  const settings = await notiSetting.findAll({ where: { status: true, type_post: post.type } });
-  
-  const userSetting = [];
-  const userUnSetting = [];
+    const post = await Post.findOne({
+      where: { id: id },
+      include: { model: User }
+    });
+    if (post.priority > 1) {
+      const users = await User.findAll({ where: { priority: post.priority, notification_status: true } });
+      const settings = await notiSetting.findAll({ where: { status: true, type_post: post.type } });
 
-  for (const user of users) {
-    const setting = settings.find((item) => item.id_user === user.id);
-    if (setting) {
-      const distance = calculateDistance(post.latitube, post.longtitube,user.latitube, user.longtitube);
-      if (distance <= setting.location_radius) {
-        userSetting.push({
-          id_user: user.id,
-          username:user.username,
-          location_radius: setting.location_radius,
-          type_post: setting.type_post
-        });
+      const userSetting = [];
+      const userUnSetting = [];
+
+      for (const user of users) {
+        const setting = settings.find((item) => item.id_user === user.id);
+        if (setting) {
+          const distance = calculateDistance(post.latitube, post.longtitube, user.latitube, user.longtitube);
+          if (distance <= setting.location_radius) {
+            userSetting.push({
+              id_user: user.id,
+              username: user.username,
+              location_radius: setting.location_radius,
+              type_post: setting.type_post
+            });
+          }
+        } else {
+          userUnSetting.push({
+            id_user: user.id,
+            username: user.username,
+          });
+        }
       }
-    } else {
-      userUnSetting.push({
-        id_user: user.id,
-        username:user.username,
+      const userNoti = [...userSetting, ...userUnSetting]
+      const exitsNoti = await Notification.findAll();
+      const notificationPromises = userNoti.map(async (user) => {
+        const existingNotification = exitsNoti.find((noti) => noti.id_user === user.id_user && noti.id_post === id);
+        if (!existingNotification && post.user.id !== user.id) {
+          const notification = await Notification.create({
+            id_user: user.id_user,
+            id_post: id,
+            notification_content: `Có một bài đăng mới từ ${post.user.username} với tiêu đề ${post.title}`
+          });
+          res.io.emit('notification', notification);
+        }
       });
+      await Promise.all(notificationPromises);
     }
-  }
-  const userNoti = [...userSetting, ...userUnSetting]
-  const exitsNoti = await Notification.findAll();
-  const notificationPromises = userNoti.map(async (user) => {
-    const existingNotification = exitsNoti.find((noti) => noti.id_user === user.id_user && noti.id_post === id);
-    if (!existingNotification && post.user.id !== user.id) {
-      const notification = await Notification.create({
-        id_user: user.id_user,
-        id_post: id,
-        notification_content: `Có một bài đăng mới từ ${post.user.username} với tiêu đề ${post.title}`
-      });
-      res.io.emit('notification', notification);
-    }
-  });
-  await Promise.all(notificationPromises);
-}
-  } catch (error) {
-  console.log(error);
-  
-  }
-} 
-// thực hiện update post và gửi sau 10 phut
-setInterval(async () => {
-  try {
-    // Lấy tất cả các bài đăng có độ ưu tiên lớn hơn 1
-    const postsToUpdate = await Post.findAll({
-      where: { priority: { [Op.gt]: 1 } },
-    });
-    // Cập nhật độ ưu tiên của các bài đăng này
-    const updatePromises = postsToUpdate.map(async (post) => {
-      const timeSinceCreation = Date.now() - post.createdAt.getTime();
-      const minutesSinceCreation = timeSinceCreation / (1000 * 60);
-      const newPriority = Math.max(1, post.priority - Math.floor(minutesSinceCreation / 240));
-      const postupdate = await post.update({ priority: newPriority });
-      createNotification(postupdate);
-    });
-    await Promise.all(updatePromises);
   } catch (error) {
     console.log(error);
+
   }
-}, 240 * 60 * 1000);
+}
+
 
 
 module.exports =
@@ -493,5 +535,5 @@ module.exports =
   getPostInteraction,
   acceptPost,
   searchPost,
-  
+
 }

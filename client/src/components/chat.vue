@@ -1,42 +1,41 @@
 <template>
     <!--view list chat-->
-    <div class="py-10 fixed bottom-0" v-if="checkLogin">
-        <div class="relative rounded-lg border border-gray-100 bg-white shadow-lg">
-            <div class="bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white py-2 px-4">
-                <h2 class="text-xl font-semibold text-gray-800">
-                    Danh sách tin nhắn
-                </h2>
-            </div>
-            <div
-                class="absolute left-14 bottom-0 h-4 w-4 -translate-x-1/2 translate-y-1/2 rotate-45 transform border-r border-b border-gray-100 bg-white">
-            </div>
-            <div class="max-h-60 overflow-y-auto" v-for="user in usersocket.filter((item) => item.id != user.id)">
-                <div class="px-2 py-2">
-                    <div class="flex items-center" @click="openChat(); getchat(user.id)">
-                        <div class="relative" v-for="us in usersocket.filter(item => item.id == user.id)">
-                            <div class="flex items-center justify-center  overflow-hidden rounded-full">
-                                <span class="mr-1 text-rose-300 cursor-pointer" @click="deleteChat()">X</span>
-                                <img class="w-12 h-12  rounded-full mr-2" :src="user.avatar" alt="Avatar">
-                            </div>
-                            <div
-                                :class="['absolute bottom-0 right-0 w-4 h-4 mr-1 rounded-full border-2 border-white', user.online ? 'bg-green-500' : 'bg-red-500']">
-                            </div>
+    <div class="py-10 fixed bottom-0 z-20" v-if="checkLogin">
+    <div class="relative rounded-lg border border-gray-100 bg-white shadow-lg" v-show="showlist">
+        <div class="bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white py-2 px-4">
+            <h2 class="text-xl font-semibold text-gray-800">
+                Danh sách tin nhắn
+            </h2>
+        </div>
+        <div class="absolute left-14 bottom-0 h-4 w-4 -translate-x-1/2 translate-y-1/2 rotate-45 transform border-r border-b border-gray-100 bg-white">
+        </div>
+        <div class="max-h-50 overflow-y-auto">
+        <div v-for="user in usersocket.filter((item) => item.id != user.id)">
+            <div class="px-2 py-2">
+                <div class="flex items-center" @click="openChat(); getchat(user.id)">
+                    <div class="relative" v-for="us in usersocket.filter(item => item.id == user.id)">
+                        <div class="flex items-center justify-center overflow-hidden rounded-full">
+                            <span class="mr-1 text-rose-300 cursor-pointer" @click="deleteChat()">X</span>
+                            <img class="w-12 h-12 rounded-full mr-2" :src="user.avatar" alt="Avatar">
                         </div>
-                        <h3
-                            class="text-gray-900 font-semibold md:text-xs lg:text-base ml-2 text-xs md:block hidden cursor-pointer">
-                            {{ user.username }}</h3>
-
+                        <div :class="['absolute bottom-0 right-0 w-4 h-4 mr-1 rounded-full border-2 border-white', user.online ? 'bg-green-500' : 'bg-red-500']">
+                        </div>
                     </div>
+                    <h3 class="text-gray-900 font-semibold md:text-xs lg:text-base ml-2 text-xs md:block cursor-pointer">
+                        {{ user.username }}</h3>
                 </div>
             </div>
-        </div>
-        <img class="mt-4 w-16 rounded-full" src="../assets/login.gif" alt="" />
+        </div></div>
+
     </div>
+    <img class="mt-4 w-14 rounded-full" src="../assets/login.gif" alt="" @click="handleshow()" />
+</div>
+
 
 
     <!--chat-->
     <div>
-        <div class="fixed md:right-20 right-0 bottom-0 z-30 w-80 h-96 flex flex-col border shadow-md bg-white"
+        <div class="fixed md:right-20 right-0 bottom-0 z-30 w-80 h-96 flex flex-col border shadow-md bg-white" 
             v-if="showChat">
             <div class="flex items-center justify-between border-b p-2">
                 <!-- user info -->
@@ -184,7 +183,8 @@ export default {
             messager: '',
             checkLogin: true,
             isShowdelete: false,
-            chat: ''
+            chat: '',
+            showlist:true
 
         };
     },
@@ -240,6 +240,10 @@ export default {
     methods: {
         openChat() {
             this.showChat = !this.showChat;
+        },
+        handleshow()
+        {
+            this.showlist = !this.showlist
         },
         formatTime(timeString) {
             return dayjs(timeString).format('HH:mm');

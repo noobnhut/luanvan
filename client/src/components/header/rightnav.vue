@@ -14,7 +14,7 @@
         </p>
       </div>
     </div>
-    <img class="mt-4 w-16 rounded-full" src="../../assets/login.gif" alt="" />
+    <img class="mt-4 w-14 rounded-full" src="../../assets/login.gif" alt="" />
   </div>
 
 </template>

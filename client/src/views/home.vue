@@ -4,15 +4,18 @@
     <div class="py-2 col-span-1 mx-2 md:mx-4 lg:mx-8">
       <leftnav />
     </div>
-    <div class="p-4 lg:col-span-2 md:col-span-2 col-span-3">
-      <inputform />
-      <router-view></router-view>
-    </div>
+      <div class="p-4 lg:col-span-2 md:col-span-2 col-span-3">
+        <inputform />
+        <router-view></router-view>
+        <div class=" md:hidden block">
+          <chatVue></chatVue>
+        </div>     
+      </div>
     <div class="p-4 hidden md:block lg:block md:col-span-1 lg:col-span-1">
       <rightnav />
       <chatVue></chatVue>
     </div>
-
+    
   </div>
 
   

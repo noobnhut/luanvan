@@ -33,12 +33,9 @@
             <h3 class="font-semibold   hidden text-xs  md:block  lg:text-base sm:block lg:block">Thông tin cá nhân</h3>
           </a>
         </div>
-        <router-link to="/" class=" items-center mt-4 py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer flex md:hidden">
-          <i class=" text-violet-500   uil-facebook-messenger mr-4 md:text-xl"></i>
-          <h3 class="font-semibold   hidden text-xs  md:block  lg:text-base sm:block lg:block">Nhắn tin</h3>
-        </router-link>
+       
 
-        <div class="bg-white shadow-md rounded-md overflow-hidden max-w-lg mx-auto mt-16">
+        <div class="bg-white shadow-md rounded-md overflow-hidden max-w-lg mx-auto mt-16 hidden md:block">
           <div class="bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white py-2 px-4">
               <h2 class="text-xl font-semibold text-gray-800">Bảng xếp hạng</h2>
           </div>

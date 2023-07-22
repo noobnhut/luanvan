@@ -102,7 +102,7 @@
                         <option disabled selected>Chọn loại bài đăng</option>
                         <option value="Tìm kiếm">Tìm kiếm</option>
                         <option value="Trao tặng">Trao tặng</option>
-                        <option value="Trao đổi">Trao đổi</option>
+                        <option value='Trao đổi'>Trao đổi</option>
 
                     </select>
                     <p class="text-red-500 text-sm ml-1" v-if="!type_post && typeFocused">Không được để trống.</p>
@@ -152,7 +152,7 @@
                         <option disabled selected>Chọn loại bài đăng</option>
                         <option value="Tìm kiếm">Tìm kiếm</option>
                         <option value="Trao tặng">Trao tặng</option>
-                        <option value="Trao đổi">Trao đổi</option>
+                        <option value='Trao đổi'>Trao đổi</option>
 
                     </select>
                     <p class="text-red-500 text-sm ml-1" v-if="!type_post && typeFocused">Không được để trống.</p>

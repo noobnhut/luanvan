@@ -17,7 +17,7 @@
                 <option disabled selected>Chọn loại bài đăng</option>
                 <option value="Tìm kiếm">Tìm kiếm</option>
                 <option value="Trao tặng">Trao tặng</option>
-                <option value="Trao đổi">Trao đổi</option>
+                <option value='Trao đổi'>Trao đổi</option>
                 <p class="text-red-500 text-sm ml-1" v-if="!type && typeFocused">Không được để trống.</p>
 
               </select>
@@ -148,10 +148,7 @@
                 <input id="img-file" type="file" @change="onFileSelected" multiple hidden
                   accept=".png, .jpeg, .gif, .jpg" />
               </label>
-
             </div>
-          
-
           </div>
         </div>
       </div>
@@ -210,6 +207,8 @@ export default {
       type: "",
       imgs_new: [],
       videos_new: [],
+      imgs_delete:[],
+      videos_delete:[],
       avatar: null,
       video: null,
       id: '',
@@ -278,6 +277,7 @@ export default {
     deleteimg() {
 
       if (this.imgs.length > 0) {
+        this.imgs_delete = this.imgs
         this.imgs = []
       }
       else {
@@ -286,6 +286,7 @@ export default {
     },
     deletevideo() {
       if (this.videos.length > 0) {
+        this.videos_delete = this.videos
         this.videos = []
       }
       else {
@@ -315,6 +316,24 @@ export default {
     },
     async updateInfo() {
       try {
+        if(this.imgs_delete.length>0)
+        {
+          try {
+            await this.$axios.delete(`post/deleteimgbypost/`+this.id);
+          } catch (error) {
+            console.log(error)
+          }
+        }
+
+        if(this.videos_delete.length>0)
+        {
+          try {
+            await this.$axios.delete(`post/deleteVideobypost/`+this.id);
+          } catch (error) {
+            console.log(error)
+          }
+        }
+
         if (this.avatar) {
           const formImg = new FormData();
           for (let i = 0; i < this.avatar.length; i++) {
@@ -335,6 +354,7 @@ export default {
             console.log(error)
           }
         }
+
         if (this.video) {
           const formVideo = new FormData();
           for (let i = 0; i < this.video.length; i++) {
@@ -351,6 +371,7 @@ export default {
             }
           );
         }
+
         this.cityFocused = true; this.districtFocused = true; this.communeFocused = true; this.catFocused = true;
         this.typeFocused = true; this.titleFocused = true; this.contentFocused = true; this.avatarFocusted = true;
 
@@ -369,13 +390,15 @@ export default {
           if (result.status == 200) {
             this.$refs.toast.showToast("Cập nhập thành công");
             setTimeout(() => {
-              location.reload();
+              window.location.href = `${import.meta.env.VITE_API_BASE_URL_API}detailpost/${this.title}/${this.id}`;
+              
             }, 1000);
 
           }
         }
 
-      } catch (error) { }
+      } catch (error) {console.log(error) }
+      
     },
 
 

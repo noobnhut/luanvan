@@ -19,7 +19,7 @@
           </div>
           <p class="text-red-500 text-sm ml-1" v-if="!username && usernameFocused">Tên người dùng bị trống.</p>
           <p class="text-red-500 text-sm ml-1"
-            v-else-if="!validFullName(username) && usernameFocused">Tên người dùng phải từ 3 đến 20
+            v-else-if="username.length >= 3 && usernameFocused">Tên người dùng phải từ 3 đến 20
             ký tự.</p>
 
           <!--kết thúc username-->
@@ -122,7 +122,7 @@
             -->
             <div class="relative mt-5">
               <label>Xã phường:</label>
-              <select v-model="commune_id" @focus="checkCommuneError"
+              <select v-model="commune_id" 
                 class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
                 <option disabled selected>Xã/Phường</option>
                 <option v-for="commune in communes" :key="commune.code" :value="commune.code">
@@ -142,7 +142,7 @@
           <div class="mt-5">
             <input type="text" placeholder="Địa chỉ cụ thể:"
               class="px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none w-full"
-              v-model="address" @focus=" checkaddressError()" />
+              v-model="address" />
           </div>
 
           <p class="text-red-500 text-sm ml-1" v-if="!address && addressFocusted">Địa chỉ cụ thể bị trống.</p>
@@ -261,7 +261,7 @@ export default {
         this.communeFocused = true, this.addressFocusted = true, this.phoneFocused = true
 
       //gọi lại hàm đăng kí từ authService
-      if (this.validEmail(this.email) && this.validPassword(this.password) && this.validPhone(this.phone) &&  this.validPassword2(this.password) && this.validFullName(this.username)
+      if (this.validEmail(this.email) && this.validPassword(this.password) && this.validPhone(this.phone) &&  this.validPassword2(this.password) 
       && this.address && this.commune_id && this.districts_code && this.city_id && this.avatar && this.username) {
         authService.register(this.avatar, this.username, this.password, this.email,
           this.address, this.phone, this.city_id, this.districts_code, this.commune_id, this.$refs, this.$router)
@@ -284,11 +284,10 @@ export default {
       const re = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
       return re.test(password);
     },
-    validFullName(fullName) {
-    // Định nghĩa tiêu chí cho họ và tên người dùng hợp lệ
-    const re = /^[a-zA-Z\s]{3,}$/;
-    return re.test(fullName);
-  },
+     validFullName(fullName) {
+  const re = /^[a-zA-Z]+(\s[a-zA-Z]+)*$/;
+  return re.test(fullName) && fullName.length >= 3;
+},
   validPassword2(password) {
       const re = /[A-Z]/;
       return re.test(password);

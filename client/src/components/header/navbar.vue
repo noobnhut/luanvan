@@ -29,10 +29,10 @@
           </router-link>
         </div>
 
-        <div class="profile-pic ml-2 " v-if="checkLogin">
+        <div class="profile-pic ml-2 md:hidden cursor-pointer " v-if="checkLogin" @click="showranks()">
           <div
             class="rounded-full w-10 h-10 object-cover bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 flex items-center justify-center">
-            <i class="uil-facebook-messenger text-3xl md:text-xl"></i>
+            <i class="fa-solid fa-ranking-star text-2xl md:text-xl"></i>
         </div>
 
         </div>
@@ -82,7 +82,31 @@
     </div>
   </div>
 
+<!--showrank-->
+<div class=" fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 overflow-auto " v-if="showrank">
+    <div class="absolute w-full h-full bg-gray-900 opacity-50"></div>
 
+    <div class=" bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto ">
+      <div class="flex flex-row py-3 px-4">
+        <h5 class="text-lg font-semibold flex-grow">Bảng chọn</h5>
+        <i class="uil-multiply flex-none cursor-pointer bg-gray-400 rounded-xl" @click="showranks()"></i>
+      </div>
+      <div class="py-4 px-4">
+        <ul class="divide-y divide-gray-200" v-for="(rank, index) in ranks">
+                  <li class="flex items-center py-4 px-6">
+                      <span class="text-gray-700 text-lg font-medium mr-4">{{ index + 1 }}.</span>
+                      <img class="w-12 h-12 rounded-full object-cover mr-4" :src="rank.avatar" alt="User avatar">
+                      <div class="flex-1">
+                          <h3 class="text-lg font-medium text-gray-800">{{ rank.username }}</h3>
+                          <p class="text-gray-600 text-base">{{ rank.ranking_score }} điểm</p>
+                      </div>
+                  </li> 
+              </ul>
+      </div>
+
+
+    </div>
+  </div>
   <toast ref="toast"></toast>
   <post_content v-if="isShowModel" @cancel="onShow"></post_content>
   <change v-if="showchange" @cancel="onShowChange" />
@@ -110,7 +134,10 @@ export default {
       checkLogin: true,
       showNotification: false,
       showsearch: false,
-      showdropdown: false
+      showdropdown: false,
+      showrank:false,
+      ranks:[],
+    
     };
   },
 
@@ -135,6 +162,7 @@ export default {
       this.checkLogin = false
       localStorage.setItem('user', false);
     }
+    this.getRank()
   },
   methods: {
     handleResize() {
@@ -174,7 +202,20 @@ export default {
     },
     openSearch() {
       this.showsearch = !this.showsearch
-    }
+    },
+    showranks()
+    {
+      this.showrank = !this.showrank
+    },
+    async getRank()
+      {
+        try {
+            const result = await this.$axios.get('rank/get');
+            this.ranks= result.data
+        } catch (error) {
+            console.log(error)
+        }
+      },
   },
 };
 </script>

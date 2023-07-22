@@ -6,7 +6,7 @@
       </div>
 
       <div v-if="user != false">
-        <div v-for="i in posts.filter(item => item.priority <= user.priority  && item.type == 'Trao tặng')">
+        <div v-for="i in posts.filter(item => (item.priority <= user.priority || user.id == item.user.id)  && item.type == 'Trao tặng')">
           <post :filter="i.id" />
         </div>
       </div>

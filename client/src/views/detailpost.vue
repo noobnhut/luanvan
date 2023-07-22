@@ -5,10 +5,14 @@
             <leftnav />
         </div>
         <div class=" p-4 lg:col-span-2 md:col-span-2 col-span-3 ">
-            <post :filter="this.$route.params.id" type=""/>
+            <post :filter="this.$route.params.id"/>
+            <div class=" md:hidden block">
+          <chatVue></chatVue>
+        </div> 
         </div>
         <div class=" p-4 hidden md:block lg:block md:col-span-1 lg:col-span-1">
             <rightnav />
+            <chatVue></chatVue>
         </div>
     </div>
     <toast ref="toast"></toast>
@@ -16,7 +20,7 @@
 </template>
 
 <script>
-
+import chatVue from '../components/chat.vue';
 import toast from '../components/toast/toast.vue';
 import navbar from '../components/header/navbar.vue';
 import leftnav from '../components/header/leftnav.vue';
@@ -36,7 +40,8 @@ export default
             leftnav,
             rightnav,
             toast,
-            post
+            post,
+            chatVue
         },
         
         mounted() {

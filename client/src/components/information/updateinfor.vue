@@ -21,7 +21,7 @@
                 </div>
                 <p class="text-red-500 text-sm ml-1" v-if="!username && usernameFocused">Tên người dùng bị trống.</p>
                 <p class="text-red-500 text-sm ml-1"
-                    v-else-if="!validFullName(username) && usernameFocused">Tên người dùng phải từ 3
+                    v-else-if="user.length>=3 && usernameFocused">Tên người dùng phải từ 3
                     đến 20
                     ký tự.</p>
 
@@ -217,7 +217,7 @@ export default {
             this.usernameFocused = true, this.cityFocused = true, this.districtFocused = true,
                 this.communeFocused = true, this.addressFocusted = true, this.phoneFocused = true
             if (this.validPhone(this.phone)
-                && this.address && this.commune_id && this.districts_code && this.city_id && this.username && this.validFullName(this.username)) {
+                && this.address && this.commune_id && this.districts_code && this.city_id && this.username ) {
                 userService.updateInfo(this.address, this.phone, this.districts_code, this.city_id, this.commune_id, this.username, id, this.$refs)
 
             }

@@ -413,7 +413,7 @@ export default {
         },
         getclass3(post) {
 
-            if (post.user.id !== this.user.id && post.type === 'Trao tặng' && !this.user) {
+            if (post.user.id != this.user.id && post.type === "Trao tặng") {
                 return ''
             }
             else {

@@ -81,12 +81,7 @@ const registerUser = async (req, res) => {
       const { username, email, password, address, phone, citycode, districtcode, communecode, } = req.body;
       const locationData = await resultGeocoding(citycode, districtcode, communecode, address);
       const existingUser = await User.findOne({ where: { email, }, });
-      const encodedEmail = encodeURIComponent(email);
-      const url = `http://api.apilayer.com/email_verification/check?email=${encodedEmail}`;
       const imgs = [];
-      const response = await axios.get(url, { headers });
-      const emailVerificationResult = response.data;
-      if (emailVerificationResult.smtp_check === true) {
         if (existingUser) {
           return res
             .status(202)
@@ -123,10 +118,7 @@ const registerUser = async (req, res) => {
 
         return res.status(201).json({ message: "Đăng kí thành công" });
 
-      }
-      else {
-        return res.status(202).json({ message: "Địa chỉ mail không tồn tại" });
-      }
+      
 
     });
   } catch (error) {
