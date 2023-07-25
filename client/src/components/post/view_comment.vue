@@ -135,6 +135,7 @@ export default {
                 if (result.status === 200) {
                     event.target.value = ''
                     this.$refs.toast.showToast(result.data.message);
+                     postService.getcomment().then((data) => { this.comments = data });
                 }
             }
 
@@ -143,6 +144,7 @@ export default {
             const id_comment = id
             const result = await postService.deletecommentByid(id_comment);
             if (result.status == 200) {
+                this.$refs.toast.showToast(result.data.message);
                 postService.getcomment().then((data) => { this.comments = data });
             }
 
@@ -160,6 +162,7 @@ export default {
             if (result.status == 200) {
                 this.showedit = !this.showedit
                 this.idcomment = ''
+                this.$refs.toast.showToast(result.data.message);
                 postService.getcomment().then((data) => { this.comments = data });
             } 
             }

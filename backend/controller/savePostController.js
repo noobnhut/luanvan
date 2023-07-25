@@ -10,11 +10,11 @@ const PostShare = async (req, res) => {
 
     if (existShare) {
         const share= await Share.destroy({ where: { id:id,id_user: id_user, id_post: id_post } });
-        res.status(200).json({share, message: "Xóa thích thành công" })
+        res.status(200).json({share, message: "Hủy lưu thành công" })
     }
     else {
         const share= await Share.create({ id_user, id_post, status });
-        res.status(200).json({ share, message: "Thêm thích thành công" })
+        res.status(200).json({ share, message: "Lưu bài thành công" })
     }
    } catch (error) {
     res.status(404).json(error)

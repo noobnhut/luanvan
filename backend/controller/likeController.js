@@ -9,11 +9,11 @@ const Postlike = async (req, res) => {
 
     if (existLike) {
         const like = await Like.destroy({ where: { id:id,id_user: id_user, id_post: id_post } });
-        res.status(200).json({ like, message: "Xóa thích thành công" })
+        res.status(200).json({ like, message: "Thả tim thành công" })
     }
     else {
         const like = await Like.create({ id_user, id_post, status });
-        res.status(200).json({ like, message: "Thêm thích thành công" })
+        res.status(200).json({ like, message: "Hủy thả tim thành công" })
     }
 };
 

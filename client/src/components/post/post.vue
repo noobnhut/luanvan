@@ -315,9 +315,8 @@ export default {
 
                 if (result.status == 200) {
                     this.$refs.toast.showToast(result.data.message);
-
+                    postService.getLike().then((data) => { this.likes = data });
                 }
-                postService.getLike().then((data) => { this.likes = data });
 
             }
         },
@@ -330,9 +329,8 @@ export default {
                 const result = await postService.unlike(id_user, id, postid)
                 if (result.status == 200) {
                     this.$refs.toast.showToast(result.data.message);
-
+                    postService.getLike().then((data) => { this.likes = data });
                 }
-                postService.getLike().then((data) => { this.likes = data });
             }
 
         },
@@ -370,6 +368,7 @@ export default {
             const id = follow.id;
             const result = await postService.unfollow(id_user, id, postid)
             if (result.status == 200) {
+                this.$refs.toast.showToast(result.data.message);
                 postService.getfollow().then((data) => { this.follows = data })
             }
         },
@@ -377,6 +376,7 @@ export default {
             const id_user = this.user.id;
             const result = await postService.addfollow(id_user, postid)
             if (result.status == 200) {
+                this.$refs.toast.showToast(result.data.message);
                 postService.getfollow().then((data) => { this.follows = data })
             }
         },

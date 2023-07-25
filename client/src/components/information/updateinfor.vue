@@ -21,7 +21,7 @@
                 </div>
                 <p class="text-red-500 text-sm ml-1" v-if="!username && usernameFocused">Tên người dùng bị trống.</p>
                 <p class="text-red-500 text-sm ml-1"
-                v-else-if="validFullName(username) && usernameFocused">Tên người dùng phải từ 3 tới 50 ký tự</p>
+                v-else-if="!validFullName(username) && usernameFocused">Tên người dùng phải từ 3 tới 50 ký tự</p>
 
 
                 <!--kết thúc username-->
@@ -120,7 +120,7 @@
                         v-model="address" />
                 </div>
                 <p class="text-red-500 text-sm ml-1" v-if="!address && addressFocusted">Địa chỉ cụ thể bị trống.</p>
-                <p class="text-red-500 text-sm ml-1" v-if="validAddress(address) && addressFocusted">Địa chỉ tối đa 10 kí tự.</p>
+                <p class="text-red-500 text-sm ml-1" v-else-if="!validAddress(address) && addressFocusted">Địa chỉ tối đa 10 kí tự.</p>
                 <!--kết thúc địa chỉ-->
             </div>
 
@@ -182,13 +182,7 @@ export default {
         onclose() {
             this.$emit('cancel')
         },
-        // xử lý các focus bật tắt validate
-        checkUsernameError() { this.usernameFocused = true; },
-        checkphoneError() { this.phoneFocused = true; },
-        checkcityError() { this.cityFocused = true; },
-        checkDistrictsError() { this.districtFocused = true; },
-        checkCommuneError() { this.communeFocused = true; },
-        checkaddressError() { this.addressFocusted = true },
+       
         validPhone(phone) {
             const re = /^(0[1-9]|84[2-9])(\d{8})$/;
             return re.test(phone);

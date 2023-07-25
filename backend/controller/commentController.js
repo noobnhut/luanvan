@@ -108,7 +108,7 @@ const editComment = async (req,res)=>
             }
         });
         res.status(200).json({
-            message: "cập nhập hoàn tất"
+            message: "Cập nhập hoàn tất"
         });
 
 

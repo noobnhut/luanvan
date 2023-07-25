@@ -225,7 +225,6 @@ export default {
         })
         socketService.getdelete((data) => {
             if ((data.sender_id == this.user_receive && data.receiver_id == this.user.id) || (data.sender_id == this.user.id && data.receiver_id == this.user_receive)) {
-                
                 for (let i = 0; i < this.chats.length; i++) {
                             if (this.chats[i].id == data.id) {
                                 this.chats.splice(i, 1);

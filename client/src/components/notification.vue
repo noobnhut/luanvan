@@ -29,7 +29,7 @@
                                 fill="#EF4444" />
                         </svg>
                     </div>
-                    <div class="pl-3">
+                    <div class="pl-3" @click="goPost(noti.id_post)">
                         <p tabindex="0" class="focus:outline-none text-sm leading-none"><span
                                 class="text-indigo-700">{{ noti.notification_content }}</span></p>
                         <p tabindex="0" class="focus:outline-none text-xs leading-3 pt-1 text-gray-500">
@@ -109,6 +109,19 @@ export default {
         onclose() {
             this.$emit("cancel");
         },
+        async goPost(id)
+        {
+            try {
+                const result = await this.$axios.get(`post/render`);
+                const post = result.data.filter(item=>item.id == id)
+                window.location.href = `${
+                import.meta.env.VITE_API_BASE_URL_API
+              }detailpost/${post[0].title}/${id}`;
+            } catch (error) {
+                console.log(error)
+            }
+           
+        },
         getTimeFromCreatedAt(createdAt) {
             return postService.getTimeFromCreatedAt(createdAt)
         },
@@ -123,7 +136,7 @@ export default {
         sendNoti(noti)
         {
             this.notisend = noti
-            console.log(noti)
+           
         },
         onclosedelete()
         {

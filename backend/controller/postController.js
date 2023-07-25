@@ -488,7 +488,9 @@ const createNotification = async (id, res) => {
       const userUnSetting = [];
 
       for (const user of users) {
-        const setting = settings.find((item) => item.id_user === user.id);
+        if(user.id !== post.id_user)
+        {
+          const setting = settings.find((item) => item.id_user === user.id);
         if (setting) {
           const distance = calculateDistance(post.latitube, post.longtitube, user.latitube, user.longtitube);
           if (distance <= setting.location_radius) {
@@ -505,12 +507,13 @@ const createNotification = async (id, res) => {
             username: user.username,
           });
         }
+        }
       }
       const userNoti = [...userSetting, ...userUnSetting]
       const exitsNoti = await Notification.findAll();
       const notificationPromises = userNoti.map(async (user) => {
         const existingNotification = exitsNoti.find((noti) => noti.id_user === user.id_user && noti.id_post === id);
-        if (!existingNotification && post.user.id !== user.id) {
+        if (!existingNotification) {
           const notification = await Notification.create({
             id_user: user.id_user,
             id_post: id,
