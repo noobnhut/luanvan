@@ -42,21 +42,21 @@ class userService {
     }
   }
 
-  async updatepass(email, password, newpassword, refs, id) {
+  async updatepass( password, newpassword, refs, id) {
     try {
       if (newpassword.length < 6) {
         refs.toast.showToast('Mật khẩu chưa đủ dài');
       }
-      const result = await axios.put(`${this.url}user/updatepasswowrd/` + id,
+      const result = await axios.put(`${this.url}user/updatepassword/` + id,
         {
-          email: email,
+         
           oldPassword: password,
           newPassword: newpassword
         });
-      if (result.status === 201) {
+      if (result.status == 201) {
         refs.toast.showToast(result.data.message)
       }
-      if (result.status === 200) {
+      if (result.status == 200) {
         refs.toast.showToast(result.data.message)
         location.reload()
       }

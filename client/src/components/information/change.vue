@@ -84,9 +84,13 @@ export default {
         async updatepass() {
             this.newpasswordFocused=true
             const id = this.user.id
-            if(this.password && this.newpassword &&this.validnewPassword(this.password)&&this.validnewPassword2(this.newpasswords))
+            if(this.password && this.newpassword && this.validnewPassword(this.password) && this.validnewPassword2(this.newpassword))
             {
-                userService.updatepass(this.email, this.password, this.newpassword, this.$refs, id);
+                userService.updatepass( this.password, this.newpassword, this.$refs, id);
+            }
+            else
+            {
+                console.log('bug')
             }
         },
         validnewPassword(newpassword) {

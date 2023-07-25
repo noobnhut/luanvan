@@ -6,6 +6,11 @@ import {
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    {
+      path: '/map',
+      name: 'map',
+      component: () => import('../views/map.vue')
+    },
     //Đăng kí
     {
       path: '/login',

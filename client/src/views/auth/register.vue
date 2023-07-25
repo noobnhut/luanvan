@@ -19,8 +19,7 @@
           </div>
           <p class="text-red-500 text-sm ml-1" v-if="!username && usernameFocused">Tên người dùng bị trống.</p>
           <p class="text-red-500 text-sm ml-1"
-            v-else-if="username.length >= 3 && usernameFocused">Tên người dùng phải từ 3 đến 20
-            ký tự.</p>
+            v-else-if="validFullName(username) && usernameFocused">Tên người dùng phải từ 3 tới 50 ký tự</p>
 
           <!--kết thúc username-->
 
@@ -146,12 +145,12 @@
           </div>
 
           <p class="text-red-500 text-sm ml-1" v-if="!address && addressFocusted">Địa chỉ cụ thể bị trống.</p>
-          <p class="text-red-500 text-sm ml-1" v-if="address.length >= 10 && addressFocusted">Địa chỉ tối đa 10 kí tự.</p>
+          <p class="text-red-500 text-sm ml-1" v-if="validAddress(address) && addressFocusted">Địa chỉ tối đa 10 kí tự.</p>
 
           <!--kết thúc địa chỉ-->
 
           <!--bắt đầu img-->
-          <div class="flex items-center justify-center w-full">
+          <div class="flex items-center justify-center w-full mt-2">
             <label for="dropzone-file" v-if="showimg"
               class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
               <div class="flex flex-col items-center justify-center pt-5 pb-6">
@@ -234,9 +233,18 @@ export default {
 
     //hàm lấy hình
     onFileSelected(event) {
-      this.avatar = event.target.files[0]
+      const maxFileSizeInBytes = 10 * 1024 * 1024; 
+      const file =  event.target.files[0]
+      if(file.size <= maxFileSizeInBytes)
+      {
+      this.avatar = file
       this.imageUrl = URL.createObjectURL(this.avatar);
       this.showimg = false
+      }else
+      {
+        this.$refs.toast.showToast('Ảnh nhỏ hơn hoặc bằng 10mb');
+      }
+     
     },
 
     // lấy data quận huyện
@@ -262,13 +270,20 @@ export default {
 
       //gọi lại hàm đăng kí từ authService
       if (this.validEmail(this.email) && this.validPassword(this.password) && this.validPhone(this.phone) &&  this.validPassword2(this.password) 
-      && this.address && this.commune_id && this.districts_code && this.city_id && this.avatar && this.username) {
+      && this.address && this.commune_id && this.districts_code && this.city_id && this.avatar && this.username && this.validFullName(this.username) && this.validAddress(this.addres)) {
         authService.register(this.avatar, this.username, this.password, this.email,
           this.address, this.phone, this.city_id, this.districts_code, this.commune_id, this.$refs, this.$router)
           this.avatarFocusted = false, this.usernameFocused = false, this.emailFocused = false,
         this.passwordFocused = false, this.cityFocused = false, this.districtFocused = false,
         this.communeFocused = false, this.addressFocusted = false, this.phoneFocused = false
-      }
+      }else
+    {
+      // bật hết các focus validate
+      this.avatarFocusted = true, this.usernameFocused = true, this.emailFocused = true,
+        this.passwordFocused = true, this.cityFocused = true, this.districtFocused = true,
+        this.communeFocused = true, this.addressFocusted = true, this.phoneFocused = true
+
+    }
     },
 
     // các re ràng buộc
@@ -285,13 +300,18 @@ export default {
       return re.test(password);
     },
      validFullName(fullName) {
-  const re = /^[a-zA-Z]+(\s[a-zA-Z]+)*$/;
-  return re.test(fullName) && fullName.length >= 3;
+      const re = /^.{3,50}$/; // Kiểm tra chuỗi từ 10 đến 50 ký tự
+  return re.test(fullName);
 },
   validPassword2(password) {
       const re = /[A-Z]/;
       return re.test(password);
     },
+    validAddress(address)
+    {
+      const re = /^.{1,10}$/; // Kiểm tra chuỗi từ 10 đến 50 ký tự
+   return re.test(address);
+    }
 
   },
 };

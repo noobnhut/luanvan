@@ -18,7 +18,7 @@ routerUser.post('/api/register', registerUser);
 routerUser.post('/api/login', loginUser);
 routerUser.put('/api/user/updateimg/:id', updateImg);
 routerUser.put('/api/user/updateinfo/:id', updateInfo);
-routerUser.put('/api/user/updatepasswowrd/:id', updatePass);
+routerUser.put('/api/user/updatepassword/:id', updatePass);
 
 
 module.exports = { 

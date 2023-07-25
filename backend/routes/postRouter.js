@@ -9,7 +9,7 @@ const {
     getPostInteraction,
     acceptPost,
      searchPost,
-     testing
+  
 
 } =require("../controller/postController.js") ;
 const routerPost = express.Router();
@@ -22,7 +22,7 @@ routerPost.delete('/api/post/delete/:id', deletePost);
 routerPost.put('/api/post/update/:id',  updatePost);
 routerPost.put('/api/post/acceptPost',acceptPost)
 routerPost.post('/api/post/search', searchPost)
-routerPost.get('/api/post/test', testing)
+
 
 module.exports = { 
     routerPost,

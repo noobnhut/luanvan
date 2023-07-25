@@ -21,9 +21,8 @@
                 </div>
                 <p class="text-red-500 text-sm ml-1" v-if="!username && usernameFocused">Tên người dùng bị trống.</p>
                 <p class="text-red-500 text-sm ml-1"
-                    v-else-if="user.length>=3 && usernameFocused">Tên người dùng phải từ 3
-                    đến 20
-                    ký tự.</p>
+                v-else-if="validFullName(username) && usernameFocused">Tên người dùng phải từ 3 tới 50 ký tự</p>
+
 
                 <!--kết thúc username-->
 
@@ -121,8 +120,7 @@
                         v-model="address" />
                 </div>
                 <p class="text-red-500 text-sm ml-1" v-if="!address && addressFocusted">Địa chỉ cụ thể bị trống.</p>
-                <p class="text-red-500 text-sm ml-1" v-if="address.length >= 10 && addressFocusted">Địa chỉ tối đa 10 kí tự.
-                </p>
+                <p class="text-red-500 text-sm ml-1" v-if="validAddress(address) && addressFocusted">Địa chỉ tối đa 10 kí tự.</p>
                 <!--kết thúc địa chỉ-->
             </div>
 
@@ -216,12 +214,26 @@ export default {
             const id = this.user.id
             this.usernameFocused = true, this.cityFocused = true, this.districtFocused = true,
                 this.communeFocused = true, this.addressFocusted = true, this.phoneFocused = true
-            if (this.validPhone(this.phone)
+            if (this.validPhone(this.phone) && this.validFullName(this.username) && this.validAddress(this.address)
                 && this.address && this.commune_id && this.districts_code && this.city_id && this.username ) {
                 userService.updateInfo(this.address, this.phone, this.districts_code, this.city_id, this.commune_id, this.username, id, this.$refs)
 
             }
-        }
+            else
+            {
+                this.usernameFocused = true, this.cityFocused = true, this.districtFocused = true,
+                this.communeFocused = true, this.addressFocusted = true, this.phoneFocused = true
+            }
+        },
+        validFullName(fullName) {
+      const re = /^.{3,50}$/; // Kiểm tra chuỗi từ 10 đến 50 ký tự
+  return re.test(fullName);
+},
+    validAddress(address)
+    {
+      const re = /^.{1,10}$/; // Kiểm tra chuỗi từ 10 đến 50 ký tự
+   return re.test(address);
+    }
     },
 }
 

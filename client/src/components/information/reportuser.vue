@@ -66,8 +66,13 @@ export default {
                     }
                 )
             this.contentFocused=false
-
-                this.$refs.toast.showToast(result.data.message);
+            this.$refs.toast.showToast(result.data.message);
+            if(result.status == 200)
+            {
+                setTimeout(() => {
+                    this.onclose()
+                }, 1000)
+            }
             } catch (error) {
                 console.log(error)
             }

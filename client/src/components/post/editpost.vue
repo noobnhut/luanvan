@@ -1,171 +1,289 @@
 <template>
-  <div class=" fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 overflow-auto ">
+  <div
+    class="fixed w-full h-full top-0 left-0 flex items-center justify-center z-50 overflow-auto"
+  >
     <div class="absolute w-full h-full bg-gray-900 opacity-50"></div>
 
-    <div class=" bg-white w-11/12 md:max-w-3xl mx-auto rounded shadow-lg z-50 overflow-y-auto max-h-full">
+    <div
+      class="bg-white w-11/12 md:max-w-3xl mx-auto rounded shadow-lg z-50 overflow-y-auto max-h-full"
+    >
       <div class="flex flex-row py-3 px-4">
         <h5 class="text-lg font-semibold flex-grow">Cập nhập bài đăng</h5>
-        <i class="uil-multiply flex-none cursor-pointer bg-gray-400 rounded-xl" @click="onclose"></i>
+        <i
+          class="uil-multiply flex-none cursor-pointer bg-gray-400 rounded-xl"
+          @click="onclose"
+        ></i>
       </div>
-      <div class=" py-4 px-2 overflow-y-auto ">
-        <div class="grid grid-cols-2 ">
+      <div class="py-4 px-2 overflow-y-auto">
+        <div class="grid grid-cols-2">
           <!--left update-->
           <div class="py-2 px-2">
             <div class="relative mb-2">
-              <select id="select" name="select" v-model="type"
-                class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none">
+              <select
+                id="select"
+                name="select"
+                v-model="type"
+                class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none"
+              >
                 <option disabled selected>Chọn loại bài đăng</option>
                 <option value="Tìm kiếm">Tìm kiếm</option>
                 <option value="Trao tặng">Trao tặng</option>
-                <option value='Trao đổi'>Trao đổi</option>
-                <p class="text-red-500 text-sm ml-1" v-if="!type && typeFocused">Không được để trống.</p>
-
+                <option value="Trao đổi">Trao đổi</option>
+                <p
+                  class="text-red-500 text-sm ml-1"
+                  v-if="!type && typeFocused"
+                >
+                  Không được để trống.
+                </p>
               </select>
             </div>
 
             <div class="relative mt-5">
               <label>Loại sản phẩm</label>
-              <select v-model="catid"
-                class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
+              <select
+                v-model="catid"
+                class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm"
+              >
                 <option disabled selected>Loại sản phẩm</option>
                 <option v-for="cat in cats" :key="cat.id" :value="cat.id">
                   {{ cat.cat_name }}
                 </option>
               </select>
-              <p class="text-red-500 text-sm ml-1" v-if="!catid && catFocused">Không được để trống.</p>
-
+              <p class="text-red-500 text-sm ml-1" v-if="!catid && catFocused">
+                Không được để trống.
+              </p>
             </div>
             <div class="mt-1">
-              <label class="block text-base ml-2 font-medium text-gray-900 dark:text-white">Tiêu đề :</label>
-              <input type="text" placeholder="Tiêu đề"
+              <label
+                class="block text-base ml-2 font-medium text-gray-900 dark:text-white"
+                >Tiêu đề :</label
+              >
+              <input
+                type="text"
+                placeholder="Tiêu đề"
                 class="w-full px-4 py-3 rounded-lg bg-gray-200 mt-2 border focus:border-blue-500 focus:bg-white focus:outline-none"
-                v-model="title" />
-              <p class="text-red-500 text-sm ml-1" v-if="!title && titleFocused">Không được để trống.</p>
-
+                v-model="title"
+              />
+              <p
+                class="text-red-500 text-sm ml-1"
+                v-if="!title && titleFocused"
+              >
+                Không được để trống.
+              </p>
+              <p
+          class="text-red-500 text-sm ml-1"
+          v-else-if=" !validTitle(title) && titleFocused"
+        >
+          Tiêu đề từ 5 -> 50 ký tự
+        </p>
             </div>
 
             <div class="mt-2">
-              <label class="block text-base ml-2 font-medium text-gray-900 dark:text-white">Nội dung bài đăng :</label>
-              <textarea class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
-                placeholder="Nhập nội dung ..." v-model="post_content"></textarea>
-              <p class="text-red-500 text-sm ml-1" v-if="!post_content && contentFocused">Không được để trống.</p>
-
+              <label
+                class="block text-base ml-2 font-medium text-gray-900 dark:text-white"
+                >Nội dung bài đăng :</label
+              >
+              <textarea
+                class="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none"
+                placeholder="Nhập nội dung ..."
+                v-model="post_content"
+              ></textarea>
+              <p class="text-red-500 text-sm ml-1" v-if="!post_content && contentFocused" >
+                Không được để trống.
+              </p>
+              <p
+          class="text-red-500 text-sm ml-1"
+          v-else-if="
+           !validcontent(post_content)&&
+            contentFocused
+          "
+        >
+          Nội dùng từ 10 -> 128 ký tự
+        </p>
             </div>
 
-            <div class=" mb-2 block">
+            <div class="mb-2 block">
               <div class="relative md:mr-2 mt-5">
                 <label class="ml-2">Thành phố :</label>
-                <select v-model="city_id" required @change="onCitySelected()"
-                  class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
+                <select
+                  v-model="city_id"
+                  required
+                  @change="onCitySelected()"
+                  class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm"
+                >
                   <option disabled>Thành phố</option>
-                  <option v-for="city in citys" :key="city.code" :value="city.code">
+                  <option
+                    v-for="city in citys"
+                    :key="city.code"
+                    :value="city.code"
+                  >
                     {{ city.name }}
                   </option>
                 </select>
-                <p class="text-red-500 text-sm ml-1" v-if="!city_id && cityFocused">Không được để trống.</p>
-
+                <p
+                  class="text-red-500 text-sm ml-1"
+                  v-if="!city_id && cityFocused"
+                >
+                  Không được để trống.
+                </p>
               </div>
               <div class="relative md:mr-2 mt-5">
                 <label class="ml-2">Quận huyện :</label>
-                <select v-model="districts_code" @change="onDistrictSelected()"
-                  class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
+                <select
+                  v-model="districts_code"
+                  @change="onDistrictSelected()"
+                  class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm"
+                >
                   <option disabled selected>Quận/Huyện</option>
-                  <option v-for="district in districts" :key="district.code" :value="district.code">
+                  <option
+                    v-for="district in districts"
+                    :key="district.code"
+                    :value="district.code"
+                  >
                     {{ district.name }}
                   </option>
                 </select>
-                <p class="text-red-500 text-sm ml-1" v-if="!districts_code && districtFocused">Không được để trống.</p>
-
+                <p
+                  class="text-red-500 text-sm ml-1"
+                  v-if="!districts_code && districtFocused"
+                >
+                  Không được để trống.
+                </p>
               </div>
               <div class="relative mt-5">
                 <label class="ml-2">Xã phường :</label>
-                <select v-model="commune_id"
-                  class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm">
+                <select
+                  v-model="commune_id"
+                  class="block appearance-none w-full bg-white border px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none text-sm"
+                >
                   <option disabled selected>Xã/Phường</option>
-                  <option v-for="commune in communes" :key="commune.code" :value="commune.code">
+                  <option
+                    v-for="commune in communes"
+                    :key="commune.code"
+                    :value="commune.code"
+                  >
                     {{ commune.name }}
                   </option>
                 </select>
-                <p class="text-red-500 text-sm ml-1" v-if="!commune_id && communeFocused">Không được để trống.</p>
-
+                <p
+                  class="text-red-500 text-sm ml-1"
+                  v-if="!commune_id && communeFocused"
+                >
+                  Không được để trống.
+                </p>
               </div>
             </div>
           </div>
           <!--right update-->
           <div class="py-2">
-
             <!-- Image -->
             <div class="flex items-center mt-4 py-2 px-4">
-
-              <swiper :pagination="true" :modules="modules" class="mySwiper" :autoplay="{ delay: 1000 }">
+              <swiper
+                :pagination="true"
+                :modules="modules"
+                class="mySwiper"
+                :autoplay="{ delay: 1000 }"
+              >
                 <swiper-slide v-for="img in imgs">
-                  <img class="max-w-sm w-full mx-auto h-32 md:h-64" :src="img.url" alt="Bài đăng">
+                  <img
+                    class="max-w-sm w-full mx-auto h-32 md:h-64"
+                    :src="img.url"
+                    alt="Bài đăng"
+                  />
                 </swiper-slide>
 
                 <swiper-slide v-for="img in imgs_new">
-                  <img class="max-w-sm w-full mx-auto h-32 md:h-64" :src="img.url" alt="Bài đăng">
+                  <img
+                    class="max-w-sm w-full mx-auto h-32 md:h-64"
+                    :src="img.url"
+                    alt="Bài đăng"
+                  />
                 </swiper-slide>
 
                 <swiper-slide v-for="video in videos">
-                  <video loop controls class="max-w-sm w-full mx-auto h-32 md:h-64 ">
+                  <video
+                    loop
+                    controls
+                    class="max-w-sm w-full mx-auto h-32 md:h-64"
+                  >
                     <source :src="video.url" type="video/mp4" />
                   </video>
                 </swiper-slide>
 
-
                 <swiper-slide v-for="video in videos_new">
-                  <video loop controls class="max-w-sm w-full mx-auto h-32 md:h-64 ">
+                  <video
+                    loop
+                    controls
+                    class="max-w-sm w-full mx-auto h-32 md:h-64"
+                  >
                     <source :src="video.url" type="video/mp4" />
                   </video>
                 </swiper-slide>
               </swiper>
-              
             </div>
             <div class="grid grid-cols-2 gap-4 mt-4 shrink-0">
-              <button @click="deleteimg()"
-                class=" text-xs border  bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none">
+              <button
+                @click="deleteimg()"
+                class="text-xs border bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none"
+              >
                 Xóa ảnh
               </button>
 
-              <button @click="deletevideo()"
-                class=" text-xs border  bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none">
+              <button
+                @click="deletevideo()"
+                class="text-xs border bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none"
+              >
                 Xóa video
               </button>
 
-              <label for="video-file" class="cursor-pointer ">
+              <label for="video-file" class="cursor-pointer">
                 <div
-                  class="text-xs border bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none">
+                  class="text-xs border bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none"
+                >
                   Thêm video
                 </div>
-                <input id="video-file" type="file" accept=".mp4" @change="onFileSelectedVideo" multiple hidden />
+                <input
+                  id="video-file"
+                  type="file"
+                  accept=".mp4"
+                  @change="onFileSelectedVideo"
+                  multiple
+                  hidden
+                />
               </label>
 
               <label for="img-file">
                 <div
-                  class="text-xs border  bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none ">
+                  class="text-xs border bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white font-medium rounded-lg px-4 py-2.5 duration-300 transition-colors focus:outline-none"
+                >
                   Thêm ảnh
                 </div>
-                <input id="img-file" type="file" @change="onFileSelected" multiple hidden
-                  accept=".png, .jpeg, .gif, .jpg" />
+                <input
+                  id="img-file"
+                  type="file"
+                  @change="onFileSelected"
+                  multiple
+                  hidden
+                  accept=".png, .jpeg, .gif, .jpg"
+                />
               </label>
             </div>
           </div>
         </div>
       </div>
 
-
-      <div class="modal-footer py-3 px-4">
-
-      </div>
+      <div class="modal-footer py-3 px-4"></div>
       <div class="modal-footer py-3 px-4">
         <button
           class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer mr-4"
-          @click="updateInfo">
+          @click="updateInfo"
+        >
           Cập nhập
         </button>
         <button
           class="py-2 px-4 bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 text-white rounded-lg cursor-pointer"
-          @click="onclose()">
+          @click="onclose()"
+        >
           Đóng
         </button>
       </div>
@@ -188,7 +306,7 @@ import "swiper/swiper-bundle.min.css";
 import { Pagination } from "swiper";
 export default {
   emits: ["cancel"],
-  props: ["post",], // Khai báo prop postId
+  props: ["post"], // Khai báo prop postId
   data() {
     return {
       user: "",
@@ -207,13 +325,19 @@ export default {
       type: "",
       imgs_new: [],
       videos_new: [],
-      imgs_delete:[],
-      videos_delete:[],
+      imgs_delete: [],
+      videos_delete: [],
       avatar: null,
       video: null,
-      id: '',
-      cityFocused: false, districtFocused: false, communeFocused: false, catFocused: false,
-      typeFocused: false, titleFocused: false, contentFocused: false, avatarFocusted: false,
+      id: "",
+      cityFocused: false,
+      districtFocused: false,
+      communeFocused: false,
+      catFocused: false,
+      typeFocused: false,
+      titleFocused: false,
+      contentFocused: false,
+      avatarFocusted: false,
     };
   },
   components: {
@@ -231,11 +355,11 @@ export default {
     addressService.getCountry().then((data) => {
       this.citys = data;
     });
-    this.id = this.post.id
-    this.title = this.post.title
+    this.id = this.post.id;
+    this.title = this.post.title;
     this.post_content = this.post.post_content;
-    this.city_id = this.post.citycode
-    this.districts_code = this.post.districtcode
+    this.city_id = this.post.citycode;
+    this.districts_code = this.post.districtcode;
     this.commune_id = this.post.communecode;
     addressService.getDistricts(this.city_id).then((data) => {
       this.districts = data;
@@ -245,15 +369,14 @@ export default {
     });
     this.imgs = this.post.Imgs;
     if (this.imgs.length !== 0) {
-      this.is_clearimg = true
+      this.is_clearimg = true;
     }
 
     this.videos = this.post.Videos;
     if (this.videos.length !== 0) {
-      this.is_clearvideo = true
+      this.is_clearvideo = true;
     }
-    (this.catid = this.post.Category.id),
-      (this.type = this.post.type);
+    (this.catid = this.post.Category.id), (this.type = this.post.type);
     this.getCat();
   },
   methods: {
@@ -275,21 +398,18 @@ export default {
       }
     },
     deleteimg() {
-
       if (this.imgs.length > 0) {
-        this.imgs_delete = this.imgs
-        this.imgs = []
-      }
-      else {
+        this.imgs_delete = this.imgs;
+        this.imgs = [];
+      } else {
         this.$refs.toast.showToast("Không có ảnh để xóa");
       }
     },
     deletevideo() {
       if (this.videos.length > 0) {
-        this.videos_delete = this.videos
-        this.videos = []
-      }
-      else {
+        this.videos_delete = this.videos;
+        this.videos = [];
+      } else {
         this.$refs.toast.showToast("Không có video để xóa");
       }
     },
@@ -297,40 +417,65 @@ export default {
     //post/create
     onFileSelected(event) {
       const files = event.target.files;
+      const maxFileSizeInBytes = 50 * 1024 * 1024; // 10 MB
+      const flag = true;
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const imageUrl = URL.createObjectURL(file);
-        this.imgs_new.push({ id: i, url: imageUrl });
+        if (file.size > maxFileSizeInBytes) {
+          flag = false;
+          this.$refs.toast.showToast(`Ảnh ${file.name}nhỏ hơn hoặc bằng 20mb`);
+        } else {
+          const imageUrl = URL.createObjectURL(file);
+          this.imgs_new.push({ id: i, url: imageUrl });
+        }
       }
-      this.avatar = files;
-      console.log(this.imgs_new)
+      if (flag == true) {
+        this.avatar = files;
+      }
     },
     onFileSelectedVideo(event) {
       const files = event.target.files;
+      const maxFileSizeInBytes = 50 * 1024 * 1024; // 10 MB
+      const flag = true;
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const imageUrl = URL.createObjectURL(file);
-        this.videos_new.push({ id: i, url: imageUrl });
+        if (file.size > maxFileSizeInBytes) {
+          flag = false;
+          this.$refs.toast.showToast(`Ảnh ${file.name}nhỏ hơn hoặc bằng 20mb`);
+        } else {
+          const imageUrl = URL.createObjectURL(file);
+          this.videos_new.push({ id: i, url: imageUrl });
+        }
       }
-      this.video = files;
+      if (flag == true) {
+        this.video = files;
+      }
+    },
+    validTitle(title)
+    {
+      const re = /^.{5,50}$/; // Kiểm tra chuỗi từ 10 đến 50 ký tự
+  return re.test(title);
+    },
+    validcontent(content)
+    {
+      const re = /^.{10,128}$/; // Kiểm tra chuỗi từ 10 đến 50 ký tự
+  return re.test(content);
     },
     async updateInfo() {
       try {
-        if(this.imgs_delete.length>0)
-        {
+        if (this.imgs_delete.length > 0) {
           try {
-            await this.$axios.delete(`post/deleteimgbypost/`+this.id);
+            await this.$axios.delete(`post/deleteimgbypost/` + this.id);
           } catch (error) {
-            console.log(error)
+            console.log(error);
           }
         }
 
-        if(this.videos_delete.length>0)
-        {
+        if (this.videos_delete.length > 0) {
           try {
-            await this.$axios.delete(`post/deleteVideobypost/`+this.id);
+            await this.$axios.delete(`post/deleteVideobypost/` + this.id);
           } catch (error) {
-            console.log(error)
+            console.log(error);
           }
         }
 
@@ -351,7 +496,7 @@ export default {
               }
             );
           } catch (error) {
-            console.log(error)
+            console.log(error);
           }
         }
 
@@ -372,10 +517,25 @@ export default {
           );
         }
 
-        this.cityFocused = true; this.districtFocused = true; this.communeFocused = true; this.catFocused = true;
-        this.typeFocused = true; this.titleFocused = true; this.contentFocused = true; this.avatarFocusted = true;
+        this.cityFocused = true;
+        this.districtFocused = true;
+        this.communeFocused = true;
+        this.catFocused = true;
+        this.typeFocused = true;
+        this.titleFocused = true;
+        this.contentFocused = true;
+        this.avatarFocusted = true;
 
-        if (this.commune_id && this.districts_code && this.city_id  && this.title && this.type && this.post_content && this.catid) {
+        if (
+          this.commune_id &&
+          this.districts_code &&
+          this.city_id &&
+          this.title &&
+          this.type &&
+          this.post_content &&
+          this.catid && this.validTitle(this.title)&& this.validcontent(this.post_content)
+
+        ) {
           const result = await this.$axios.put(`post/update/` + this.id, {
             title: this.title,
             post_content: this.post_content,
@@ -390,18 +550,27 @@ export default {
           if (result.status == 200) {
             this.$refs.toast.showToast("Cập nhập thành công");
             setTimeout(() => {
-              window.location.href = `${import.meta.env.VITE_API_BASE_URL_API}detailpost/${this.title}/${this.id}`;
-              
+              window.location.href = `${
+                import.meta.env.VITE_API_BASE_URL_API
+              }detailpost/${this.title}/${this.id}`;
             }, 1000);
-
           }
         }
-
-      } catch (error) {console.log(error) }
-      
+        else
+        {
+          this.cityFocused = true;
+        this.districtFocused = true;
+        this.communeFocused = true;
+        this.catFocused = true;
+        this.typeFocused = true;
+        this.titleFocused = true;
+        this.contentFocused = true;
+        this.avatarFocusted = true;
+        }
+      } catch (error) {
+        console.log(error);
+      }
     },
-
-
   },
 };
 </script>

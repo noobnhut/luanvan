@@ -18,6 +18,7 @@ const Notification = db.Notification;
 const notiSetting = db.NotificationSetting;
 const fs = require('fs');
 const cron = require('node-cron');
+const { create } = require('domain');
 
 const level3 = []
 const level2 = []
@@ -76,9 +77,10 @@ const createPost = async (req, res) => {
         latitube: locationData.coordinates[1]
       });
       if (post) {
+        createNotification(post.id,res)
         let newpost = { id: post.id, priority: post.id, time: post.createdAt }
         level3.push(newpost)
-        handleLV3()
+        handleLV3(res)
         const id_post = post.id;
         res.status(200).json({ id_post, message: "Thêm thành công" });
       }
@@ -87,7 +89,7 @@ const createPost = async (req, res) => {
     return res.status(404).json(error)
   }
 }
-const handleLV3 = () => {
+const handleLV3 = (res) => {
   for (let i = 0; i < level3.length; i++) {
     const post = level3[i];
     const time = post.time
@@ -99,16 +101,17 @@ const handleLV3 = () => {
       // thực hiện update tại đây
       const postupdate = await Post.findByPk(post.id)
       const lv3 = await postupdate.update({ priority: 3 })
+      createNotification(post.id,res)
       let newpost = { id: lv3.id, priority: lv3.priority, time: lv3.updatedAt }
       level2.push(newpost)
       level3.splice(i, 1);
-      handleLV2()
+      handleLV2(res)
     });
 
     cronJob.start();
   }
 }
-const handleLV2 = () => {
+const handleLV2 = (res) => {
   for (let i = 0; i < level2.length; i++) {
     const post = level2[i];
     const time = post.time
@@ -120,6 +123,7 @@ const handleLV2 = () => {
     const cronJob = cron.schedule(cronTime, async () => {
       const postupdate = await Post.findByPk(post.id)
       const lv2 = await postupdate.update({ priority: 2 })
+      createNotification(post.id,res)
       let newpost = { id: lv2.id, priority: lv2.priority, time: lv2.updatedAt }
       level1.push(newpost)
       level2.splice(i, 1);
@@ -379,11 +383,12 @@ const acceptPost = async (req, res) => {
       const update = await post.update({ status_gift: true })
       const score = user.ranking_score + 1;
       const updateUser = await user.update({ ranking_score: score });
-      if (user.ranking_score >= 0 && user.ranking_score <= 4) {
+      const delta = 2
+      if (user.ranking_score >= delta*0 && user.ranking_score <= delta*2) {
         await user.update({ priority: 1 });
-      } else if (user.ranking_score >= 5 && user.ranking_score <= 9) {
+      } else if (user.ranking_score > delta*2 && user.ranking_score < delta*5) {
         await user.update({ priority: 2 });
-      } else if (user.ranking_score >= 10 && user.ranking_score <= 14) {
+      } else if (user.ranking_score >= delta*5 && user.ranking_score <= delta*7) {
         await user.update({ priority: 3 });
       } else {
         await user.update({ priority: 4 });

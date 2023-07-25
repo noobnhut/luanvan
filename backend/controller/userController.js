@@ -219,6 +219,17 @@ const loginUser = async (req, res) => {
         error: "Tài khoản hoặc mật khẩu không đúng",
       });
     }
+    //update rank lại
+    const delta = 2
+    if (user.ranking_score >= delta*0 && user.ranking_score <= delta*2) {
+      await user.update({ priority: 1 });
+    } else if (user.ranking_score > delta*2 && user.ranking_score < delta*5) {
+      await user.update({ priority: 2 });
+    } else if (user.ranking_score >= delta*5 && user.ranking_score <= delta*7) {
+      await user.update({ priority: 3 });
+    } else {
+      await user.update({ priority: 4 });
+    }
 
     // Tạo JWT
     const token = jwt.sign(
@@ -250,7 +261,7 @@ const loginUser = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      error: "Đăng nhập thất sssss",
+      error: "Đăng nhập thất bại",
     });
   }
 };
@@ -291,11 +302,11 @@ const getUser = async (req, res) => {
 };
 
 const updatePass = async (req, res) => {
+try {
   const userId = req.params.id;
-  const { oldPassword, newPassword, email } = req.body;
+  const { oldPassword, newPassword } = req.body;
   const user = await User.findByPk(userId);
-  const emailCheck = await User.findOne({ where: { email } });
-  if (!user || !emailCheck) {
+  if (!user) {
     return res.status(201).json({ message: "Tài khoản không tồn tại." });
   }
   const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
@@ -308,6 +319,9 @@ const updatePass = async (req, res) => {
     await user.save();
     return res.status(200).json({ message: "Cập nhập thành công mật khẩu" });
   }
+} catch (error) {
+  console.log(error)
+}
 };
 
 const getIsUser = async (req, res) => {
