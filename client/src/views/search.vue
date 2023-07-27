@@ -5,17 +5,50 @@
       <leftnav />
     </div>
     <div class="p-4 lg:col-span-2 md:col-span-2 col-span-3">
+      <div
+                class="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+                <ul class="flex flex-wrap">
+                    <li class="mr-2 cursor-pointer ">
+                        <a @click="SearchBTN"
+                            :class="['inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300', { 'text-blue-600 border-blue-600 rounded-t-lg font-bold': activeTab === 'search' }]"
+                            class=" active inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">Kết quả tìm kiếm</a>
+                    </li>
+                    <li class="mr-2 cursor-pointer ">
+                        <a @click="SearchSameBTN"
+                            :class="['inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300', { 'text-blue-600 border-blue-600 rounded-t-lg font-bold': activeTab === 'searchsame' }]"
+                            class=" active inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">Kết quả tương tự</a>
+                    </li>
+                    
+                </ul>
+            </div>
+      <div v-if="issearch">
       <div v-if="user === false">
         <div v-for="i in searchs.filter(item => item.priority == 1)">
-          <post type="" :filter="i.id" />
+          <post  :filter="i.id" />
         </div>
       </div>
 
       <div v-if="user != false">
         <div v-for="i in searchs.filter(item => item.priority <= user.priority)">
-          <post type="" :filter="i.id" />
+          <post  :filter="i.id" />
         </div>
       </div>
+     </div>
+
+     <div v-if="isSame">
+      <div v-if="user === false">
+        <div v-for="i in searchsames.filter(item => item.priority == 1)">
+          <post  :filter="i.id" />
+        </div>
+      </div>
+
+      <div v-if="user != false">
+        <div v-for="i in searchsames.filter(item => item.priority <= user.priority)">
+          <post  :filter="i.id" />
+        </div>
+      </div>
+     </div>
+
     </div>
     <div class="p-4 hidden md:block lg:block md:col-span-1 lg:col-span-1">
       <rightnav />
@@ -37,7 +70,11 @@ export default {
     return {
       searchs: [],
       obj: '',
-      user: ''
+      user: '',
+      issearch:true,
+      isSame:false,
+      activeTab:"search",
+      searchsames:[]
     }
   },
   components: { post, navbar, leftnav, rightnav, chatVue },
@@ -56,10 +93,23 @@ export default {
             communecode: this.obj.communecode, keyword: this.obj.keyword, type: this.obj.type,
             catid: this.obj.catid, radius: this.obj.radius
           });
-        this.searchs = result.data
+        this.searchs = result.data.resultunlocation
+        this.searchsames = result.data.postlocation
       } catch (error) {
         console.log(error)
       }
+    },
+    SearchBTN()
+    {
+      this.issearch = true
+      this.isSame = false
+      this.activeTab = "search"
+    },
+    SearchSameBTN()
+    { 
+      this.issearch = false
+      this.isSame = true
+      this.activeTab = "searchsame"
     }
   }
 }

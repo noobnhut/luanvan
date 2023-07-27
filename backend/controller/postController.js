@@ -454,20 +454,24 @@ const searchPost = async (req, res) => {
         id_cat: catid,
         type: type,
       }
-    });
+    }); 
     // lấy ra được tọa độ của input search
     const searchLocation = await resultPost(citycode, districtcode, communecode, useraddress);
-
     const resultunlocation = []
     for (const result of postunlocation) {
-      const math = calculateDistance(result.latitube, result.longtitube, searchLocation.lat, searchLocation.lng)
-
+      const math = calculateDistance(result.latitube, result.longtitube, searchLocation.coordinates[1], searchLocation.coordinates[0])
       if (math <= radius) {
         resultunlocation.push(result)
       }
     }
-
-    res.json(postlocation)
+    
+    const filteredPostLocation = postlocation.filter((post) => {
+      // Kiểm tra xem có tồn tại phần tử trong resultunlocation có cùng id với post hay không
+      const isDuplicate = resultunlocation.some((result) => result.id === post.id);
+      return !isDuplicate;
+    });
+    
+    res.json({ postlocation: filteredPostLocation, resultunlocation });
 
   } catch (error) {
     console.log(error);

@@ -34,9 +34,15 @@
             class="rounded-full w-10 h-10 object-cover bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 flex items-center justify-center">
             <i class="fa-solid fa-ranking-star text-2xl md:text-xl"></i>
         </div>
-
         </div>
         
+        <div class="profile-pic ml-2 md:hidden cursor-pointer " @click="openSearch()">
+          <div
+            class="rounded-full w-10 h-10 object-cover bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 flex items-center justify-center">
+            <i class="fa-solid fa-search text-2xl md:text-xl"></i>
+        </div>
+        </div>
+
         <div class="profile-pic ml-2" @click="onShowNotification" v-if="checkLogin">
           <div
             class="rounded-full w-10 h-10 object-cover bg-gradient-to-r from-indigo-100 via-purple-300 to-pink-200 flex items-center justify-center">

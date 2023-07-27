@@ -166,6 +166,7 @@ export default {
       }
     },
     async search() {
+     
       this.cityFocused=true;  this.districtFocused=true;  this.communeFocused=true; this.catFocused =true;
       this.radiusFocused=true;this.typeFocused = true
       const data = {
@@ -175,8 +176,9 @@ export default {
       };
       if(this.city_id && this.districts_code && this.commune_id && this.catid && this.radius && this.validNumber(this.radius) && this.type)
       {
+        
         const encodedData = encodeURIComponent(JSON.stringify(data));
-        this.$router.push({ name: 'searchview', query: { data: encodedData } });
+        window.location.href = `${import.meta.env.VITE_API_BASE_URL_API}searchview?data=${encodedData}`;
         this.cityFocused=false;  this.districtFocused=false;  this.communeFocused=false; this.catFocused =false;
         this.radiusFocused=false;this.typeFocused = false
       }
