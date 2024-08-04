@@ -4,15 +4,13 @@
 ![Vue.js](https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vue.js&logoColor=4FC08D)
 ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
+![ExpressJS](https://img.shields.io/badge/Expressjs-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![TypeORM](https://img.shields.io/badge/TypeORM-262627?style=for-the-badge&logo=typeorm&logoColor=white)
 
 ## Overview
 
-This project is an ecommerce website built using modern web technologies. It leverages **Vue.js** with **Vite** for the front end, **NestJS** with **MySQL** and **TypeORM** for the back end, and **TailwindCSS** for styling.
-
-![markdown](https://asia-1-fileserver-2.stringee.com/0/asia-1_1_1OB62KU7V569ALL/1691035476-NestJS-la-gi.jpg)
+This project is an ecommerce website built using modern web technologies. It leverages **Vue.js** with **Vite** for the front end, **Expressjs** with **MySQL** and **TypeORM** for the back end, and **TailwindCSS** for styling.
 
 ## Description
 
@@ -23,9 +21,8 @@ Created a platform for sharing and trading pre-owned items, featuring post/searc
 - **Vue.js**: Progressive JavaScript framework for building user interfaces.
 - **Vite**: Next-generation front-end tooling.
 - **TailwindCSS**: Utility-first CSS framework.
-- **NestJS**: Framework for building efficient, scalable Node.js server-side applications.
+- **Expressjs**: Framework for building efficient, scalable Node.js applications.
 - **MySQL**: Relational database management system.
-- **TypeORM**: ORM for TypeScript and JavaScript.
 - **Mapbox**: Provides map and location services.
 - **Node Cron**: Task scheduling for Node.js.
 - **Socket.IO**: Real-time, bidirectional, event-based communication.
@@ -52,9 +49,8 @@ Created a platform for sharing and trading pre-owned items, featuring post/searc
 
 ## Backend Resources
 
-1. [NestJS](https://nestjs.com/)
+1. [Expressjs]([https://nestjs.com/](https://expressjs.com/))
 2. [TypeORM](https://typeorm.io/)
-3. [Role-Based Authorization](https://shpota.com/2022/07/16/role-based-authorization-with-jwt-using-nestjs.html)
 
 ## Additional Resources
 
